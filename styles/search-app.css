@@ -1,0 +1,538 @@
+/* =========================================================
+   OntoEagle — Ontology Search App
+   Stage G: Polished, scoped, accessible CSS
+   ========================================================= */
+
+/* ---------- Global reset (scoped) ---------- */
+
+.ont-search {
+  font-family: var(--ont-font-body);
+  color: var(--ont-text);
+  background: var(--ont-bg);
+  margin: 0;
+  padding: 0;
+}
+
+/* Skip link */
+.ont-search__skip {
+  position: absolute;
+  left: -999px;
+  top: auto;
+}
+.ont-search__skip:focus {
+  left: 1rem;
+  top: 1rem;
+  background: #fff;
+  padding: 0.5rem;
+  z-index: 1000;
+}
+
+/* ---------- Header ---------- */
+
+.ont-search__header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--ont-border);
+  background: var(--ont-panel-bg);
+}
+
+.ont-search__title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.ont-search__status {
+  margin-top: 0.25rem;
+  margin-left: 2rem;
+  color: var(--ont-muted);
+}
+
+.ont-pagebar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 1rem 0.25rem;
+}
+
+.ont-pagebar__left,
+.ont-pagebar__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ont-pagebar__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ont-pagebar__tab {
+  border: 1px solid var(--ont-border);
+  border-radius: var(--ont-radius);
+  background: transparent;
+  color: var(--ont-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 650;
+  line-height: 2.6;
+  padding: 0.4rem 0.85rem;
+  margin-bottom: 0px;
+}
+
+.ont-pagebar__tab[aria-selected="true"] {
+  background: var(--ont-panel-bg);
+  border-color: var(--ont-accent);
+  color: var(--ont-text);
+}
+
+.ont-appView[hidden] {
+  display: none !important;
+}
+
+.ont-appView.ont-catalog__main {
+  padding-top: 0;
+}
+
+/* ---------- Layout ---------- */
+
+.ont-search__layout {
+  display: grid;
+  grid-template-columns: 1.5fr 3fr 2.5fr;
+  gap: var(--ont-gap);
+  padding: 0.35rem 1rem 1rem;
+}
+
+@media (max-width: 1100px) {
+  .ont-search__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Panels ---------- */
+
+.ont-search__panel,
+.ont-search__results,
+.ont-search__detailsPanel {
+  background: var(--ont-panel-bg);
+  border: 1px solid var(--ont-border);
+  border-radius: var(--ont-radius);
+  padding: 1rem;
+}
+
+/* ---------- Forms ---------- */
+
+.ont-search__form {
+  margin-bottom: 0rem;
+}
+
+.ont-search__label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.ont-search__input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--ont-border);
+  border-radius: var(--ont-radius);
+  font-size: 1.5rem;
+}
+
+.ont-search__input:focus {
+  outline: 2px solid var(--ont-focus);
+  outline-offset: 1px;
+}
+
+.ont-search__queryRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ont-search__btn {
+  padding-top: 0rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  border-radius: var(--ont-radius);
+  border: 1px solid var(--ont-border);
+  background: var(--ont-accent);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ont-search__btn--secondary {
+  background: var(--ont-code-bg);
+  color: var(--ont-text);
+  border-color: var(--ont-border);
+}
+
+.ont-search__btn--ghost {
+  background: transparent;
+  color: var(--ont-muted);
+}
+
+.ont-search__btn:disabled,
+.ont-search__btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.ont-search__btn:focus {
+  outline: 2px solid var(--ont-focus);
+}
+
+/* ---------- Fieldsets ---------- */
+
+.ont-search__fieldset {
+  border: none;
+  margin: 0.75rem 1rem;
+  padding: 0;
+}
+
+.ont-search__legend {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  margin-left: -1rem;
+}
+
+.ont-search__check {
+  display: flex;
+  gap: 0.85rem;
+  margin-bottom: -.75rem;
+  margin-top: -.25rem;
+  margin-left: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+/* ---------- Results ---------- */
+
+.ont-search__resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.ont-search__h2 {
+  margin: 0;
+  font-size: 2.75rem;
+}
+
+.ont-search__resultsMeta {
+  font-size: 1.5rem;
+  color: var(--ont-muted);
+}
+
+.ont-search__list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.ont-search__result {
+  margin-bottom: 2rem;
+  background-image: linear-gradient(to bottom, var(--ont-panel-bg), var(--ont-code-bg));
+}
+
+.ont-search__resultBtn {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem;
+  border: 1px solid var(--ont-border);
+  border-radius: var(--ont-radius);
+  background: #fff;
+  cursor: pointer;
+}
+
+.ont-search__resultBtn:hover {
+  background: var(--ont-accent-soft);
+}
+
+.ont-search__resultBtn:focus {
+  outline: 2px solid var(--ont-focus);
+}
+
+.ont-search__resultTitle {
+  margin-top: 0.25rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.ont-search__resultMeta {
+
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ont-search__resultIri {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--ont-font-mono);
+  font-size: 1.25rem;
+  color: var(--ont-muted);
+  padding-bottom: 1rem;
+}
+
+.ont-search__resultIri span {
+  min-width: 0;
+  word-break: break-all;
+}
+
+/* ---------- Pills ---------- */
+
+.ont-search__pill {
+  background: var(--ont-pill-bg);
+  color: var(--ont-pill-text);
+  border-radius: 999px;
+  padding: 0.125rem 0.5rem;
+  font-size: 1.6rem;
+}
+
+.ont-search__pill--user {
+  background: var(--ont-accent-soft);
+  color: var(--ont-text);
+  border: 1px solid var(--ont-accent);
+}
+
+/* ---------- Details ---------- */
+
+.ont-search__detailsCard {
+  font-size: 1.5rem;
+}
+
+.ont-search__detailsHeader {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.ont-search__detailsIri code {
+  font-family: var(--ont-font-mono);
+  font-size: 1.5rem;
+}
+
+.ont-search__detailsMeta {
+  margin: 0.85rem 0;
+}
+
+.ont-search__detailsList {
+  margin: 0.35rem 0 0;
+  padding-left: 1.35rem;
+}
+
+.ont-search__detailsList li {
+  margin: 0.25rem 0;
+}
+
+.ont-search__detailsList code {
+  font-family: var(--ont-font-mono);
+  font-size: 0.9em;
+  color: var(--ont-muted);
+}
+
+.ont-search__detailsList--pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding-left: 0;
+  list-style: none;
+}
+
+.ont-search__detailsPillItem {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--ont-border);
+  border-radius: 999px;
+  background: var(--ont-pill-bg);
+  color: var(--ont-pill-text);
+  padding: 0.15rem 0.55rem;
+}
+
+.ont-search__inlineBtn,
+.ont-search__copyBtn {
+  border: 1px solid var(--ont-border);
+  border-radius: 4px;
+  background: var(--ont-code-bg);
+  color: var(--ont-text);
+  cursor: pointer;
+}
+
+.ont-search__inlineBtn {
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.9em;
+}
+
+.ont-search__copyBtn {
+  display: inline-grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  margin-left: 0.35rem;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1;
+  vertical-align: text-bottom;
+}
+
+.ont-search__inlineBtn:hover,
+.ont-search__copyBtn:hover {
+  border-color: var(--ont-accent);
+}
+
+.ont-search__expandText {
+  display: inline;
+}
+
+.ont-search__expandRest:not([hidden]) {
+  display: inline;
+}
+
+.ont-search__detailsSubhead {
+  font-size: 1.75rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.ont-search__taxonomy .ont-search__detailsSubhead {
+  font-size: 2.25rem;
+}
+
+.ont-search__taxonomy {
+  border-top: 1px solid var(--ont-border);
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+}
+
+.ont-search__tree {
+  font-size: 1.35rem;
+  font-family: var(--ont-font-body);
+}
+
+.ont-search__treeLevel {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+.ont-search__treeItem {
+  display: flex;
+  align-items: center;
+  min-height: 1.75rem;
+  margin: 0.05rem 0 0.05rem calc(var(--tree-depth, 0) * 2.35rem);
+  line-height: 1.4;
+}
+
+.ont-search__treeConnector {
+  flex: 0 0 0;
+  color: var(--ont-muted);
+  font-family: var(--ont-font-mono);
+  text-align: right;
+  white-space: pre;
+}
+
+.ont-search__treeLevel--children {
+  margin-left: 0.55rem;
+}
+
+.ont-search__treeNode {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  overflow-wrap: anywhere;
+}
+
+.ont-search__treeItem--ancestor .ont-search__treeNode {
+  color: var(--ont-text);
+}
+
+.ont-search__treeItem--sibling .ont-search__treeNode {
+  color: var(--ont-muted);
+}
+
+.ont-search__treeItem--extraParent .ont-search__treeNode {
+  color: var(--ont-muted);
+  font-style: italic;
+}
+
+.ont-search__treeItem--focus .ont-search__treeNode {
+  border: 1px solid var(--ont-accent);
+  background: var(--ont-accent-soft);
+  color: var(--ont-text);
+  font-weight: 700;
+}
+
+.ont-search__ontologyList {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ont-search__ontologyRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.5rem;
+  align-items: center;
+  border: 1px solid var(--ont-border);
+  border-radius: var(--ont-radius);
+  padding: 0.5rem;
+  background: var(--ont-code-bg);
+}
+
+.ont-search__ontologyName {
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.ont-search__ontologyMeta {
+  color: var(--ont-muted);
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+
+.ont-search__ontologyToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+@media (max-width: 620px) {
+  .ont-search__queryRow,
+  .ont-search__ontologyRow {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}
+
+/* ---------- Empty / help ---------- */
+
+.ont-search__help {
+  font-size: 1.25rem;
+  color: var(--ont-muted);
+  margin-bottom: 1.25rem;
+}
+
+.ont-search__empty {
+  text-align: center;
+  color: var(--ont-muted);
+  padding: 2rem 1rem;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="OntoEagle is a browser-based ontology lookup and exploration app for searching ontology elements, inspecting term details, and bundling selected terms for slim-building workflows." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="dcterms.creator" content="Jonathan Vajda" />
+  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="version" content="0.1.0" />
+  <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
+  <title>OntoEagle Lookup</title>
+  <!-- Public CSS -->
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+
+  <!-- App Global CSS -->
+  <script>
+    (function () {
+      const APPBASE_CSS_SOURCES = [
+        "../styles/app-base.css", /* local dev copy first */
+        "https://jonathanvajda.github.io/OntoEagle/styles/app-base.css",
+        "https://jonathanvajda.github.io/table-nova/styles/app-base.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of APPBASE_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load app base CSS from all sources.");
+      })();
+    })();
+  </script>
+  <script>
+    (function () {
+      const HEADER_CSS_SOURCES = [
+        "../styles/site-header.css", /* local dev copy first */
+        "https://jonathanvajda.github.io/OntoEagle/styles/site-header.css",
+        "https://jonathanvajda.github.io/table-nova/styles/site-header.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of HEADER_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load header CSS from all sources.");
+      })();
+    })();
+  </script>
+
+
+  <!-- App Local CSS -->
+  <link rel="stylesheet" href="../styles/search-app.css" />
+  <link rel="stylesheet" href="../styles/ontology-pages.css" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/index.js" />
+  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/tabular-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/ontology-utils/src/index.js" />
+</head>
+
+<body data-page-id="ontoeagle" data-db-name="OntoEagleDB" data-db-stores="settings,datasets,documents,index" data-manage-data-label="Manage data" class="ont-search">
+  <header id="siteHeader" class="sitehdr-root" role="banner" aria-label="Site header">
+    
+  </header>
+
+  <div id="ontMetaStatus" class="ont-pagebar">
+    <div class="ont-pagebar__left">
+      <nav class="ont-pagebar__nav" aria-label="OntoEagle views" role="tablist">
+        <button id="ontSearchTab" class="ont-pagebar__tab" type="button" role="tab" aria-selected="true" aria-controls="ontSearchView" data-view-tab="search">Term Lookup</button>
+        <button id="ontCatalogTab" class="ont-pagebar__tab" type="button" role="tab" aria-selected="false" aria-controls="ontCatalogView" data-view-tab="catalog">Ontology Catalog</button>
+      </nav>
+    </div>
+  </div>
+
+  <main id="ontSearchView" class="ont-search__layout ont-appView" role="tabpanel" aria-labelledby="ontSearchTab">
+    <!-- Left: Search + filters -->
+    <section class="ont-search__panel" aria-label="Search and filters">
+      <form id="ontSearchForm" class="ont-search__form" role="search" autocomplete="off">
+        <div class="ont-search__queryRow">
+          <input
+            id="ontQuery"
+            name="q"
+            class="ont-search__input"
+            type="search"
+            placeholder='e.g., vehicle, "act of location change", IAO_0000115'
+            aria-describedby="ontQueryHelp"
+            spellcheck="false"
+          />
+          <button id="ontSearchBtn" class="ont-search__btn" type="submit" disabled aria-disabled="true">Search</button>
+        </div>
+
+        <p id="ontQueryHelp" class="ont-search__help">
+          Quotes keep phrases together.
+        </p>
+
+        <details class="ont-search__details" open>
+          <summary class="ont-search__summary"><strong>Filters</strong></summary>
+
+          <fieldset class="ont-search__fieldset">
+            <legend class="ont-search__legend">Match</legend>
+
+            <label class="ont-search__check">
+              <input id="optExact" type="checkbox" />
+              <span>Exact match</span>
+            </label>
+
+            <label class="ont-search__check">
+              <input id="optWildcard" type="checkbox" checked />
+              <span>Wildcard / contains</span>
+            </label>
+          </fieldset>
+
+          <fieldset class="ont-search__fieldset">
+            <legend class="ont-search__legend">Fields searched</legend>
+
+            <label class="ont-search__check">
+              <input id="optIncludeDefinition" type="checkbox" checked />
+              <span>Definitions</span>
+            </label>
+
+            <label class="ont-search__check">
+              <input id="optIncludeCitation" type="checkbox" checked />
+              <span>Citations</span>
+            </label>
+
+            <label class="ont-search__check">
+              <input id="optIncludeExamples" type="checkbox" checked />
+              <span>Examples</span>
+            </label>
+
+            <label class="ont-search__check">
+              <input id="optIncludeClarifications" type="checkbox" checked />
+              <span>Clarifications</span>
+            </label>
+          </fieldset>
+
+          <fieldset class="ont-search__fieldset">
+            <legend class="ont-search__legend">By element types</legend>
+
+            <div class="ont-search__grid" role="group" aria-label="OWL element types">
+              <label class="ont-search__check"><input class="optType" type="checkbox" value="Ontology" checked /> <span>Ontology</span></label>
+              <label class="ont-search__check"><input class="optType" type="checkbox" value="Class" checked /> <span>Class</span></label>
+              <label class="ont-search__check"><input class="optType" type="checkbox" value="ObjectProperty" checked /> <span>ObjectProperty</span></label>
+              <label class="ont-search__check"><input class="optType" type="checkbox" value="DatatypeProperty" checked /> <span>DatatypeProperty</span></label>
+              <label class="ont-search__check"><input class="optType" type="checkbox" value="AnnotationProperty" checked /> <span>AnnotationProperty</span></label>
+              <label class="ont-search__check"><input class="optType" type="checkbox" value="NamedIndividual" checked /> <span>NamedIndividual</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="ont-search__fieldset">
+            <legend class="ont-search__legend">By namespaces</legend>
+            <input
+              id="optNamespaces"
+              class="ont-search__input"
+              type="text"
+              placeholder="e.g., cco, bfo, iao OR http://purl.obolibrary.org/obo/"
+            />
+            <p class="ont-search__help">Comma-separated prefixes or namespace IRIs. Leave blank to search all namespaces.</p>
+          </fieldset>
+
+          <div class="ont-search__row">
+            <button id="ontSaveSettingsBtn" class="ont-search__btn ont-search__btn--secondary" type="button">
+              Save settings
+            </button>
+            <button id="ontResetSettingsBtn" class="ont-search__btn ont-search__btn--ghost" type="button">
+              Reset
+            </button>
+          </div>
+        </details>
+
+      </form>
+    </section>
+
+    <!-- Center: Results -->
+    <section class="ont-search__results" aria-label="Search results">
+      <header class="ont-search__resultsHeader">
+        <h2 class="ont-search__h2" id="ontResults">Results</h2>
+        <br />
+        <br />
+
+        <!-- Live region for result count/time -->
+        <div class="ont-search__resultsMeta" aria-live="polite" aria-atomic="true">
+          <span id="ontResultsCount">0</span> results
+          <span aria-hidden="true">-</span>
+          <span id="ontResultsTime">0 ms</span>
+        </div>
+      </header>
+
+      <!-- Ranked results: listbox + options for keyboard navigation -->
+      <ol
+        id="ontResultsList"
+        class="ont-search__list"
+        role="listbox"
+        aria-label="Ranked results"
+        aria-activedescendant=""
+        tabindex="0"
+      ></ol>
+
+      <div id="ontEmptyState" class="ont-search__empty" hidden>
+        <p><strong>No results yet.</strong> Try a search above.</p>
+      </div>
+    </section>
+
+    <!-- Right: Details -->
+    <aside class="ont-search__detailsPanel" aria-label="Selected element details">
+      <h2 class="ont-search__h2">Details</h2>
+      <br />
+      <div id="ontDetails" class="ont-search__detailsCard">
+        <p class="ont-search__help">Select a result to view details.</p>
+      </div>
+    </aside>
+  </main>
+
+  <main id="ontCatalogView" class="ont-catalog__main ont-appView" role="tabpanel" aria-labelledby="ontCatalogTab" hidden>
+    <section class="ont-catalog__panel" aria-label="Ontology catalog table">
+      <div id="ontologyCatalogLoading" class="ont-catalog__loading">
+        <span class="ont-catalog__spinner" aria-hidden="true"></span>
+        <span>Loading ontologies...</span>
+      </div>
+      <div id="ontologyCatalogTableWrap" class="ont-catalog__tableWrap" hidden>
+        <table class="ont-catalog__table">
+          <colgroup>
+            <col />
+            <col />
+            <col />
+            <col />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">Label</th>
+              <th scope="col">Description</th>
+              <th scope="col">Repo</th>
+              <th scope="col">Download</th>
+            </tr>
+          </thead>
+          <tbody id="ontologyCatalogBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="ontologyRegistryModal" class="ont-catalog__modal">
+    <form id="ontologyRegistryForm" method="dialog">
+      <h2 class="ont-viewer__title">Registry data</h2>
+      <div class="ont-catalog__formGrid">
+        <div class="ont-catalog__field ont-catalog__field--full">
+          <label for="registryIri">IRI</label>
+          <input id="registryIri" name="iri" type="url" readonly />
+        </div>
+        <div class="ont-catalog__field">
+          <label for="registryLevel">Ontology level</label>
+          <select id="registryLevel" name="ontology_level">
+            <option value="top">Top</option>
+            <option value="mid">Mid</option>
+            <option value="dom">Domain</option>
+            <option value="app">Application</option>
+            <option value="kg">Knowledge graph</option>
+          </select>
+        </div>
+        <div class="ont-catalog__field">
+          <label for="registryLogo">Repo logo</label>
+          <select id="registryLogo" name="git_logo">
+            <option value="github">GitHub</option>
+            <option value="gitlab">GitLab</option>
+            <option value="git">Git</option>
+          </select>
+        </div>
+        <div class="ont-catalog__field ont-catalog__field--full">
+          <label for="registryRepo">Git repository URL</label>
+          <input id="registryRepo" name="git_repo_url" type="url" />
+        </div>
+        <div class="ont-catalog__field ont-catalog__field--full">
+          <label for="registryIssues">Issue tracker URL</label>
+          <input id="registryIssues" name="issue_tracker_url" type="url" />
+        </div>
+        <div class="ont-catalog__field ont-catalog__field--full">
+          <label for="registryFile">Download file path</label>
+          <input id="registryFile" name="file" type="text" placeholder="./ontologies/example.ttl" />
+        </div>
+      </div>
+      <div class="ont-catalog__toolbar">
+        <button class="ont-search__btn" type="submit">Save</button>
+        <button id="ontologyRegistryCancelBtn" class="ont-search__btn ont-search__btn--ghost" type="button">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="ontologyMissingMetadataModal" class="ont-catalog__modal ont-catalog__modal--wide">
+    <form method="dialog">
+      <div class="ont-catalog__toolbar">
+        <h2 class="ont-viewer__title">Ontologies missing metadata</h2>
+        <button class="ont-search__btn ont-search__btn--ghost" type="submit">Close</button>
+      </div>
+      <div id="ontologyMissingMetadataList" class="ont-catalog__missingList"></div>
+    </form>
+  </dialog>
+
+  <!-- Service worker-->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async function () {
+        try {
+          const reg = await navigator.serviceWorker.register('/sw.js', {
+            updateViaCache: 'none'
+          });
+
+          await reg.update();
+
+          let reloading = false;
+          navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (reloading) return;
+            reloading = true;
+            window.location.reload();
+          });
+
+          console.log('SW registered with scope:', reg.scope);
+        } catch (err) {
+          console.error('Service worker registration failed:', err);
+        }
+      });
+    }
+  </script>
+
+  <script>
+    (function () {
+      const JS_SOURCES = [
+        "../app/site-header.js", /* local dev copy first */
+        //"https://jonathanvajda.github.io/OntoEagle/app/site-header.js",
+        //"https://jonathanvajda.github.io/table-nova/app/site-header.js",
+      ];
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.type = "module";
+          s.src = src;
+          s.defer = true;
+
+          s.onload = () => resolve(src);
+          s.onerror = () => reject(new Error("JS failed: " + src));
+
+          document.head.appendChild(s);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        const div = document.createElement("div");
+        div.style.cssText =
+          "position:fixed;left:0;right:0;bottom:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-top:1px solid rgba(0,0,0,.2)";
+        div.textContent = msg;
+        document.body ? document.body.appendChild(div) : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(div));
+      }
+
+      (async () => {
+        for (const src of JS_SOURCES) {
+          try { await loadScript(src); return; } catch (_) {}
+        }
+        showFailure("Failed to load header JavaScript from all sources.");
+      })();
+    })();
+  </script>
+  <script>
+    (() => {
+      const tabs = Array.from(document.querySelectorAll('[data-view-tab]'));
+      const views = {
+        search: document.getElementById('ontSearchView'),
+        catalog: document.getElementById('ontCatalogView')
+      };
+
+      function showView(viewName) {
+        for (const tab of tabs) {
+          tab.setAttribute('aria-selected', String(tab.dataset.viewTab === viewName));
+        }
+        for (const [name, view] of Object.entries(views)) {
+          if (view) view.hidden = name !== viewName;
+        }
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => showView(tab.dataset.viewTab || 'search'));
+      });
+    })();
+  </script>
+  <!-- App JS --> 
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/rdflib.min.js"></script>
+  <script src="../vendor/jszip.min.js"></script>
+  <script type="module" src="../bundler/bundler-core.js"></script>
+  <script type="module" src="../app/catalog-data-manager.js"></script>
+  <script type="module" src="./ontology-catalog.js"></script>
+  <script type="module" src="./search-main.js"></script>
+
+</body>
+</html>

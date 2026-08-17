@@ -1,0 +1,395 @@
+
+
+    body {
+      overflow: hidden;
+    }
+
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      /* Stack children vertically */
+      padding: 1rem;
+      height: calc(100vh - 200px);
+      /* Full viewport height MINUS the HEADER*/
+      box-sizing: border-box;
+      /* Include padding in width/height */
+    }
+
+    .sidebar h2 {
+      font-size: 3rem;
+      margin-top: 0;
+      border-bottom: 1px solid #6c7a89;
+      padding-bottom: 0.5rem;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      margin: 0.5rem 0;
+      display: block;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .main {
+      padding: 3rem;
+      overflow-y: auto;
+      height: calc(100vh - 200px);
+    }
+
+    .section {
+      background-color: var(--ont-bg);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .section h3 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+      font-weight: bold;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .columns {
+      display: flex;
+      margin-left: 0%;
+      gap: 2rem;
+    }
+
+
+    .cq-list {
+      line-height: 1.4;
+      flex-grow: 1;
+      /* Allow the list to grow and take available space */
+      overflow-y: auto;
+      /* Enable vertical scrolling for the list */
+      margin-bottom: 1rem;
+      /* Add spacing between the list and buttons */
+    }
+
+    .cq-list-item {
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      border: 1px solid #00416a;
+    }
+
+    .cq-list-item:hover {
+      background-color: var(--ont-bg-panel);
+    }
+
+    .process-image {
+      width: 100%;
+      height: 200px;
+      background-color: var(--ont-bg-panel);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-style: italic;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: var(--ont-bg);
+      margin-bottom: 1rem;
+    }
+
+    .tag-container input {
+      border: none;
+      outline: none;
+      flex-grow: 1;
+      padding: 0.2rem;
+      margin: 0.2rem;
+      width: auto;
+      min-width: 150px;
+    }
+
+    .owner-tag {
+      display: flex;
+      align-items: center;
+      background-color: var(--ont-bg-panel);
+      color: #333;
+      border-radius: 12px;
+      padding: 0.2rem 0.6rem;
+      margin: 0.2rem;
+      font-size: 0.9em;
+    }
+
+    .tag-text {
+      margin-right: 0.4rem;
+    }
+
+    .remove-tag {
+      cursor: pointer;
+      font-weight: bold;
+      color: #666;
+    }
+
+    .remove-tag:hover {
+      color: #000;
+    }
+
+    .data-requirement-item {
+      position: relative;
+      background-color: var(--ont-bg-panel);
+      border: 1px solid var(--ont-border);
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .datasource-tag {
+      display: flex;
+      align-items: center;
+      background-color: var(--ont-bg-panel);
+      /* A light green color */
+      color: #0f5132;
+      border-radius: 12px;
+      padding: 0.2rem 0.6rem;
+      margin: 0.2rem;
+      font-size: 0.9em;
+    }
+
+    .dynamic-list-container {
+      position: relative;
+      background-color: var(--ont-bg-panel);
+      border: 1px solid var(--ont-border);
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .list-item-container {
+      position: relative;
+      border-radius: 4px;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .list-item-container textarea {
+      width: 100%;
+      margin-bottom: 0;
+      min-height: 60px;
+    }
+
+    .delete-item-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      border: none;
+      background-color: var(--ont-bg-panel);
+      color: var(--ont-text);
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      line-height: 20px;
+      text-align: center;
+      padding: 0;
+    }
+
+    .delete-item-btn:hover {
+      background-color: #555555;
+    }
+
+    button {
+      /* border: none; */
+      /* padding: 0.5rem 1rem; */
+      border-radius: 20px;
+      cursor: pointer;
+      /* margin-bottom: 0.5rem;
+    }
+
+    button:last-of-type {
+      margin-bottom: 0;
+      /* Remove margin for the last button */
+    }
+
+    #download-jsonld-button,
+    #download-csv-button,
+    #upload-csv-button {
+      margin-top: auto;
+      /* Push buttons to the bottom of the sidebar */
+    }
+
+    .add-item-btn {
+      background-color: var(--ont-bg-panel);
+      color: var(--ont-text);
+    }
+
+    .add-item-btn:hover {
+      background-color: var(--ont-accent-soft);
+    }
+
+    .save-btn {
+      background-color: var(--ont-accent);
+      color: var(--ont-accent-soft);
+    }
+
+    .save-btn:hover {
+      background-color: var(--ont-emph-bg);
+      color: var(--ont-btn-hover-text);
+      border: var(--ont-btn-hover-border);
+    }
+    
+    .new-btn {
+      background-color: var(--ont-accent);
+      color: var(--ont-accent-soft);
+    }
+
+    .new-btn:hover {
+      background-color: var(--ont-emph-bg);
+      color: var(--ont-btn-hover-text);
+      border: var(--ont-btn-hover-border);
+    }
+
+    .person-entry {
+      position: relative;
+      background-color: var(--ont-bg-panel);
+      border: 1px solid var(--ont-border);
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .person-header {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Styles for the person lookup feature */
+    .person-search-results {
+      position: absolute;
+      background-color: var(--ont-bg);
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      width: calc(50% - 0.5rem);
+      /* Match the approximate width of the name input */
+      z-index: 10;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .person-search-result-item {
+      padding: 0.75rem;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    }
+
+    .person-search-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .person-search-result-item:hover {
+      background-color: var(--ont-accent-soft);
+    }
+
+    .person-search-result-item small {
+      color: #666;
+      display: block;
+    }
+
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.7em;
+      justify-content: center;
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    /* Optional “pressed” look */
+    .tab-btn.active:active { transform: none; }
+
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ========================================= */
+    /* TABLET RESPONSIVE STYLES             */
+    /* ========================================= */
+    @media screen and (max-width: 900px) {
+      .main {
+        width: 100%;
+        float: none;
+        padding: 1rem;
+      }
+
+
+
+      .columns {
+        /* Stack the subquestion/logic columns vertically */
+        flex-direction: column;
+        gap: 1.5rem;
+        /* Adjust the gap for vertical stacking */
+      }
+
+      .section {
+        /* Slightly reduce padding within sections */
+        padding: 1rem;
+      }
+
+      /* Increase font size on form elements for better readability on mobile */
+      input,
+      textarea,
+      select {
+        font-size: 16px;
+      }
+    }
+
+    /* ========================================= */
+    /* MOBILE RESPONSIVE STYLES             */
+    /* ========================================= */
+    @media (max-width: 768px) {
+
+      .container {
+        /* Change the main layout to stack vertically */
+        flex-direction: column;
+        height: auto;
+        /* Allow height to grow with content */
+      }
+
+      .sidebar {
+        /* Make the sidebar full-width and auto-height */
+        width: 100%;
+        height: auto;
+        float: none;
+        /* Clear the old float property */
+      }
+
+    }

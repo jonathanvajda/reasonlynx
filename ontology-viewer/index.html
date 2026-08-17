@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Ontology viewer for inspecting ontology metadata, imports, and terms." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="dcterms.creator" content="Jonathan Vajda" />
+  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="version" content="0.1.0" />
+  <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
+  <title>Ontology Viewer</title>
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+  <link rel="stylesheet" href="../styles/app-base.css" />
+  <link rel="stylesheet" href="../styles/site-header.css" />
+  <link rel="stylesheet" href="../styles/search-app.css" />
+  <link rel="stylesheet" href="../styles/tabulator.min.css" />
+  <link rel="stylesheet" href="../styles/ontology-pages.css" />
+</head>
+<body data-page-id="ontology-viewer" data-db-name="OntoEagleDB" data-db-stores="settings,datasets,documents,index" data-manage-data-label="Manage data" class="ont-catalog">
+  <header id="siteHeader" class="sitehdr-root" role="banner" aria-label="Site header"></header>
+
+  <div class="ont-catalog__status">
+    <div class="ont-pagebar__left">
+      <nav class="ont-pagebar__nav" aria-label="OntoEagle pages">
+        <a href="../onto-eagle/" aria-current="page"><button class="ont-search__btn ont-search__btn--secondary" type="button" data-lookup-service>Search</button></a>
+        <a href="../onto-eagle/"><button class="ont-search__btn ont-search__btn--secondary" type="button" data-manage-catalog-table>Catalog</button></a>
+      </nav>
+    </div>
+  </div>
+
+  <main class="ont-catalog__main ont-viewer__layout" role="main">
+    <div class="ont-viewer__topRow">
+      <section id="ontologyCard" class="ont-viewer__section ont-viewer__section--top" aria-label="Ontology metadata">
+        <div class="ont-catalog__loading">
+          <span class="ont-catalog__spinner" aria-hidden="true"></span>
+          <span>Loading ontology...</span>
+        </div>
+      </section>
+      <section id="importDiagram" class="ont-viewer__section ont-viewer__section--top" aria-label="Import diagram"></section>
+    </div>
+    <section id="termList" class="ont-viewer__section ont-viewer__section--wide" aria-label="Ontology term list"></section>
+    <section id="qualityAssuranceReport" class="ont-viewer__section" aria-label="Quality assurance report"></section>
+  </main>
+
+  <dialog id="ontologyRegistryModal" class="ont-catalog__modal">
+    <form id="ontologyRegistryForm" method="dialog">
+      <h2 class="ont-viewer__title">Registry data</h2>
+      <div class="ont-catalog__formGrid">
+        <div class="ont-catalog__field ont-catalog__field--full">
+          <label for="registryIri">IRI</label>
+          <input id="registryIri" name="iri" type="url" readonly />
+        </div>
+        <div class="ont-catalog__field">
+          <label for="registryLevel">Ontology level</label>
+          <select id="registryLevel" name="ontology_level">
+            <option value="top">Top</option>
+            <option value="mid">Mid</option>
+            <option value="dom">Domain</option>
+            <option value="app">Application</option>
+            <option value="kg">Knowledge graph</option>
+          </select>
+        </div>
+        <div class="ont-catalog__field">
+          <label for="registryLogo">Repo logo</label>
+          <select id="registryLogo" name="git_logo">
+            <option value="github">GitHub</option>
+            <option value="gitlab">GitLab</option>
+            <option value="git">Git</option>
+          </select>
+        </div>
+        <div class="ont-catalog__field ont-catalog__field--full">
+          <label for="registryRepo">Git repository URL</label>
+          <input id="registryRepo" name="git_repo_url" type="url" />
+        </div>
+        <div class="ont-catalog__field ont-catalog__field--full">
+          <label for="registryIssues">Issue tracker URL</label>
+          <input id="registryIssues" name="issue_tracker_url" type="url" />
+        </div>
+        <div class="ont-catalog__field ont-catalog__field--full">
+          <label for="registryFile">Download file path</label>
+          <input id="registryFile" name="file" type="text" placeholder="./ontologies/example.ttl" />
+        </div>
+      </div>
+      <div class="ont-catalog__toolbar">
+        <button class="ont-search__btn" type="submit">Save</button>
+        <button id="ontologyRegistryCancelBtn" class="ont-search__btn ont-search__btn--ghost" type="button">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="ont-catalog__footer">
+    <p>Copyright Jonathan Vajda. Licensed under the GNU General Public License version 3.0.</p>
+  </footer>
+
+  <script type="module" src="../app/site-header.js"></script>
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/rdflib.min.js"></script>
+  <script src="../vendor/mermaid.min.js"></script>
+  <script src="../vendor/tabulator.min.js"></script>
+  <script type="module" src="../app/catalog-data-manager.js"></script>
+  <script type="module" src="./ontology-viewer.js"></script>
+</body>
+</html>

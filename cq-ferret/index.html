@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CQ Ferret is a competency-question builder for ontology development that captures question metadata and extracts vocabulary for ontology scaffolding workflows." />
+    <meta name="author" content="Jonathan Vajda" />
+    <meta name="dcterms.creator" content="Jonathan Vajda" />
+    <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+    <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="version" content="0.1.0" />
+    <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
+    <title>Competency Question Builder</title>
+    <!-- Public CSS -->
+    <link rel="stylesheet" href="../styles/skeleton.css" />
+
+    <!-- App Global CSS -->
+    <script>
+        (function () {
+            const APPBASE_CSS_SOURCES = [
+                "../styles/app-base.css", /* local dev copy first */
+                "https://jonathanvajda.github.io/OntoEagle/styles/app-base.css",
+                "https://jonathanvajda.github.io/table-nova/styles/app-base.css",
+            ];
+
+            function loadCss(href) {
+                return new Promise((resolve, reject) => {
+                    const link = document.createElement("link");
+                    link.rel = "stylesheet";
+                    link.href = href;
+
+                    link.onload = () => resolve(href);
+                    link.onerror = () => reject(new Error("CSS failed: " + href));
+
+                    document.head.appendChild(link);
+                });
+            }
+
+            function showFailure(msg) {
+                console.error(msg);
+                // Optional user-visible banner
+                const style = document.createElement("style");
+                style.textContent =
+                    ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+                    "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+                    "border-bottom:1px solid rgba(0,0,0,.2)}";
+                document.head.appendChild(style);
+
+                const div = document.createElement("div");
+                div.className = "asset-fail-banner";
+                div.textContent = msg;
+                document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+            }
+
+            (async () => {
+                for (const href of APPBASE_CSS_SOURCES) {
+                    try { await loadCss(href); return; } catch (_) { }
+                }
+                showFailure("Failed to load app base CSS from all sources.");
+            })();
+        })();
+    </script>
+    <script>
+        (function () {
+            const HEADER_CSS_SOURCES = [
+                "../styles/site-header.css", /* local dev copy first */
+                "https://jonathanvajda.github.io/OntoEagle/styles/site-header.css",
+                "https://jonathanvajda.github.io/table-nova/styles/site-header.css",
+            ];
+
+            function loadCss(href) {
+                return new Promise((resolve, reject) => {
+                    const link = document.createElement("link");
+                    link.rel = "stylesheet";
+                    link.href = href;
+
+                    link.onload = () => resolve(href);
+                    link.onerror = () => reject(new Error("CSS failed: " + href));
+
+                    document.head.appendChild(link);
+                });
+            }
+
+            function showFailure(msg) {
+                console.error(msg);
+                // Optional user-visible banner
+                const style = document.createElement("style");
+                style.textContent =
+                    ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+                    "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+                    "border-bottom:1px solid rgba(0,0,0,.2)}";
+                document.head.appendChild(style);
+
+                const div = document.createElement("div");
+                div.className = "asset-fail-banner";
+                div.textContent = msg;
+                document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+            }
+
+            (async () => {
+                for (const href of HEADER_CSS_SOURCES) {
+                    try { await loadCss(href); return; } catch (_) { }
+                }
+                showFailure("Failed to load header CSS from all sources.");
+            })();
+        })();
+    </script>
+    <link rel="stylesheet" href="./ferret.css">
+    <link rel="stylesheet" href="../styles/tabulator.min.css">
+    <link rel="modulepreload" href="../packages/namespace-registry/src/index.js" />
+    <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+    <link rel="modulepreload" href="../packages/tabular-io/src/index.js" />
+    <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+</head>
+
+<body data-page-id="cq-ferret">
+    <header id="siteHeader" class="sitehdr-root" role="banner" aria-label="Site header">
+
+    </header>
+
+    <div style="display: grid;grid-template-columns: 1fr 4fr; gap: 1rem;">
+        <div class="sidebar">
+            <div class="tabs" role="tablist">
+                <button class="tab-btn" role="tab" data-tab="tab-cq-form" aria-controls="tab-cq-form">Competency
+                    Questions</button>
+                <button class="tab-btn" role="tab" data-tab="tab-term-form" aria-controls="tab-term-form">Term
+                    List</button>
+            </div>
+            <div class="cq-list" id="cq-list">
+            </div>
+            <button id="download-jsonld-button">Download JSON-LD</button>
+            <button id="download-csv-button">Download CSV</button>
+            <button id="upload-csv-button">Upload CSV</button> <input type="file" id="csv-upload-input" accept=".csv"
+                style="display: none;">
+        </div>
+        <div class="main" role="main">
+            <div id="tab-cq-form" class="tab-panel" role="tabpanel" style="max-width: 67%;">
+                <div class="section">
+                    <button id="save-button-top" class="save-btn">Save</button>
+                    <button id="new-cq-button" class="new-btn">New CQ</button>
+                    <h3>Formulation of Question</h3>
+                    <span id="save-status"></span>
+                    <label for="cq-title">Competency Question</label>
+                    <textarea id="cq-title" rows="1"
+                        placeholder="A clear, focused question that drives key information for decision making."></textarea>
+
+                    <label for="cq-description">CQ Context</label>
+                    <textarea id="cq-description" rows="3"
+                        placeholder="Explain why this question matters or what decision it supports."></textarea>
+
+                    <h3>CQ Contributors</h3>
+                    <div id="persons-list">
+                        <div class="person-entry"><button class="delete-item-btn" type="button">✖</button>
+                            <div class="person-header"><input type="text" class="person-name-input"
+                                    placeholder="Full Name (type to search...)" autocomplete="off"><select
+                                    class="person-role-select">
+                                    <option value="Creator">Creator</option>
+                                    <option value="Approver">Approver</option>
+                                    <option value="Reviewer">Reviewer</option>
+                                    <option value="Executor">Executor</option>
+                                    <option value="Subject Matter Expert">Subject Matter Expert</option>
+                                    <option value="Other">Other</option>
+                                </select></div>
+                            <div class="person-search-results"></div><input type="text" class="person-contact-input"
+                                placeholder="Contact (Email, Phone, etc.)"><textarea class="person-notes-textarea"
+                                rows="2" placeholder="Notes / Comments (e.g., area of responsibility)"></textarea><input
+                                type="hidden" class="person-id-input" value=""><input type="hidden"
+                                class="email-id-input" value="">
+                        </div>
+                    </div>
+                    <button type="button" id="add-person-btn" class="add-item-btn">+ Add Person</button>
+                    <div style="display:none;">
+                        <label for="cq-status">Status</label>
+                        <select id="cq-status">
+                            <option>Draft</option>
+                            <option selected="">In Review</option>
+                            <option>Approved</option>
+                            <option>Archived</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Decomposition</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <label>Subquestions</label>
+                            <small>Can you break the main question into smaller, answerable questions?</small>
+                            <div id="subquestions-list" class="dynamic-list-container">
+                                <div class="list-item-container"><textarea class="subquestion-input"
+                                        rows="3"></textarea><button class="delete-item-btn" type="button">✖</button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-subquestion-btn" class="add-item-btn">+ Add
+                                Subquestion</button>
+                        </div>
+                        <div class="column">
+                            <label>Decision Logic</label>
+                            <small>Define the rules or steps for turning subquestion answers into a decision.
+                            </small>
+                            <div id="decision-logic-list" class="dynamic-list-container">
+                                <div class="list-item-container"><textarea class="decision-logic-input"
+                                        rows="3"></textarea><button class="delete-item-btn" type="button">✖</button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-decision-logic-btn" class="add-item-btn">+ Add Decision
+                                Logic</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>What data sources are relevant to finding the answer?</h3>
+
+                    <div id="data-requirements-list">
+                        <div class="data-requirement-item"><button class="delete-item-btn"
+                                type="button">✖</button><label>Data Source</label><input type="text"
+                                class="data-source-input" placeholder="Enter a data source name..."><label>Data Quality
+                                Notes (If you know)</label><textarea class="data-quality-input" rows="2"
+                                placeholder="Note any known issues or limitations for this source..."></textarea></div>
+                    </div>
+                    <button type="button" id="add-data-requirement-btn" class="add-item-btn">+ Add Data
+                        Requirement</button>
+                </div>
+                <div class="section">
+                    <h3>Operational Context</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <label>Process Diagram</label>
+                            <small>What business processes diagrams represent the use case?</small>
+                            <div id="mermaid-diagram-list" class="dynamic-list-container">
+                                <div class="list-item-container"><textarea class="mermaid-diagram-input" placeholder="graph TD;
+    A-->B"></textarea><button class="delete-item-btn" type="button">✖</button><small>(Expects Mermaid syntax)</small>
+                                </div>
+                            </div>
+                            <button type="button" id="add-mermaid-diagram-btn" class="add-item-btn">+ Add Diagram</button>
+                        </div>
+                        <div class="column">
+                            <label>Associated Query</label>
+                            <small>What database queries are used to support this CQ?
+                            </small>
+                            <div id="database-query-list" class="dynamic-list-container">
+                                <div class="list-item-container"><textarea class="database-query-input" placeholder="SELECT *
+WHERE {?subj ?pred ?obj}"></textarea><button class="delete-item-btn" type="button">✖</button>
+                                <select class="database-query-syntax-select">
+                                    <option value="SPARQL">SPARQL</option>
+                                    <option value="SQL">SQL</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                </div>
+                            </div>
+                            <button type="button" id="add-database-query-btn" class="add-item-btn">+ Add Query</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="save-button-bottom" class="save-btn">Save</button>
+            </div>
+            <div id="tab-term-form" class="tab-panel" role="tabpanel">
+                <h1>Extracted Vocabulary</h1>
+
+                <div class="bar">
+                    <button id="btnRebuild" type="button">Rebuild from CQ graph</button>
+                    <button id="btnExportCsv" type="button">Export CSV</button>
+                    <span id="count"></span>
+                    <span id="status" aria-live="polite" style="margin-left:auto;"></span>
+                </div>
+
+                <!-- Tabulator mounts here -->
+                <div id="vocabGrid"></div>
+            </div>
+        </div>
+    </div>
+    <script src="./lexicon.js"></script>
+    <script src="./POSTaggerGraph.js"></script>
+    <script type="module" src="./ferret.js"></script>
+    <script>
+        (function () {
+            const JS_SOURCES = [
+                "../app/site-header.js", /* local dev copy first */
+                "https://jonathanvajda.github.io/OntoEagle/app/site-header.js",
+                "https://jonathanvajda.github.io/table-nova/app/site-header.js",
+            ];
+
+            function loadScript(src) {
+                return new Promise((resolve, reject) => {
+                    const s = document.createElement("script");
+                    s.type = "module";
+                    s.src = src;
+                    s.defer = true;
+
+                    s.onload = () => resolve(src);
+                    s.onerror = () => reject(new Error("JS failed: " + src));
+
+                    document.head.appendChild(s);
+                });
+            }
+
+            function showFailure(msg) {
+                console.error(msg);
+                const div = document.createElement("div");
+                div.style.cssText =
+                    "position:fixed;left:0;right:0;bottom:0;z-index:9999;" +
+                    "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+                    "border-top:1px solid rgba(0,0,0,.2)";
+                div.textContent = msg;
+                document.body ? document.body.appendChild(div) : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(div));
+            }
+
+            (async () => {
+                for (const src of JS_SOURCES) {
+                    try { await loadScript(src); return; } catch (_) { }
+                }
+                showFailure("Failed to load header JavaScript from all sources.");
+            })();
+        })();
+    </script>
+    <!-- Vocabulary modules -->
+    <script src="../vendor/jszip.min.js"></script>
+    <script src="../vendor/tabulator.min.js"></script>
+    <script type="module" src="./vocab-extract-core.js"></script>
+    <script type="module" src="./extracted-vocabulary-tabulator.js"></script>
+
+</body>
+
+</html>

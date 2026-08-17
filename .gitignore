@@ -1,0 +1,10 @@
+onto-eagle/*.html
+!onto-eagle/index.html
+onto-eagle/admin/
+onto-eagle/app/
+onto-eagle/cq-outputs/
+onto-eagle/data/
+onto-eagle/plan/
+onto-eagle/styles/
+onto-eagle/sw.js
+admin/coverage/

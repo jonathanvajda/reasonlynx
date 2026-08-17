@@ -1,0 +1,12 @@
+{
+  "name": "@ontoeagle/tabular-io",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js __tests__/tabular-io.test.js"
+  }
+}

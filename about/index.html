@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="OntoEagle is a lightweight browser-based toolkit for exploring ontologies, assembling ontology slims, and supporting ontology development workflows." />
+    <meta name="author" content="Jonathan Vajda" />
+    <meta name="dcterms.creator" content="Jonathan Vajda" />
+    <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+    <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="version" content="0.1.0" />
+    <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
+    <title>OntoEagle Lookup</title>
+    <!-- Public CSS -->
+    <link rel="stylesheet" href="../styles/skeleton.css" />
+
+    <!-- App Global CSS -->
+    <script>
+        (function () {
+            const APPBASE_CSS_SOURCES = [
+                "../styles/app-base.css", /* local dev copy first */
+                "https://jonathanvajda.github.io/OntoEagle/styles/app-base.css",
+                "https://jonathanvajda.github.io/table-nova/styles/app-base.css",
+            ];
+
+            function loadCss(href) {
+                return new Promise((resolve, reject) => {
+                    const link = document.createElement("link");
+                    link.rel = "stylesheet";
+                    link.href = href;
+
+                    link.onload = () => resolve(href);
+                    link.onerror = () => reject(new Error("CSS failed: " + href));
+
+                    document.head.appendChild(link);
+                });
+            }
+
+            function showFailure(msg) {
+                console.error(msg);
+                // Optional user-visible banner
+                const style = document.createElement("style");
+                style.textContent =
+                    ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+                    "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+                    "border-bottom:1px solid rgba(0,0,0,.2)}";
+                document.head.appendChild(style);
+
+                const div = document.createElement("div");
+                div.className = "asset-fail-banner";
+                div.textContent = msg;
+                document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+            }
+
+            (async () => {
+                for (const href of APPBASE_CSS_SOURCES) {
+                    try { await loadCss(href); return; } catch (_) { }
+                }
+                showFailure("Failed to load app base CSS from all sources.");
+            })();
+        })();
+    </script>
+    <script>
+        (function () {
+            const HEADER_CSS_SOURCES = [
+                "../styles/site-header.css", /* local dev copy first */
+                "https://jonathanvajda.github.io/OntoEagle/styles/site-header.css",
+                "https://jonathanvajda.github.io/table-nova/styles/site-header.css",
+            ];
+
+            function loadCss(href) {
+                return new Promise((resolve, reject) => {
+                    const link = document.createElement("link");
+                    link.rel = "stylesheet";
+                    link.href = href;
+
+                    link.onload = () => resolve(href);
+                    link.onerror = () => reject(new Error("CSS failed: " + href));
+
+                    document.head.appendChild(link);
+                });
+            }
+
+            function showFailure(msg) {
+                console.error(msg);
+                // Optional user-visible banner
+                const style = document.createElement("style");
+                style.textContent =
+                    ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+                    "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+                    "border-bottom:1px solid rgba(0,0,0,.2)}";
+                document.head.appendChild(style);
+
+                const div = document.createElement("div");
+                div.className = "asset-fail-banner";
+                div.textContent = msg;
+                document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+            }
+
+            (async () => {
+                for (const href of HEADER_CSS_SOURCES) {
+                    try { await loadCss(href); return; } catch (_) { }
+                }
+                showFailure("Failed to load header CSS from all sources.");
+            })();
+        })();
+    </script>
+
+
+    <!-- App Local CSS -->
+    <link rel="stylesheet" href="../styles/search-app.css" />
+    <style>
+        .social img { 
+        width: 50px; 
+        height: 50px; 
+        }
+
+        /* Correct selector: No space between .invert and img */
+        :root[data-theme="dark"] .social img.invert { 
+        filter: invert(100%); 
+        }
+    </style>
+</head>
+
+<body data-page-id="about-page" class="ont-search">
+    <header id="siteHeader" class="sitehdr-root" role="banner" aria-label="Site header">
+
+    </header>
+
+    <main role="main">
+        <h1 style="justify-self: center; margin:auto;">About Us</h1>
+        <br />
+        <div style="width: 50%; margin:auto;">
+        <h2 style="justify-self: center;">Development Team</h2>
+        <div id="development-team" style="justify-self: center; margin:auto; display: flex;grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div id="jonathan-vajda" class="team-members" style="max-width: 50%; gap: 1rem;">
+                <div class="avatar" style="justify-self: center; margin:auto;">
+                    <a href="https://github.com/jonathanvajda" style="text-decoration: none;" target="_blank">
+                        <img style="height:150px; width:auto; border-radius: 10%; border: 2px solid var(--ont-border);" alt="View jonathanvajda's GitHub page" src="https://avatars.githubusercontent.com/u/36548200?v=4"></a>
+                </div>
+                <div class="title" style="justify-self: center; margin:auto;">
+                    <h3>Jonathan Vajda</h3>
+                </div>
+                <div class="social" style="justify-self: center; margin:auto;">
+                    <a href="https://github.com/jonathanvajda" style="text-decoration: none;" target="_blank">
+                        <img class="social invert svg" src="../images/GitHub_Invertocat_Black_Clearspace.svg" alt="GitHub Invertocat Logo" style="border-radius: 48%;">
+                    </a>
+                    &nbsp;
+                    <a href="https://www.linkedin.com/in/jonathan-vajda-165720b0/" style="text-decoration: none;" target="_blank">
+                        <img class="social" srcset="https://img.icons8.com/?size=250&amp;id=xuvGCOXi8Wyg" alt="LinkedIn" style="border-radius: 48%;">
+                    </a>
+                    &nbsp;
+                    <a href="https://jonathanvajda.com/" style="text-decoration: none;" target="_blank">
+                        <img class="social" src="../images/phi-vajda2.jpg" alt="Icon for Jonathan Vajda's website, for philosophy, theology, and technology. Go to https://jonathanvajda.com/" style="border-radius: 48%;">
+                    </a>
+                    &nbsp;
+                    <a href="mailto:jonathan.vajda@gmail.com" style="text-decoration: none;">
+                        <img class="social invert svg" src="../images/email-1-svgrepo-com.svg" alt="Mail to jonathan.vajda@gmail.com" style="border-radius: 48%;">
+                    </a>
+                </div>
+                <br />
+                <div class="bio" style="max-width: 80%; justify-self: center; margin:auto;">
+                    <p>Jonathan Vajda is an ontologist at U.S. Customs and Border Protection (CBP), where he designs and maintains formal, machine-readable domain models aligned with Basic Formal Ontology and related standards. He designed, executed, and oversees his team's ontology quality assurance pipeline.</p>
+                    <p>He holds a PhD in Philosophy (<a href="http://buffalo.edu" target="_blank">UB</a>), an MA in Philosophy (<a href="http://wmich.edu/" target="_blank">WMU</a>), an MA in Religion (<a href="http://wts.edu" target="_blank">WTS</a>), and a BA in Psychology (<a href="http://cmich.edu/" target="_blank">CMU</a>). He was <a href="http://ccef.org" target="_blank">CCEF</a>'s IT adminstrator for 5+ years, where he made naive ontologies for organization-wide technology asset management.</p>
+                </div>
+            </div>
+
+            <div id="aaron-damiano" class="team-members" style="max-width: 50%; gap: 1rem;">
+                <div class="avatar" style="justify-self: center; margin:auto;">
+                    <a href="https://github.com/Skreen5hot/" style="text-decoration: none;" target="_blank">
+                        <img style="height:150px; width:auto; border-radius: 10%; border: 2px solid var(--ont-border);" alt="View Skreen5hot's GitHub page"
+                            src="https://avatars.githubusercontent.com/u/4684931?v=4"></a>
+                </div>
+                <div class="title" style="justify-self: center; margin:auto;">
+                    <h3>Aaron Damiano</h3>
+                </div>
+                <div class="social" style="justify-self: center; margin:auto;">
+                    <a href="https://github.com/Skreen5hot" style="text-decoration: none;" target="_blank">
+                        <img class="social invert svg" src="../images/GitHub_Invertocat_Black_Clearspace.svg" alt="GitHub Invertocat Logo" style="border-radius: 48%;">
+                    </a>
+                    &nbsp;
+                    <a href="https://www.linkedin.com/in/aaron-a-damiano" style="text-decoration: none;" target="_blank">
+                        <img class="social" srcset="https://img.icons8.com/?size=250&amp;id=xuvGCOXi8Wyg" alt="LinkedIn" style="border-radius: 48%;">
+                    </a>
+                    &nbsp;
+                    <a href="https://fandaws.com/" style="text-decoration: none;" target="_blank">
+                        <img class="social" src="../images/fandaws-robot.gif" alt="Icon for Fact and Answer Web Service (Fandaws) is an Ontology Building Service (OBS). Go to https://fandaws.com/" style="border-radius: 48%;">
+                    </a>
+                    &nbsp;
+                    <a href="mailto:aaron.damiano@gmail.com" style="text-decoration: none;">
+                        <img class="social invert svg"src="../images/email-1-svgrepo-com.svg" alt="Mail to aaron.damiano@gmail.com" style="border-radius: 48%;">
+                    </a>
+                </div>
+                <br />  
+                <div class="bio" style="max-width: 80%; justify-self: center; margin:auto;">
+                    <p>Aaron Damiano is a semantic engineer, ontologist, and data scientist specializing in enterprise knowledge graphs and ontology-driven systems. He works at U.S. Customs and Border Protection, where he helps lead efforts to normalize, integrate, and operationalize data using formal ontologies and graph technologies.</p>
+                    <p>With more than 20 years of private-sector experience before entering federal service, Aaron focuses on pragmatic semantic architectures that bridge theory and implementation. He is particularly interested in normalization services, semantic reduction strategies, and building tools that make knowledge graphs accessible to both humans and machines.</p>
+                </div>
+                
+            </div>
+        </div>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            const JS_SOURCES = [
+                "../app/site-header.js", /* local dev copy first */
+                "https://jonathanvajda.github.io/OntoEagle/app/site-header.js",
+                "https://jonathanvajda.github.io/table-nova/app/site-header.js",
+            ];
+
+            function loadScript(src) {
+                return new Promise((resolve, reject) => {
+                    const s = document.createElement("script");
+                    s.type = "module";
+                    s.src = src;
+                    s.defer = true;
+
+                    s.onload = () => resolve(src);
+                    s.onerror = () => reject(new Error("JS failed: " + src));
+
+                    document.head.appendChild(s);
+                });
+            }
+
+            function showFailure(msg) {
+                console.error(msg);
+                const div = document.createElement("div");
+                div.style.cssText =
+                    "position:fixed;left:0;right:0;bottom:0;z-index:9999;" +
+                    "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+                    "border-top:1px solid rgba(0,0,0,.2)";
+                div.textContent = msg;
+                document.body ? document.body.appendChild(div) : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(div));
+            }
+
+            (async () => {
+                for (const src of JS_SOURCES) {
+                    try { await loadScript(src); return; } catch (_) { }
+                }
+                showFailure("Failed to load header JavaScript from all sources.");
+            })();
+        })();
+    </script>
+
+</body>
+
+</html>

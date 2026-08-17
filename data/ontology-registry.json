@@ -1,0 +1,181 @@
+[
+  {
+    "iri": "http://purl.obolibrary.org/obo/bfo.owl",
+    "ontology_level": "top",
+    "git_repo_url": "https://github.com/BFO-ontology/BFO-2020",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/BFO-ontology/BFO-2020/issues",
+    "file": "./ontologies/bfo-core.ttl"
+  },
+  {
+    "iri": "http://purl.obolibrary.org/obo/ico.owl",
+    "ontology_level": "domain",
+    "git_repo_url": "https://github.com/ICO-ontology/ICO",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/ICO-ontology/ICO/issues",
+    "file": "./ontologies/ico.owl"
+  },
+  {
+    "iri": "http://purl.obolibrary.org/obo/omo.owl",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/information-artifact-ontology/ontology-metadata",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/information-artifact-ontology/ontology-metadata/issues",
+    "file": "./ontologies/omo.owl"
+  },
+  {
+    "iri": "http://purl.org/geojson/vocab#",
+    "ontology_level": "dom",
+    "git_repo_url": "https://github.com/geojson/geojson-ld",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/geojson/geojson-ld/issues",
+    "file": "./ontologies/geojson.rdf"
+  },
+  {
+    "iri": "http://www.ontologyrepository.com/CommonCoreOntologies/Domain/CognitiveProcessOntology",
+    "ontology_level": "dom",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CognitiveProcessOntology",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/CognitiveProcessOntology.ttl"
+  },
+  {
+    "iri": "http://www.ontologyrepository.com/CommonCoreOntologies/Domain/CyberOntology",
+    "ontology_level": "dom",
+    "git_repo_url": "https://opensource.ieee.org/cyber-ontology-working-group/cyber-ontology-releases",
+    "git_logo": "gitlab",
+    "issue_tracker_url": "https://opensource.ieee.org/cyber-ontology-working-group/cyber-ontology-releases/issues",
+    "file": "./ontologies/CyberOntology.ttl"
+  },
+  {
+    "iri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "file": "./ontologies/rdf-syntax.ttl"
+  },
+  {
+    "iri": "http://www.w3.org/2000/01/rdf-schema#",
+    "file": "./ontologies/rdf-schema.ttl"
+  },
+  {
+    "iri": "http://www.w3.org/2002/07/owl",
+    "git_repo_url": "https://github.com/w3c/owl",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/w3c/owl/issues",
+    "file": "./ontologies/owl.ttl"
+  },
+  {
+    "iri": "http://www.w3.org/2004/02/skos/core",
+    "file": "./ontologies/skos.rdf"
+  },
+  {
+    "iri": "http://www.w3.org/ns/dcat",
+    "ontology_level": "domain",
+    "git_repo_url": "https://github.com/w3c/dxwg",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/w3c/dxwg/issues",
+    "file": "./ontologies/dcat3.ttl"
+  },
+  {
+    "iri": "http://xmlns.com/foaf/0.1/",
+    "ontology_level": "domain",
+    "git_repo_url": "https://github.com/foaf/foaf",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/foaf/foaf/issues",
+    "file": "./ontologies/foaf-20140114.rdf"
+  },
+  {
+    "iri": "https://github.com/jonathanvajda/cco-d-acts",
+    "ontology_level": "dom",
+    "git_repo_url": "https://github.com/jonathanvajda/cco-d-acts",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/jonathanvajda/cco-d-acts/issues",
+    "file": "./ontologies/cco-d-acts.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/AgentOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/AgentOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/ArtifactOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/ArtifactOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/CurrencyUnitOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/CurrencyUnitOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/EventOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/EventOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/ExtendedRelationOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/ExtendedRelationOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/FacilityOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/FacilityOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/GeospatialOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/GeospatialOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/InformationEntityOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/InformationEntityOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/QualityOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/QualityOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/TimeOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/TimeOntology.ttl"
+  },
+  {
+    "iri": "https://www.commoncoreontologies.org/UnitsOfMeasureOntology",
+    "ontology_level": "mid",
+    "git_repo_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies",
+    "git_logo": "github",
+    "issue_tracker_url": "https://github.com/CommonCoreOntology/CommonCoreOntologies/issues",
+    "file": "./ontologies/UnitsOfMeasureOntology.ttl"
+  }
+]

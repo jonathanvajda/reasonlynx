@@ -1,0 +1,84 @@
+body {margin:0;padding:0}
+#bundler-app { margin: 0; padding: 16px; max-width: 1100px; margin-inline: auto; }
+      h3 {padding-top: 2rem;}  
+      button, select, input { height: 32px; font: inherit; padding: 0px 6px; }
+      .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+      @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+      .card { border: 1px solid #ddd; border-radius: 12px; padding: 12px; }
+      .bundleHeader { display:flex; align-items:center; justify-content:space-between; gap: 8px; }
+      .bundleTitle { font-weight: 650; }
+      .items { margin-top: 10px; display: grid; gap: 8px; }
+      .item { border: 1px solid #eee; border-radius: 10px; padding: 10px; }
+      .itemTop { display:flex; justify-content:space-between; gap: 8px; align-items: baseline; }
+      .itemLabel { font-weight: 600; font-size: 1.75rem;}
+      .itemIri { font-size: 1.5rem; overflow-wrap: anywhere; }
+      .row { margin-left: 1.5rem; font-size: 1.25rem; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; margin-top: 8px; }
+      details { margin-top: 6px; }
+      textarea { width: 100%; min-height: 220px; padding: 10px; margin-top: 12px; }
+
+/* Bundle header polish */
+.bundleManager {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.bundleTitle {
+  font-size: 2rem;
+  line-height: 1.25;
+}
+
+/* Item title + pills */
+.itemHeading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  font-size: 1.5rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* Slightly emphasized “type” pill */
+.pill--type {
+  border-color: var(--ont-border);
+  background: var(--ont-bg);
+}
+
+/* isDefinedBy line */
+.itemDefinedByRow {
+  margin-top: 6px;
+  margin-left: 1em;
+  display: flex;
+  gap: 4px;
+}
+
+.itemDefinedByLabel {
+  font-size: 1.5rem;
+}
+
+.itemDefinedByValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere; /* important */
+  word-break: break-word;
+}
