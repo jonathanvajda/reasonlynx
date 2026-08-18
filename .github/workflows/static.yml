@@ -1,29 +1,72 @@
-# Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["master"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
+env:
+  TOM_LOOKUP_OUTPUT_DIR: tabular-ontology-maker/json
+  TOM_LOOKUP_SOURCE_DIR: src/ontologies
+  TOM_LOOKUP_SOURCE_PATH: ""
+  TOM_LOOKUP_SOURCE_URL: ""
+
 jobs:
-  # Single deploy job since we're just deploying
+  test-apps:
+    name: Test ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - reasonlynx
+          - onto-eagle
+          - ontology-viewer
+          - cq-ferret
+          - bundler
+          - tabular-ontology-maker
+          - about
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate app
+        run: node scripts/validate-app.mjs "${{ matrix.app }}"
+
+  test-service-worker:
+    name: Test service worker manifest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate service worker asset list
+        run: node scripts/validate-service-worker.mjs
+
   deploy:
+    name: Build and deploy
+    needs:
+      - test-apps
+      - test-service-worker
     environment:
       name: github-pages
       url: https://reasonlynx.com/
@@ -31,13 +74,84 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip rdflib
+
+      - name: Regenerate Tabular Ontology Maker lookup JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p "${TOM_LOOKUP_OUTPUT_DIR}"
+          generated_any=0
+
+          if [ -d "${TOM_LOOKUP_SOURCE_DIR}" ]; then
+            while IFS= read -r -d '' ontology_file; do
+              filename="$(basename "${ontology_file}")"
+              stem="${filename%.*}"
+              output_path="${TOM_LOOKUP_OUTPUT_DIR}/${stem}-lookup.json"
+              echo "Generating ${output_path} from ${ontology_file}"
+              python generate-lookup-json.py "${ontology_file}" -o "${output_path}"
+              generated_any=1
+            done < <(find "${TOM_LOOKUP_SOURCE_DIR}" -maxdepth 1 -type f \( -name '*.ttl' -o -name '*.rdf' -o -name '*.owl' -o -name '*.nt' -o -name '*.trig' -o -name '*.jsonld' \) -print0)
+          fi
+
+          if [ "${generated_any}" -eq 0 ]; then
+            source_file=""
+            temp_file=""
+
+            if [ -n "${TOM_LOOKUP_SOURCE_URL}" ]; then
+              temp_file="$(mktemp)"
+              echo "Downloading lookup source from ${TOM_LOOKUP_SOURCE_URL}"
+              curl -fsSL "${TOM_LOOKUP_SOURCE_URL}" -o "${temp_file}"
+              source_file="${temp_file}"
+            elif [ -n "${TOM_LOOKUP_SOURCE_PATH}" ] && [ -f "${TOM_LOOKUP_SOURCE_PATH}" ]; then
+              source_file="${TOM_LOOKUP_SOURCE_PATH}"
+            fi
+
+            if [ -n "${source_file}" ]; then
+              python generate-lookup-json.py "${source_file}" -o "${TOM_LOOKUP_OUTPUT_DIR}/bfo-cco-lookup.json"
+            else
+              echo "No ontology source directory or single source configured; keeping committed lookup JSON files"
+            fi
+
+            if [ -n "${temp_file:-}" ] && [ -f "${temp_file}" ]; then
+              rm -f "${temp_file}"
+            fi
+          fi
+
+      - name: Write Tabular Ontology Maker build info JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          built_at="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          mkdir -p tabular-ontology-maker/app
+          cat > tabular-ontology-maker/app/build-info.json <<EOF
+          {
+            "ci": "github-actions",
+            "commit": "${GITHUB_SHA}",
+            "short_commit": "${GITHUB_SHA::7}",
+            "built_at": "${built_at}",
+            "run_id": "${GITHUB_RUN_ID}",
+            "run_number": "${GITHUB_RUN_NUMBER}",
+            "ref": "${GITHUB_REF_NAME}"
+          }
+          EOF
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
           path: '.'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

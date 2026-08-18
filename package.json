@@ -1,0 +1,9 @@
+{
+  "name": "reasonlynx",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:app": "node scripts/validate-app.mjs",
+    "test:sw": "node scripts/validate-service-worker.mjs"
+  }
+}
