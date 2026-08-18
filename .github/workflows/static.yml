@@ -159,6 +159,7 @@ jobs:
         shell: bash
         env:
           NAMECHEAP_PRIVATE_KEY: ${{ secrets.NAMECHEAP_PRIVATE_KEY }}
+          NC_SSH_PASSPHRASE: ${{ secrets.NC_SSH_PASSPHRASE }}
         run: |
           set -euo pipefail
 
@@ -168,12 +169,28 @@ jobs:
           fi
 
           install -m 700 -d ~/.ssh
-          printf '%s\n' "${NAMECHEAP_PRIVATE_KEY}" > ~/.ssh/namecheap_key
+          printf '%s\n' "${NAMECHEAP_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/namecheap_key
           chmod 600 ~/.ssh/namecheap_key
           ssh-keyscan -p "${NAMECHEAP_SSH_PORT}" "${NAMECHEAP_SSH_HOST}" >> ~/.ssh/known_hosts
 
+          eval "$(ssh-agent -s)"
+          if [ -n "${NC_SSH_PASSPHRASE}" ]; then
+            cat > ~/.ssh/askpass-namecheap.sh <<'EOF'
+          #!/usr/bin/env sh
+          printf '%s\n' "${NC_SSH_PASSPHRASE}"
+          EOF
+            chmod 700 ~/.ssh/askpass-namecheap.sh
+            DISPLAY=:0 SSH_ASKPASS="${HOME}/.ssh/askpass-namecheap.sh" SSH_ASKPASS_REQUIRE=force ssh-add ~/.ssh/namecheap_key </dev/null
+          else
+            ssh-add ~/.ssh/namecheap_key
+          fi
+          ssh-add -l
+
+          SSH_OPTS="-i ~/.ssh/namecheap_key -p ${NAMECHEAP_SSH_PORT} -o IdentitiesOnly=yes -o BatchMode=yes"
+          ssh ${SSH_OPTS} "${NAMECHEAP_SSH_USER}@${NAMECHEAP_SSH_HOST}" "test -d '${NAMECHEAP_DEPLOY_PATH}'"
+
           rsync -az --delete \
-            -e "ssh -i ~/.ssh/namecheap_key -p ${NAMECHEAP_SSH_PORT}" \
+            -e "ssh ${SSH_OPTS}" \
             --exclude '.git/' \
             --exclude '.github/' \
             --exclude '.tmp-tom-lookup-test/' \
