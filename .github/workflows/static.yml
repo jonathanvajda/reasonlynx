@@ -19,6 +19,10 @@ env:
   TOM_LOOKUP_SOURCE_DIR: src/ontologies
   TOM_LOOKUP_SOURCE_PATH: ""
   TOM_LOOKUP_SOURCE_URL: ""
+  NAMECHEAP_SSH_USER: reasqjfn
+  NAMECHEAP_SSH_HOST: 198.54.115.29
+  NAMECHEAP_SSH_PORT: "21098"
+  NAMECHEAP_DEPLOY_PATH: /home/reasqjfn/public_html
 
 jobs:
   test-apps:
@@ -34,6 +38,13 @@ jobs:
           - cq-ferret
           - bundler
           - tabular-ontology-maker
+          - axiolotl
+          - visual-lynx
+          - ontology-compliance-diagnostic
+          - iri-swapper
+          - sparql-pattern-visualizer
+          - ontology-tabulator
+          - table-nova
           - about
     steps:
       - name: Checkout
@@ -143,6 +154,36 @@ jobs:
             "ref": "${GITHUB_REF_NAME}"
           }
           EOF
+
+      - name: Deploy to Namecheap over SSH
+        shell: bash
+        env:
+          NAMECHEAP_PRIVATE_KEY: ${{ secrets.NAMECHEAP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${NAMECHEAP_PRIVATE_KEY}" ]; then
+            echo "NAMECHEAP_PRIVATE_KEY secret is not configured"
+            exit 1
+          fi
+
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${NAMECHEAP_PRIVATE_KEY}" > ~/.ssh/namecheap_key
+          chmod 600 ~/.ssh/namecheap_key
+          ssh-keyscan -p "${NAMECHEAP_SSH_PORT}" "${NAMECHEAP_SSH_HOST}" >> ~/.ssh/known_hosts
+
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/namecheap_key -p ${NAMECHEAP_SSH_PORT}" \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.tmp-tom-lookup-test/' \
+            --exclude '.well-known/' \
+            --exclude 'cgi-bin/' \
+            --exclude 'node_modules/' \
+            --exclude 'coverage/' \
+            --exclude 'admin/coverage/' \
+            --exclude 'package-lock.json' \
+            ./ "${NAMECHEAP_SSH_USER}@${NAMECHEAP_SSH_HOST}:${NAMECHEAP_DEPLOY_PATH}/"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
