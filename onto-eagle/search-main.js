@@ -15,6 +15,7 @@
  * - types.js
  */
 
+import '../app/root-service-worker.js';
 import { extractDocumentsFromJsonLd, mapByIri, parseGraphJsonLdText } from '../app/rdf_extract.js';
 import { searchDocuments } from './search.js';
 import { defaultSearchOptions } from '../app/types.js';
@@ -902,16 +903,6 @@ async function renderUserOntologyManager() {
  * App init + search execution
  * ----------------------------- */
 
-async function registerServiceWorker() {
-  if (!('serviceWorker' in navigator)) return;
-  try {
-    await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-  } catch (err) {
-    // Non-fatal; app still works online
-    console.warn('Service worker registration failed:', err);
-  }
-}
-
 /**
  * Perform a search and render.
  * @param {string} query
@@ -948,7 +939,6 @@ async function ontoEagleInit() {
   setDbStatus('initializing', 'DB initializing');
   setStatus('Initializing…');
 
-  await registerServiceWorker();
   setDbStatus('initializing', 'DB opening');
   await openOntoEagleProjectDatabase();
 

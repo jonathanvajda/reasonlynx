@@ -18,7 +18,7 @@ import {
   // --- Your config (as you provided) ---
   const HEADER_CONFIG = {
     brand: {
-      mainLogo: { href: "https://jonathanvajda.github.io/OntoEagle/about.html", src: "../images/main-logo.png", alt: "Erhaben Semantic Solutions" },
+      mainLogo: { href: "../about/", src: "../images/main-logo.png", alt: "Erhaben Semantic Solutions" },
       toolLogoByPageId: {
         "ontoeagle": { src: "../images/Eagle-VI_1753264913.svg", alt: "OntoEagle Semantic Lookup" },
         "ontology-tabulator": { src: "../images/ontology-tabulator.svg", alt: "Ontology Tabulator" },
@@ -57,7 +57,7 @@ import {
       {
         title: "Data Exploration",
         items: [
-          { label: "OntoEagle Semantic Lookup", href: "https://jonathanvajda.github.io/OntoEagle", pageId: "ontoeagle" },
+          { label: "OntoEagle Semantic Lookup", href: "../onto-eagle/", pageId: "ontoeagle" },
         //  { label: "IRI Registry", href: "/iri-registry.html", pageId: "iri-registry" },
           { label: "Ontology Tabulator", href: "https://jonathanvajda.github.io/ontology-tabulator/", pageId: "ontology-tabulator" },
           { label: "Visual Lynx", href: "https://jonathanvajda.github.io/visual-lynx/", pageId: "visual-lynx" },
@@ -75,7 +75,7 @@ import {
         title: "Building Tools",
         items: [
         //  { label: "Controlled Vocabulary", href: "/controlled-vocabulary-registry.html", pageId: "controlled-vocabulary-registry" },
-          { label: "Tabular Ontology Maker (TOM)", href: "https://jonathanvajda.github.io/tabular-ontology-maker/", pageId: "tom" },
+          { label: "Tabular Ontology Maker (TOM)", href: "../tabular-ontology-maker/", pageId: "tom" },
           { label: "Table Nova", href: "https://jonathanvajda.github.io/table-nova/", pageId: "table-nova" },
           { label: "Knowledge Graph Modeler 🔗", href: "https://skreen5hot.github.io/kgModeler/", pageId: "kg-modeler" },
         //  { label: "SHACL Generator", href: "/shacl-generator.html", pageId: "shacl-generator" },

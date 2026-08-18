@@ -114,7 +114,10 @@
     <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
     <link rel="modulepreload" href="../packages/ontology-utils/src/index.js" />
 
-  </head>
+    <script type="importmap">
+    { "imports": { "jszip": "/vendor/jszip-esm.js" } }
+  </script>
+</head>
 
   <body data-page-id="ontoeagle" data-db-name="OntoEagleDB" data-db-stores="settings,datasets,documents,index" data-manage-data-label="Manage data">
     <header id="siteHeader" class="sitehdr-root" role="banner" aria-label="Site header">

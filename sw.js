@@ -4,12 +4,38 @@
    - graph.jsonld: stale-while-revalidate
 */
 
-const SW_VERSION = 'reasonlynx-monorepo-v7';
+const SW_VERSION = 'reasonlynx-monorepo-v11';
 const CACHE_SHELL = `ontoeagle-shell-${SW_VERSION}`;
 const CACHE_DATA = `ontoeagle-data-${SW_VERSION}`;
 
 // Keep this list tight and explicit.
 const SHELL_ASSETS = [
+  './vendor/jszip-esm.js',
+  './vendor/jszip.min.js',
+  './vendor/xlsx.full.min.js',
+  './vendor/glide-data-grid.min.js',
+  './app/root-service-worker.js',
+  './tabular-ontology-maker/favicon.ico',
+  './tabular-ontology-maker/favicon.svg',
+  './tabular-ontology-maker/manifest.json',
+  './tabular-ontology-maker/template.xlsx',
+  './tabular-ontology-maker/template.csv',
+  './tabular-ontology-maker/json/bfo-cco-lookup.json',
+  './tabular-ontology-maker/json/bfo-lookup.json',
+  './tabular-ontology-maker/json/cco-lookup.json',
+  './tabular-ontology-maker/styles/tom-axiom-builder.css',
+  './tabular-ontology-maker/styles/ontology_spreadsheet_styles.css',
+  './vendor/glide-data-grid.min.css',
+  './tabular-ontology-maker/app/tom-ui.js',
+  './tabular-ontology-maker/app/tom-project-storage.js',
+  './tabular-ontology-maker/app/tom-grid-glide.js',
+  './tabular-ontology-maker/app/tom-feature-utils.js',
+  './tabular-ontology-maker/app/tom-core.js',
+  './tabular-ontology-maker/app/tom-core-utils.js',
+  './tabular-ontology-maker/app/tom-axiom-builder.js',
+  './tabular-ontology-maker/app/tom-app.js',
+  './tabular-ontology-maker/app/build-info.js',
+  './tabular-ontology-maker/',
   './about/',
   './admin/',
   './bundler/',
@@ -221,3 +247,7 @@ async function staleWhileRevalidate(req, cacheName) {
 
   return hit || (await fetchPromise) || new Response('Offline', { status: 503 });
 }
+
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
+});

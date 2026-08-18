@@ -11,6 +11,7 @@ This repo is shaped for hosts that deploy the repository root as the public web 
 | `/ontology-viewer/` | `ontology-viewer/index.html` | `OntoEagle/docs/ontology-viewer.html` |
 | `/cq-ferret/` | `cq-ferret/index.html` | `OntoEagle/docs/cq-ferret.html` |
 | `/bundler/` | `bundler/index.html` | `OntoEagle/docs/bundler.html` |
+| `/tabular-ontology-maker/` | `tabular-ontology-maker/index.html` | `tabular-ontology-maker/docs/index.html` |
 | `/about/` | `about/index.html` | `OntoEagle/docs/about.html` |
 | `/cq-ferret.html` | `cq-ferret.html` | Redirect alias to `/cq-ferret/` |
 | `/onto-eagle.html` | `onto-eagle.html` | Redirect alias to `/onto-eagle/` |
@@ -26,7 +27,7 @@ This repo is shaped for hosts that deploy the repository root as the public web 
 | `images/` | Shared image assets | `OntoEagle/docs/images` |
 | `styles/` | Shared OntoEagle app CSS | `OntoEagle/docs/styles` |
 | `data/` | Shared runtime ontology data | `OntoEagle/docs/data` |
-| `sw.js` | Root service worker with `/` scope | `OntoEagle/docs/sw.js`, path-adjusted |
+| `sw.js` | Site-base service worker; scope is `/` at domain root or the deployed project path when served from a subpath | `OntoEagle/docs/sw.js`, path-adjusted |
 | `app/styles/` | ReasonLynx landing page styles | Existing ReasonLynx files |
 
 Shared package files under `packages/` are copied without deploy-time path rewrites. Only app HTML/JS is rewritten to consume those package entrypoints from the new repository layout.
@@ -58,5 +59,6 @@ App suites get directories, not root-level `index.html` variants. This avoids co
 | OntoEagle | `/onto-eagle/` |
 | Ontology Viewer | `/ontology-viewer/` transitional standalone route; intended future embedded OntoEagle view |
 | CQ Ferret | `/cq-ferret/` |
+| TOM | `/tabular-ontology-maker/` |
 
 Root-level `.html` files should be aliases only, not separate app copies.

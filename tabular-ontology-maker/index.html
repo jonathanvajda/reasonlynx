@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#5d799c">
+  <title>Tabular Ontology Maker</title>
+  <meta name="description" content="TOM (Tabular Ontology Maker) is a web application for creating simple ontologies using a spreadsheet-like interface. It allows users to define classes, properties, and individuals in a tabular format and export the ontology in various RDF formats." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="dcterms.creator" content="Jonathan Vajda" />
+  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="version" content="0.2.0" />
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <!-- Public CSS -->
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+  <!-- Vendor CSS -->
+  <link rel="stylesheet" href="../vendor/glide-data-grid.min.css" />
+  <!-- App Global CSS -->
+  <link rel="stylesheet" href="../styles/app-base.css" />
+  <link rel="stylesheet" href="../styles/site-header.css" />
+  <!-- App Local CSS -->
+  <link rel="stylesheet" href="./styles/ontology_spreadsheet_styles.css" />
+  <link rel="stylesheet" href="./styles/tom-axiom-builder.css" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/namespace-registry.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/prefix-map.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/curie.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/rdf-serialization-prefixes.js" />
+  <script type="importmap">
+    { "imports": { "jszip": "/vendor/jszip-esm.js" } }
+  </script>
+</head>
+<body data-page-id="tom">
+  <header id="siteHeader" class="sitehdr-root" role="banner" aria-label="Site header"></header>
+
+  <main style="margin: 1em;">
+    <div id="toolbar">
+      <div id="view-switcher" style="display:inline-flex; gap:0.4rem; margin-right:3rem;">
+        <button id="viewOntologyBtn" data-view-switch="ontology" aria-pressed="true">Ontology Mode</button>
+        <button id="viewRelataBtn" data-view-switch="relata" aria-pressed="false">Relata Mode</button>
+      </div>
+      <button id="ontologySettingsBtn">Ontology Settings</button>
+      
+      <button id="ontologyImportsBtn">Ontology Imports</button>
+      <button id="managePrefixesBtn">Manage Prefixes</button>
+      <button id="managePredicatesBtn">Manage Predicates</button>
+      <button id="importBtn">Insert Data from File</button>
+      <button id="reloadSavedSessionBtn" disabled>Reload Saved Session</button>
+      <button id="previewRdfBtn">Preview RDF</button>
+      <button id="saveToDatabaseBtn">Save Session</button>
+      <select id="exportFormat">
+        <option value="ttl">Turtle (.ttl)</option>
+        <!-- Not Supported Yet <option value="rdf">RDF/XML (.rdf)</option> -->
+        <option value="jsonld">JSON-LD (.jsonld)</option>
+        <option value="nt">N-Triples (.nt)</option>
+        <option value="trig">TriG (.trig)</option>
+        <option value="csv">CSV (.csv)</option>
+      </select>
+      <button id="exportBtn">Export Data</button>
+    </div>
+
+    <div id="ontology-grid" class="tom-grid-shell"></div>
+
+    <!-- Change Number of Rows -->
+    <div id="row-controls" style="margin: 1em 0; display:flex; align-items:center; gap:10px;">
+      <label for="row-count" style="margin-right:.5em;">Rows:</label>
+      <input type="number" id="row-count" min="1" value="1" style="width:70px;" />
+      <button id="add-rows-btn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Add</button>
+      <button id="remove-rows-btn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Remove</button>
+    </div>
+
+
+    <h3>Code Preview</h3>
+    <textarea id="rdfOutput" readonly></textarea>
+  </main>
+
+  <aside id="axiom-builder-drawer" class="tom-axiom-drawer" aria-hidden="true">
+    <div class="tom-axiom-drawer-header">
+      <div>
+        <h2>OWL Axioms</h2>
+        <div id="axiom-builder-drawer-subtitle" class="tom-axiom-drawer-subtitle">No row selected</div>
+      </div>
+      <button id="axiomBuilderDrawerCloseBtn" type="button" aria-label="Close axiom builder">Close</button>
+    </div>
+    <div id="axiom-builder-root" class="tom-axiom-drawer-body"></div>
+  </aside>
+  <div id="axiom-builder-backdrop" class="tom-axiom-backdrop" hidden></div>
+
+  <!-- Ontology Settings Modal -->
+  <div id="ontology-settings-modal" class="tom-modal" style="display:none; position:fixed; background: var(--ont-bg); border:1px solid gray; padding:20px; z-index:1000; top:20%; left:30%; width:40%;">
+    <h2>Ontology Settings</h2>
+    <div class="tom-modal-scroll">
+    <div>
+      <label class="tom-modal-label" for="ontology-label-input">Ontology Label (rdfs:label):</label>
+      <input type="text" class="tom-modal-input" id="ontology-label-input"><br>
+
+      <label class="tom-modal-label" for="ontology-creator-input">Ontology Creator (dcterms:creator)</label>
+      <input type="text" class="tom-modal-input" id="ontology-creator-input"><br>
+
+      <label class="tom-modal-label" for="ontology-description-input">Ontology Description (dcterms:description)</label>
+      <input type="text" class="tom-modal-input" id="ontology-description-input"><br>
+
+      <label class="tom-modal-label" for="ontology-base-iri-input">Base IRI:</label>
+      <input type="text" class="tom-modal-input" id="ontology-base-iri-input">
+      <br>
+    </div>
+    <!-- base IRI delimiter -->
+    <div style="display: inline-flex">
+      Base IRI Delimiter:
+      &nbsp;&nbsp;
+      <label><input type="radio" name="base-iri-delimiter" value="/" checked style="margin-bottom: 0rem;"> / </label>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <label><input type="radio" name="base-iri-delimiter" value="#"style="margin-bottom: 0rem;"> # </label>
+    </div>
+
+    <!-- IRI Generation -->
+    <hr style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+    <h3>IRI Generation</h3>
+    <div style="display: inline-flex">
+      <label class="tom-modal-label">
+        <input type="radio" name="iri-mode" value="opaque" checked style="margin-bottom: 0rem;"> Opaque (sequential)</label>
+        &nbsp;&nbsp;&nbsp;
+      <label class="tom-modal-label">
+        <input type="radio" name="iri-mode" value="readable" style="margin-bottom: 0rem;"> Human-readable (from label)</label>
+    </div>
+
+    <!-- Opaque options -->
+    <div id="opaque-opts" style="display: inline-flex;">
+      <label class="tom-modal-label">Leading text:
+        <input id="opaque-leading" type="text" class="tom-modal-input"  value="ont" style="width: 10em; height: 2em; margin-left: 1rem;">
+      </label>
+      &nbsp;&nbsp;
+      <label class="tom-modal-label">Digits: <input id="opaque-digits" type="number" class="tom-modal-input"  min="1" max="12" value="6" style="width: 5em; height: 2em; margin-left: 1rem;"></label>
+      &nbsp;&nbsp;
+      <label class="tom-modal-label">Starting #: <input id="opaque-start" type="number" class="tom-modal-input"  min="1" value="1" style="width: 5em; height: 2em; margin-left: 1rem;"></label>
+      <div style="color:#666; font-size:12px; margin-top:4px;">
+        Entity IRI Preview: <code id="entity-iri-preview">http://example.org/ont000001</code>
+      </div>
+    </div>
+
+    <!-- Human-readable options -->
+    <div id="readable-opts" style="display:inline-flex">
+      <label class="tom-modal-label">Label case:
+        <select id="readable-case" style="width:12em;">
+          <option value="PascalCase" selected>PascalCase</option>
+          <option value="camelCase">camelCase</option>
+          <option value="snake_case">snake_case</option>
+        </select>
+      </label>
+      <div style="color:#666; font-size:12px; margin-top:4px;">
+        IRI updates when the label changes (for blank/new IRIs).
+      </div>
+    </div>
+    <!-- Backfill -->
+    <div style="margin: 0.75em 0 1em 0;">
+      <button id="backfillIRIsBtn" type="button" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Backfill IRIs</button>
+      <span id="backfill-iris-note" style="font-size:12px; color:#666; margin-left:8px;">
+        Fills only blank IRIs using current settings.
+      </span>
+    </div>
+
+    <!-- Preview -->
+    <div style="margin-bottom:1em;">
+      <label for="version-iri-preview" style="display: inline;">Version IRI:</label>
+        <span id="version-iri-preview">[auto-generated]</span><br>
+      <label for="version-info-preview" style="display: inline;">Version Info:</label>
+        <span id="version-info-preview">[auto-generated]</span>
+    </div>
+    </div>
+    <div class="tom-modal-footer">
+      <button class="modal-window" id="ontologySettingsModalSaveSettingsBtn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Save & Close</button>
+      <button class="modal-window" id="ontologySettingsModalCancelSettingsBtn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Close</button>
+      <button class="modal-window" id="ontologySettingsModalResetSessionBtn" style="margin-left:auto; height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Reset Session</button>
+    </div>
+  </div>
+
+  <!-- Ontology Imports Modal -->
+  <div id="ontology-imports-modal" class="tom-modal" style="display:none; position:fixed; background: var(--ont-bg); border:1px solid gray; padding:20px; z-index:1000; top:20%; left:30%; width:40%;">
+    <h2>Ontology Imports</h2>
+    <div class="tom-modal-scroll">
+    <div style="margin-bottom:1rem;">
+      <label for="new-import-file">Add ontology file:</label><br>
+      <input type="file" id="new-import-file" accept=".ttl,.turtle,.n3,.nt,.ntriples,.nq,.trig,.jsonld,.json-ld,.rdf,.owl,.xml" />
+      <div style="color:#666; font-size:12px; margin-top:4px;">
+        Uses owl:versionIRI when present; otherwise falls back to the ontology IRI.
+      </div>
+    </div>
+
+    <div id="import-list" style="max-height:200px; overflow:auto; border:1px solid #ccc; padding:10px;"></div>
+
+    <label for="new-import-iri">Add new import IRI:</label><br>
+    <input type="text" id="new-import-iri" style="width:100%" placeholder="http://example.org/ontology"><br>
+    <button class="modal-window" id="importSettingsModalAddOntologyBtn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Add Ontology</button><br><br>
+    </div>
+    <div class="tom-modal-footer">
+      <button class="modal-window" id="importSettingsModalSaveSettingsBtn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Save Imports</button>
+      <button class="modal-window" id="importSettingsModalCancelSettingsBtn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Prefix Manager Modal -->
+  <div id="prefix-manager-modal" class="tom-modal" style="display:none; position:fixed; top:10%; left:25%; width:50%; z-index:1000; background: var(--ont-bg); border:1px solid #ccc; padding:20px; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+
+    <h2>Manage IRI Prefixes</h2>
+    <div class="tom-modal-scroll">
+
+    <!-- Existing Prefix Table -->
+    <table id="prefix-table" style="width:100%; margin-bottom:1em; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th style="text-align:left; border-bottom:1px solid #ccc;">Prefix</th>
+          <th style="text-align:left; border-bottom:1px solid #ccc;">IRI</th>
+          <th style="border-bottom:1px solid #ccc;"></th>
+        </tr>
+      </thead>
+      <tbody id="prefix-table-body">
+        <!-- JS will populate this -->
+      </tbody>
+    </table>
+
+    <!-- Add New Prefix -->
+    <div style="margin-bottom:1.5em;">
+      <input type="text" id="new-prefix" placeholder="Prefix" style="width:30%; margin-right:10px;" />
+      <input type="text" id="new-prefix-iri" placeholder="IRI" style="width:50%; margin-right:10px;" />
+      <button id="add-prefix-btn" disabled style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Add Prefix</button>
+    </div>
+    </div>
+    <!-- Action Buttons -->
+    <div class="tom-modal-footer" style="text-align:right;">
+      <button id="save-prefixes-btn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Save</button>
+      <button id="cancel-prefixes-btn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Close</button>
+    </div>
+  </div>
+
+
+  <!-- Manage Predicate Modal -->
+  <div id="manage-predicates-modal" class="tom-modal" style="display:none; position:fixed; background: var(--ont-bg); border:1px solid gray; padding:20px; z-index:1000; top:5%; left:50%; width:80%;">
+    <h2>Manage Predicates & Columns</h2>
+    <div class="tom-modal-scroll predicate-modal-scroll">
+      <div class="predicate-modal-layout">
+        <div class="predicate-modal-panel predicate-modal-add-panel">
+          <h3>Add Predicate</h3>
+          <label for="predicate-select">Select a common predicate:</label><br>
+          <select id="predicate-select" style="width:100%">
+            <option value="skos:altLabel">alternative label (skos:altLabel)</option>
+            <option value="skos:prefLabel">preferred label (skos:prefLabel)</option>
+            <option value="skos:example">example (skos:example)</option>
+            <option value="skos:scopeNote">scope note (skos:scopeNote)</option>
+            <option value="skos:editorialNote">editorial note (skos:editorialNote)</option>
+            <option value="cco2:ont00001753">acronym (cco2:ont00001753)</option>
+            <option value="obo:IAO_0000114"> has curation status (OBO:IAO_0000114)</option>
+            <option value="rdfs:comment">comment (rdfs:comment)</option>
+            <option value="rdfs:seeAlso">see also (rdfs:seeAlso)</option>
+            <option value="rdfs:isDefinedBy">is defined by (rdfs:isDefinedBy)</option>
+            <option value="dcterms:bibliographicCitation">citation (dcterms:bibliographicCitation)</option>
+            <option value="dcterms:source">source (dcterms:source)</option>
+            <option value="dcterms:creator">creator (dcterms:creator)</option>
+            <option value="dcterms:created">created (dcterms:created)</option>
+            <option value="dcterms:description">description (dcterms:description)</option>
+            <option value="oboInOwl:hasDbXref">has database cross reference (oboInOwl:hasDbXref)</option>
+          </select><br><br>
+
+          <label for="predicate-iri">Or enter a custom IRI:</label><br>
+          <input type="text" id="predicate-iri" list="predicate-iri-suggestions" style="width:100%" placeholder="Type a property label, CURIE, or IRI"><br>
+          <datalist id="predicate-iri-suggestions"></datalist>
+          <div id="predicate-iri-help" class="predicate-lookup-help">
+            Suggestions only include annotation, object, and datatype properties.
+          </div><br>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+            <label for="predicate-target-view" style="flex:1 1 220px;">
+              Add to views:<br>
+              <select id="predicate-target-view" style="width:100%">
+                <option value="both">Both `Ontology` and `Relata`</option>
+                <option value="ontology">`Ontology` only</option>
+                <option value="relata">`Relata` only</option>
+              </select>
+            </label>
+            <label for="predicate-object-mode" style="flex:1 1 220px;">
+              Object values:<br>
+              <select id="predicate-object-mode" style="width:100%">
+                <option value="auto">Auto-detect</option>
+                <option value="literal">Literal</option>
+                <option value="iri">IRI</option>
+              </select>
+            </label>
+          </div>
+          <button id="predicateSettingsModalAddPredicateBtn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Add</button>
+        </div>
+
+        <div class="predicate-modal-panel predicate-modal-manage-panel">
+          <h3>Manage Existing Columns</h3>
+          <div id="predicate-modes-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tom-modal-footer" style="margin-top:12px; text-align:right;">
+      <button id="manage-predicates-save-btn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Save & Close</button>
+      <button id="manage-predicates-cancel-btn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Cancel</button>
+    </div>
+  </div>
+
+
+  <!-- Insert Data Modal -->
+  <div id="insert-data-modal" class="tom-modal" style="display:none; position:fixed; top:10%; left:25%; width:50%; z-index:1000; background: var(--ont-bg); border:1px solid #ccc; padding:20px; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+
+    <h2>Insert Data</h2>
+    <div class="tom-modal-scroll">
+
+    <p>Download Starter Template: <a href="template.csv">CSV</a> or <a href="template.xlsx">XLSX</a></p>
+
+    <!-- Drag & Drop -->
+    <div id="drop-area" style="border:2px dashed #ccc; padding:20px; text-align:center; margin-bottom:1em;">
+      <p>Drag & drop a file here</p>
+      <p>- or -</p>
+      <input type="file" id="file-input" accept=".csv,.tsv,.xls,.xlsx,.ttl,.turtle,.n3,.nt,.ntriples,.nq,.trig,.jsonld,.json-ld,.rdf,.owl,.xml" />
+    </div>
+
+    <!-- Filename display -->
+    <div id="filename-display" style="margin-bottom:1em; display:none;">
+      <span id="filename-text" style="font-weight:bold;"></span>
+      <button id="remove-file-btn" style="margin-left:10px; height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">X</button>
+    </div>
+
+    <!-- File type radio -->
+    <div style="margin-bottom:1em;">
+      <label><input type="radio" name="file-type" value="spreadsheet" checked> Spreadsheet</label>
+      <label><input type="radio" name="file-type" value="ontology"> Ontology</label>
+    </div>
+
+    <!-- Header checkbox (spreadsheet only) -->
+    <div id="header-checkbox-container" style="margin-bottom:1em;">
+      <label><input type="checkbox" id="first-row-header" checked> First row is header</label>
+    </div>
+
+    <!-- Insert behavior -->
+    <div style="margin-bottom:1.5em;">
+      <label><input type="radio" name="insert-mode" value="append" checked> Append Data</label>
+      <label><input type="radio" name="insert-mode" value="replace"> Replace Data</label>
+    </div>
+    </div>
+    <!-- Action buttons -->
+    <div class="tom-modal-footer" style="text-align:right;">
+      <button id="insert-data-save-btn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Save</button>
+      <button id="insert-data-cancel-btn" style="height: 3.5em; padding: 4px 8px; font-size: 0.85rem; line-height: normal;">Close</button>
+    </div>
+  </div>
+
+
+  <!-- Toast container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+  <div id="portal"></div>
+
+  <footer style="margin: 1em;">
+    <details><summary><b>Important User Data Notice</b></summary>By design, any data that a user inputs stays <i>local</i> to the user's device. Ontology settings and data can be saved in the browser ('Save Session' button), but users are encouraged to export their work ('Export Data' button), since it <i>cannot</i> be otherwise recovered. This is on purpose: I do not harvest your data or process your data. This site does not receive data from a user, and therefore no user data is stored anywhere except locally. If you are interested in storing data on the cloud (on a server), please contact me (jonathan.vajda [at] gmail.com) so I know about your interest and so I can notify you if/when I add that feature.</details><br />
+    <div id="build-info" style="font-size:0.85rem; color:#666; margin-bottom:0.5rem;"></div>
+    <span style="text-align:right"><small>Copyright 2026, Jonathan Vajda</small></span>
+  </footer>
+
+  <script src="../vendor/glide-data-grid.min.js"></script>
+  <script src="../vendor/xlsx.full.min.js"></script>
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/rdflib.min.js"></script>
+  <link rel="modulepreload" href="../packages/format-registry/src/mime-registry.js" />
+  <link rel="modulepreload" href="../packages/format-registry/src/rdf-parser-formats.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/namespace-registry.js" />
+  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/tabular-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/indexeddb-data-management/src/index.js" />
+  <link rel="modulepreload" href="./app/tom-core-utils.js" />
+  <link rel="modulepreload" href="./app/tom-axiom-builder.js" />
+  <link rel="modulepreload" href="./app/tom-feature-utils.js" />
+  <link rel="modulepreload" href="./app/tom-project-storage.js" />
+  <script src="./app/build-info.js"></script>
+
+  <script type="module" src="../app/site-header.js"></script>
+  <script type="module" src="./app/tom-app.js"></script>
+  <script type="module" src="../app/root-service-worker.js"></script>
+</body>
+</html>
+

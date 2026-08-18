@@ -1,4 +1,5 @@
 // docs/scripts/bundler-ui.js
+import '../app/root-service-worker.js';
 import {
   loadDoc,
   saveDoc,
@@ -287,16 +288,6 @@ function renderIriRow(iri) {
 /* -----------------------------
  * App init + search execution
  * ----------------------------- */
-
-async function registerServiceWorker() {
-  if (!('serviceWorker' in navigator)) return;
-  try {
-    await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-  } catch (err) {
-    // Non-fatal; app still works online
-    console.warn('Service worker registration failed:', err);
-  }
-}
 
 async function bundlerInit() {
   btnCreateBundle?.addEventListener('click', async () => {
@@ -661,7 +652,6 @@ async function render() {
   });
 
 
-  await registerServiceWorker();
   await openOntoEagleProjectDatabase();
 
   // Prefer IDB cache; fall back to graph fetch if needed or outdated
