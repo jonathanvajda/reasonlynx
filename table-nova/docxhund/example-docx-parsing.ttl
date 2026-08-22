@@ -1,0 +1,1297 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix cco: <https://www.commoncoreontologies.org/> .
+@prefix bfo: <http://purl.obolibrary.org/obo/> .
+@prefix ex: <https://example.org/doc-inst/> .
+
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "document 1" ;
+    <http://purl.org/dc/terms/type> "document" ;
+    <https://example.org/doc-inst/has_sibling_index> "1" .
+
+<https://example.org/doc-inst/inst_paragraph_7e09092f840b4ac7a612ecfba82e0dd3>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 1" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Plan:" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_62962e29cfe2453da4ac3bcf0a3ed31f> ;
+    <https://example.org/doc-inst/has_sibling_index> "1" .
+
+<https://example.org/doc-inst/inst_paragraph_62962e29cfe2453da4ac3bcf0a3ed31f>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 2" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Add the “bundle” shopping cart capability to OntoEagle" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_7e09092f840b4ac7a612ecfba82e0dd3> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_0f5a19575414415c92f9b7cd97c66f88> ;
+    <https://example.org/doc-inst/has_sibling_index> "2" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_0f5a19575414415c92f9b7cd97c66f88>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 3" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "User selects elements from search results into shopping cart" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_62962e29cfe2453da4ac3bcf0a3ed31f> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_e98a57bac7794f0ca1889b722b47c8b9> ;
+    <https://example.org/doc-inst/has_sibling_index> "3" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_e98a57bac7794f0ca1889b722b47c8b9>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 4" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Results that have been added will get an icon “Added to Bundle”; the bundle icon in corner also has a number of items" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_0f5a19575414415c92f9b7cd97c66f88> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_9bac9f4d99a445029a8b17e1d5422f90> ;
+    <https://example.org/doc-inst/has_sibling_index> "4" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_9bac9f4d99a445029a8b17e1d5422f90>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 5" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "User can go to bundle page to manage" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_e98a57bac7794f0ca1889b722b47c8b9> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_0452fd8dfde749f9ad813b605b90d5a3> ;
+    <https://example.org/doc-inst/has_sibling_index> "5" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_0452fd8dfde749f9ad813b605b90d5a3>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 6" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "User can view the bundle, add & remove items, empty" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_9bac9f4d99a445029a8b17e1d5422f90> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_acae817916a84fdc81400c2fc7f1f31e> ;
+    <https://example.org/doc-inst/has_sibling_index> "6" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_acae817916a84fdc81400c2fc7f1f31e>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 7" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "User can checkout create seed list (compatible with ROBOT) or make slim." ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_0452fd8dfde749f9ad813b605b90d5a3> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_bde3a88938144b4a80eafda687fe06ba> ;
+    <https://example.org/doc-inst/has_sibling_index> "7" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_bde3a88938144b4a80eafda687fe06ba>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 8" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "“Bundle” page" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_acae817916a84fdc81400c2fc7f1f31e> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_1a974ceb4a0d4cd8a2e5a476429000a0> ;
+    <https://example.org/doc-inst/has_sibling_index> "8" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_1a974ceb4a0d4cd8a2e5a476429000a0>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 9" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Makes DOM from the localStorage data" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_bde3a88938144b4a80eafda687fe06ba> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_374e6e8475ef4cd7a90820a116d3a842> ;
+    <https://example.org/doc-inst/has_sibling_index> "9" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_374e6e8475ef4cd7a90820a116d3a842>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 10" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Displays bundle with simplified information of each item in bundle" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_1a974ceb4a0d4cd8a2e5a476429000a0> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_7d1b143fc643477090e4b11b533752b4> ;
+    <https://example.org/doc-inst/has_sibling_index> "10" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_7d1b143fc643477090e4b11b533752b4>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 11" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Bundle management" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_374e6e8475ef4cd7a90820a116d3a842> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_0af616afc40a4154bd4c98cef3c9d4dd> ;
+    <https://example.org/doc-inst/has_sibling_index> "11" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_0af616afc40a4154bd4c98cef3c9d4dd>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 12" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Split bundles, merge bundles" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_7d1b143fc643477090e4b11b533752b4> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_443c6923a35340c48615aa2cee851db5> ;
+    <https://example.org/doc-inst/has_sibling_index> "12" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_443c6923a35340c48615aa2cee851db5>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 13" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Changes the bundle index 0-N" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_0af616afc40a4154bd4c98cef3c9d4dd> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_a93d7e4d5b4746b3bce2accea4573feb> ;
+    <https://example.org/doc-inst/has_sibling_index> "13" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_a93d7e4d5b4746b3bce2accea4573feb>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 14" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Dump bundle" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_443c6923a35340c48615aa2cee851db5> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_fe5c2864be754485af751d417a0dabad> ;
+    <https://example.org/doc-inst/has_sibling_index> "14" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_fe5c2864be754485af751d417a0dabad>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 15" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Item management" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_a93d7e4d5b4746b3bce2accea4573feb> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_57aef0cf596e45aa8c345e86981ff7f4> ;
+    <https://example.org/doc-inst/has_sibling_index> "15" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_57aef0cf596e45aa8c345e86981ff7f4>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 16" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Add, remove" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_fe5c2864be754485af751d417a0dabad> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_3f2033c3761f455e80c2db8d5e6cfdae> ;
+    <https://example.org/doc-inst/has_sibling_index> "16" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_3f2033c3761f455e80c2db8d5e6cfdae>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 17" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "User can expand any data field" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_57aef0cf596e45aa8c345e86981ff7f4> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_91b50d8552b3433d8f9b10906db5e7f3> ;
+    <https://example.org/doc-inst/has_sibling_index> "17" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_91b50d8552b3433d8f9b10906db5e7f3>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 18" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Move to another bundle (if there’s more than one bundle)" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_3f2033c3761f455e80c2db8d5e6cfdae> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_9640a75b843449d6a2e114aff1b232f7> ;
+    <https://example.org/doc-inst/has_sibling_index> "18" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_9640a75b843449d6a2e114aff1b232f7>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 19" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Slim creation" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_91b50d8552b3433d8f9b10906db5e7f3> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_b66b35147c8e4e12998c138bd7f87d9a> ;
+    <https://example.org/doc-inst/has_sibling_index> "19" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_b66b35147c8e4e12998c138bd7f87d9a>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 20" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Select bundle to export" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_9640a75b843449d6a2e114aff1b232f7> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_7c5c353ad6a34e5f99d8d873a4b17d20> ;
+    <https://example.org/doc-inst/has_sibling_index> "20" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_7c5c353ad6a34e5f99d8d873a4b17d20>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 21" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Export file" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_b66b35147c8e4e12998c138bd7f87d9a> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_1a4dab0016404acaa1fa35c977e60b02> ;
+    <https://example.org/doc-inst/has_sibling_index> "21" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_1a4dab0016404acaa1fa35c977e60b02>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 22" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "ROBOT seed file" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_7c5c353ad6a34e5f99d8d873a4b17d20> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_fcdc111d2318485b896399655507ad75> ;
+    <https://example.org/doc-inst/has_sibling_index> "22" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_fcdc111d2318485b896399655507ad75>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 23" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Format options" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_1a4dab0016404acaa1fa35c977e60b02> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_a87d7bb9db2047e290402df7c050856c> ;
+    <https://example.org/doc-inst/has_sibling_index> "23" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_a87d7bb9db2047e290402df7c050856c>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 24" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "CSV" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_fcdc111d2318485b896399655507ad75> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_951ca6d8b52a4d528b25b88b6b6f7329> ;
+    <https://example.org/doc-inst/has_sibling_index> "24" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_951ca6d8b52a4d528b25b88b6b6f7329>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 25" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "TSV" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_a87d7bb9db2047e290402df7c050856c> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_fa6bb5aa7ae5496681b6b1d7ce3930ac> ;
+    <https://example.org/doc-inst/has_sibling_index> "25" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_fa6bb5aa7ae5496681b6b1d7ce3930ac>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 26" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "TXT" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_951ca6d8b52a4d528b25b88b6b6f7329> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_24bba6f36bb64021a38b5afc406ffc08> ;
+    <https://example.org/doc-inst/has_sibling_index> "26" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_24bba6f36bb64021a38b5afc406ffc08>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 27" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Include labels?" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_fa6bb5aa7ae5496681b6b1d7ce3930ac> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_d479bd9a9e3547978c6eac807b35c519> ;
+    <https://example.org/doc-inst/has_sibling_index> "27" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_d479bd9a9e3547978c6eac807b35c519>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 28" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "After IRI, # label" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_24bba6f36bb64021a38b5afc406ffc08> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_c0343d67b1b2419d952f413430756604> ;
+    <https://example.org/doc-inst/has_sibling_index> "28" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_c0343d67b1b2419d952f413430756604>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 29" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Attempt to generate slim" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_d479bd9a9e3547978c6eac807b35c519> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_21229a9c57eb4ea8b816ab69ed7b27c1> ;
+    <https://example.org/doc-inst/has_sibling_index> "29" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_21229a9c57eb4ea8b816ab69ed7b27c1>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 30" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Extraction methods" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_c0343d67b1b2419d952f413430756604> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_39ffb180a6334416be27a6f3b0c7f32e> ;
+    <https://example.org/doc-inst/has_sibling_index> "30" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_39ffb180a6334416be27a6f3b0c7f32e>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 31" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "SPOlite, full" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_21229a9c57eb4ea8b816ab69ed7b27c1> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_1bdd8adfea5a44c18e9619fb8937b330> ;
+    <https://example.org/doc-inst/has_sibling_index> "31" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_1bdd8adfea5a44c18e9619fb8937b330>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 32" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "SCOlite, full" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_39ffb180a6334416be27a6f3b0c7f32e> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_eb8be2ddea5e4438898b3e10ce2a7887> ;
+    <https://example.org/doc-inst/has_sibling_index> "32" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_eb8be2ddea5e4438898b3e10ce2a7887>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 33" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Provenancelite, full" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_1bdd8adfea5a44c18e9619fb8937b330> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_ca6f3519abab48a7a6167562cd10fde2> ;
+    <https://example.org/doc-inst/has_sibling_index> "33" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_ca6f3519abab48a7a6167562cd10fde2>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 34" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Semantic annotationslite, full" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_eb8be2ddea5e4438898b3e10ce2a7887> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_dbd0e0ce8e9246a89d2fc4a858e55391> ;
+    <https://example.org/doc-inst/has_sibling_index> "34" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_dbd0e0ce8e9246a89d2fc4a858e55391>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 35" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Documentation annotationslite, full" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_ca6f3519abab48a7a6167562cd10fde2> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_f8912677df2f4de38e19713d611c10d3> ;
+    <https://example.org/doc-inst/has_sibling_index> "35" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_f8912677df2f4de38e19713d611c10d3>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 36" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Individualsexclude, include" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_dbd0e0ce8e9246a89d2fc4a858e55391> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_8a6709a53a154582b99aff1111d49613> ;
+    <https://example.org/doc-inst/has_sibling_index> "36" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_8a6709a53a154582b99aff1111d49613>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 37" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Format options:" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_f8912677df2f4de38e19713d611c10d3> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_caca2e48f0fb4215b1af9f11a516b28b> ;
+    <https://example.org/doc-inst/has_sibling_index> "37" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_caca2e48f0fb4215b1af9f11a516b28b>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 38" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "TTL" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_8a6709a53a154582b99aff1111d49613> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_95500add95c34703845cebc0c99bb94c> ;
+    <https://example.org/doc-inst/has_sibling_index> "38" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_95500add95c34703845cebc0c99bb94c>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 39" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "N-Triples" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_caca2e48f0fb4215b1af9f11a516b28b> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_f6b3c4a3fcaf4dd1a6d0732e7e55b374> ;
+    <https://example.org/doc-inst/has_sibling_index> "39" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_f6b3c4a3fcaf4dd1a6d0732e7e55b374>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 40" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "JSON-LD" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_95500add95c34703845cebc0c99bb94c> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_2518849aab7440faafca038e5923667a> ;
+    <https://example.org/doc-inst/has_sibling_index> "40" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_2518849aab7440faafca038e5923667a>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 41" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "I want to make a webpage that displays the contents of a “shopping cart”" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_f6b3c4a3fcaf4dd1a6d0732e7e55b374> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_db0c12103b9d477286e81d0abb925cca> ;
+    <https://example.org/doc-inst/has_sibling_index> "41" .
+
+<https://example.org/doc-inst/inst_paragraph_db0c12103b9d477286e81d0abb925cca>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 42" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "“Ontology bundle”" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_2518849aab7440faafca038e5923667a> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_63b735752f8245b9849aadc71c6efa1c> ;
+    <https://example.org/doc-inst/has_sibling_index> "42" .
+
+<https://example.org/doc-inst/inst_paragraph_63b735752f8245b9849aadc71c6efa1c>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 43" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Seed" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_db0c12103b9d477286e81d0abb925cca> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_45f0d06389194d7b82d548df60551b57> ;
+    <https://example.org/doc-inst/has_sibling_index> "43" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_45f0d06389194d7b82d548df60551b57>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 44" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "[in process]" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_63b735752f8245b9849aadc71c6efa1c> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_2bbe38260ab243afaf97023fc0ee7c01> ;
+    <https://example.org/doc-inst/has_sibling_index> "44" .
+
+<https://example.org/doc-inst/inst_paragraph_2bbe38260ab243afaf97023fc0ee7c01>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 45" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Sprouting" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_45f0d06389194d7b82d548df60551b57> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_19cff0be771a4d19b318ac50be949bb3> ;
+    <https://example.org/doc-inst/has_sibling_index> "45" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_19cff0be771a4d19b318ac50be949bb3>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 46" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "“Ontology slim”" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_2bbe38260ab243afaf97023fc0ee7c01> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_5b63d25e99874b6fb300bfbcc27e7a80> ;
+    <https://example.org/doc-inst/has_sibling_index> "46" .
+
+<https://example.org/doc-inst/inst_paragraph_5b63d25e99874b6fb300bfbcc27e7a80>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 47" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Tree" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_19cff0be771a4d19b318ac50be949bb3> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_bd0d104d0180481db888da2dc4f72a36> ;
+    <https://example.org/doc-inst/has_sibling_index> "47" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_bd0d104d0180481db888da2dc4f72a36>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 48" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "What gets stored in localStorage?" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_5b63d25e99874b6fb300bfbcc27e7a80> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_62ac96ae72d74db69d4c017e040c412c> ;
+    <https://example.org/doc-inst/has_sibling_index> "48" .
+
+<https://example.org/doc-inst/inst_paragraph_62ac96ae72d74db69d4c017e040c412c>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 49" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Displayed" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_bd0d104d0180481db888da2dc4f72a36> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_ee5650f094e549fc91f19e9243ce5cf8> ;
+    <https://example.org/doc-inst/has_sibling_index> "49" .
+
+<https://example.org/doc-inst/inst_paragraph_ee5650f094e549fc91f19e9243ce5cf8>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 50" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Stored" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_62ac96ae72d74db69d4c017e040c412c> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_568036b5b0f746c094ad37c3e6840c74> ;
+    <https://example.org/doc-inst/has_sibling_index> "50" .
+
+<https://example.org/doc-inst/inst_paragraph_568036b5b0f746c094ad37c3e6840c74>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 51" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Label" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_ee5650f094e549fc91f19e9243ce5cf8> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_2c6d11e1c1184147810910d2dce5224d> ;
+    <https://example.org/doc-inst/has_sibling_index> "51" .
+
+<https://example.org/doc-inst/inst_paragraph_2c6d11e1c1184147810910d2dce5224d>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 52" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Rdfs:label" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_568036b5b0f746c094ad37c3e6840c74> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_e10cce8ce1b344e4a7d6e336bee3653e> ;
+    <https://example.org/doc-inst/has_sibling_index> "52" .
+
+<https://example.org/doc-inst/inst_paragraph_e10cce8ce1b344e4a7d6e336bee3653e>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 53" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "IRI" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_2c6d11e1c1184147810910d2dce5224d> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_52f13e4eb06c4d6abc76eda11dbac843> ;
+    <https://example.org/doc-inst/has_sibling_index> "53" .
+
+<https://example.org/doc-inst/inst_paragraph_52f13e4eb06c4d6abc76eda11dbac843>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 54" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "IRI" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_e10cce8ce1b344e4a7d6e336bee3653e> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_d15aabae1cfd4420956a4bff947202ab> ;
+    <https://example.org/doc-inst/has_sibling_index> "54" .
+
+<https://example.org/doc-inst/inst_paragraph_d15aabae1cfd4420956a4bff947202ab>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 55" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Type" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_52f13e4eb06c4d6abc76eda11dbac843> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_8bd91cf2e4164215ba9e64bc013c4177> ;
+    <https://example.org/doc-inst/has_sibling_index> "55" .
+
+<https://example.org/doc-inst/inst_paragraph_8bd91cf2e4164215ba9e64bc013c4177>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 56" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Owl:type" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_d15aabae1cfd4420956a4bff947202ab> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_41bc3deee3f0435185a144eecc9ee472> ;
+    <https://example.org/doc-inst/has_sibling_index> "56" .
+
+<https://example.org/doc-inst/inst_paragraph_41bc3deee3f0435185a144eecc9ee472>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 57" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "First 30 characters of definition" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_8bd91cf2e4164215ba9e64bc013c4177> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_be47a03a4b5341c798793405ba2758be> ;
+    <https://example.org/doc-inst/has_sibling_index> "57" .
+
+<https://example.org/doc-inst/inst_paragraph_be47a03a4b5341c798793405ba2758be>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 58" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Skos:definition" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_41bc3deee3f0435185a144eecc9ee472> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_88ef8f3021a449139110a4a9218ecd7f> ;
+    <https://example.org/doc-inst/has_sibling_index> "58" .
+
+<https://example.org/doc-inst/inst_paragraph_88ef8f3021a449139110a4a9218ecd7f>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 59" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Which bundle (index 0-N)" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_be47a03a4b5341c798793405ba2758be> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_0d2913b2a24a483c95aeb96958b3d139> ;
+    <https://example.org/doc-inst/has_sibling_index> "59" .
+
+<https://example.org/doc-inst/inst_paragraph_0d2913b2a24a483c95aeb96958b3d139>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 60" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Curated in, if available" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_88ef8f3021a449139110a4a9218ecd7f> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_1be59c3105e84bf382c2c8b1a8644275> ;
+    <https://example.org/doc-inst/has_sibling_index> "60" .
+
+<https://example.org/doc-inst/inst_paragraph_1be59c3105e84bf382c2c8b1a8644275>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 61" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Minimal" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_0d2913b2a24a483c95aeb96958b3d139> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_0bd51642d754459bbf6390d8652b8435> ;
+    <https://example.org/doc-inst/has_sibling_index> "61" .
+
+<https://example.org/doc-inst/inst_paragraph_0bd51642d754459bbf6390d8652b8435>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 62" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "IRI" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_1be59c3105e84bf382c2c8b1a8644275> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_62598c1c5e1e4f6db308966f8e70ffd0> ;
+    <https://example.org/doc-inst/has_sibling_index> "62" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_62598c1c5e1e4f6db308966f8e70ffd0>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 63" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Subclass parent" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_0bd51642d754459bbf6390d8652b8435> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_03d3d39960a447579f02cf5139836cc0> ;
+    <https://example.org/doc-inst/has_sibling_index> "63" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_03d3d39960a447579f02cf5139836cc0>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 64" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Add the node’s IRI to the list" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_62598c1c5e1e4f6db308966f8e70ffd0> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_b70dfe80352a4d05abdeaefbb46dda2b> ;
+    <https://example.org/doc-inst/has_sibling_index> "64" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_b70dfe80352a4d05abdeaefbb46dda2b>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 65" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Label" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_03d3d39960a447579f02cf5139836cc0> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_4eb1a69846b8463fa274d938691036c5> ;
+    <https://example.org/doc-inst/has_sibling_index> "65" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_4eb1a69846b8463fa274d938691036c5>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 66" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Curated in ontology" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_b70dfe80352a4d05abdeaefbb46dda2b> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_a76210d6e7bf462e94f5dfe19365fe18> ;
+    <https://example.org/doc-inst/has_sibling_index> "66" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_a76210d6e7bf462e94f5dfe19365fe18>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 67" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "subClassOf strategy" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_4eb1a69846b8463fa274d938691036c5> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_331fd79c120941b98f138a0ed46ff087> ;
+    <https://example.org/doc-inst/has_sibling_index> "67" .
+
+<https://example.org/doc-inst/inst_paragraph_331fd79c120941b98f138a0ed46ff087>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 68" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Input: JSON-LD graph" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_a76210d6e7bf462e94f5dfe19365fe18> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_22e0d94ddd3d4310816e45e2a727ef7f> ;
+    <https://example.org/doc-inst/has_sibling_index> "68" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_22e0d94ddd3d4310816e45e2a727ef7f>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 69" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "SCO Minimal: Iterate through the array. Grab only a nodes that are an IRI (not a blank node)" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_331fd79c120941b98f138a0ed46ff087> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_a48fd178ce504ea09a39ba773d6e3418> ;
+    <https://example.org/doc-inst/has_sibling_index> "69" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_a48fd178ce504ea09a39ba773d6e3418>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 70" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "SCO Maximal: Iterate through the array, collect IRIs and follow blank nodes to get those IRIs too" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_22e0d94ddd3d4310816e45e2a727ef7f> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_e727202810f6438e8465d2176413e796> ;
+    <https://example.org/doc-inst/has_sibling_index> "70" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_e727202810f6438e8465d2176413e796>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 71" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Output: list of all the IRIs gathered along the way" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_a48fd178ce504ea09a39ba773d6e3418> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_39f60a5ae1cf4f1cb22eb5dfa9fbca2b> ;
+    <https://example.org/doc-inst/has_sibling_index> "71" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_39f60a5ae1cf4f1cb22eb5dfa9fbca2b>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 72" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "subPropertyOf strategy" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_e727202810f6438e8465d2176413e796> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_b7e12957b64d44878500ee5bc1e4072b> ;
+    <https://example.org/doc-inst/has_sibling_index> "72" .
+
+<https://example.org/doc-inst/inst_paragraph_b7e12957b64d44878500ee5bc1e4072b>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 73" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Input: JSON-LD graph" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_39f60a5ae1cf4f1cb22eb5dfa9fbca2b> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_e8600c4d48b24f048c597160724721c5> ;
+    <https://example.org/doc-inst/has_sibling_index> "73" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_e8600c4d48b24f048c597160724721c5>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 74" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "SPO Minimal: Iterate through the array. Grab only a nodes that are an IRI (not a blank node)" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_b7e12957b64d44878500ee5bc1e4072b> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_2ffa166a010e462184f46b2b0997034d> ;
+    <https://example.org/doc-inst/has_sibling_index> "74" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_2ffa166a010e462184f46b2b0997034d>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 75" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "SPO Maximal: Iterate through the array, collect IRIs and follow blank nodes to get those IRIs too" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_e8600c4d48b24f048c597160724721c5> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_500fd465d1ec429db8e198cd160143a3> ;
+    <https://example.org/doc-inst/has_sibling_index> "75" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_500fd465d1ec429db8e198cd160143a3>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 76" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Output: list of all the IRIs gathered along the way" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_2ffa166a010e462184f46b2b0997034d> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_e27f36419ee846168488db6471f61f69> ;
+    <https://example.org/doc-inst/has_sibling_index> "76" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_e27f36419ee846168488db6471f61f69>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 77" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Provenance strategy" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_500fd465d1ec429db8e198cd160143a3> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_9060e7d917d0410a98ef74103246907f> ;
+    <https://example.org/doc-inst/has_sibling_index> "77" .
+
+<https://example.org/doc-inst/inst_paragraph_9060e7d917d0410a98ef74103246907f>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 78" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Curated in: get one of ‘is curated in ontology’, cco2:ont00001760, rdfs:isDefinedBy" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_e27f36419ee846168488db6471f61f69> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_d0c818b9aa854a839ce4ef6ecec50043> ;
+    <https://example.org/doc-inst/has_sibling_index> "78" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_d0c818b9aa854a839ce4ef6ecec50043>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 79" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Curation version: with the curated in, find the ontology’s version info." ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_9060e7d917d0410a98ef74103246907f> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_deadbf3feed843a9b1901d23634cf806> ;
+    <https://example.org/doc-inst/has_sibling_index> "79" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_deadbf3feed843a9b1901d23634cf806>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 80" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Take the value of the ‘is curated in ontology’." ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_d0c818b9aa854a839ce4ef6ecec50043> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_b26e3b19b1534f8a87e71e47fd23c153> ;
+    <https://example.org/doc-inst/has_sibling_index> "80" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_b26e3b19b1534f8a87e71e47fd23c153>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 81" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "If it is an IRI, then assume it is the ontology’s IRI." ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_deadbf3feed843a9b1901d23634cf806> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_46e418f041964a41bd81e1d366453148> ;
+    <https://example.org/doc-inst/has_sibling_index> "81" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_46e418f041964a41bd81e1d366453148>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 82" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "If it is not a valid IRI, then search for an ontology whose name matches" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_b26e3b19b1534f8a87e71e47fd23c153> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_fec4da407dc34b5f9a99c9b650b485f1> ;
+    <https://example.org/doc-inst/has_sibling_index> "82" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_fec4da407dc34b5f9a99c9b650b485f1>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 83" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Lite:" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_46e418f041964a41bd81e1d366453148> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_4a9ed602de444714bbfd8656cc626263> ;
+    <https://example.org/doc-inst/has_sibling_index> "83" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_4a9ed602de444714bbfd8656cc626263>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 84" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Curated in: get one of ‘is curated in ontology’, cco2:ont00001760, rdfs:isDefinedBy" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_fec4da407dc34b5f9a99c9b650b485f1> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_5cef11e276ec47de84be9b00ce2ebcd6> ;
+    <https://example.org/doc-inst/has_sibling_index> "84" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_5cef11e276ec47de84be9b00ce2ebcd6>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 85" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Full:" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_4a9ed602de444714bbfd8656cc626263> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_b1a90e7870d64cee8a562f75930090ca> ;
+    <https://example.org/doc-inst/has_sibling_index> "85" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_b1a90e7870d64cee8a562f75930090ca>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 86" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Curated in: Datetime derived: follow the" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_5cef11e276ec47de84be9b00ce2ebcd6> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_fa0f831723cc4cb0a5358d27985cee83> ;
+    <https://example.org/doc-inst/has_sibling_index> "86" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_fa0f831723cc4cb0a5358d27985cee83>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 87" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Annotation strategy" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_b1a90e7870d64cee8a562f75930090ca> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_8c77dcbef4ce424a97c7c0257dc9b652> ;
+    <https://example.org/doc-inst/has_sibling_index> "87" .
+
+<https://example.org/doc-inst/inst_paragraph_8c77dcbef4ce424a97c7c0257dc9b652>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 88" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Input: JSON-LD graph + list of all the IRIs to gather annotations" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_fa0f831723cc4cb0a5358d27985cee83> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_f59fb4f0438245f1abfec36b0359f6fb> ;
+    <https://example.org/doc-inst/has_sibling_index> "88" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_f59fb4f0438245f1abfec36b0359f6fb>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 89" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Minimal: label" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_8c77dcbef4ce424a97c7c0257dc9b652> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_3c51bc23367e43849410736d9788b0fd> ;
+    <https://example.org/doc-inst/has_sibling_index> "89" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_3c51bc23367e43849410736d9788b0fd>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 90" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Provenance:" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_f59fb4f0438245f1abfec36b0359f6fb> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_b13203dd298f40aa8a9351b256073914> ;
+    <https://example.org/doc-inst/has_sibling_index> "90" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_b13203dd298f40aa8a9351b256073914>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 91" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Lite: is curated in" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_3c51bc23367e43849410736d9788b0fd> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_642be7f314dd46cf97cf943706017541> ;
+    <https://example.org/doc-inst/has_sibling_index> "91" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_642be7f314dd46cf97cf943706017541>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 92" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Full: curation version, datetime when derived" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_b13203dd298f40aa8a9351b256073914> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_0b63fa43f70141b0a152986795099d8f> ;
+    <https://example.org/doc-inst/has_sibling_index> "92" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_0b63fa43f70141b0a152986795099d8f>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 93" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Semantics:" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_642be7f314dd46cf97cf943706017541> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_3202d98464364add9c0a392421532edb> ;
+    <https://example.org/doc-inst/has_sibling_index> "93" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_3202d98464364add9c0a392421532edb>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 94" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Documentation:" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_0b63fa43f70141b0a152986795099d8f> ;
+    <https://example.org/doc-inst/has_immediately_posterior_document_part> <https://example.org/doc-inst/inst_paragraph_8f5d6ff6aa184ceead2f8222d9bbd45a> ;
+    <https://example.org/doc-inst/has_sibling_index> "94" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_paragraph_8f5d6ff6aa184ceead2f8222d9bbd45a>
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> ;
+    <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.commoncoreontologies.org/ont00000958> ;
+    <http://www.w3.org/2000/01/rdf-schema#label> "paragraph 95" ;
+    <http://purl.org/dc/terms/type> "paragraph" ;
+    <https://www.commoncoreontologies.org/ont00001765> "Maximal: minimal + provenance + semantics + documentation" ;
+    <http://purl.obolibrary.org/obo/BFO_0000176> <https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> ;
+    <https://example.org/doc-inst/has_immediately_prior_document_part> <https://example.org/doc-inst/inst_paragraph_3202d98464364add9c0a392421532edb> ;
+    <https://example.org/doc-inst/has_sibling_index> "95" ;
+    <https://example.org/doc-inst/has_style_id> "ListParagraph" ;
+    <https://example.org/doc-inst/has_style_name> "ListParagraph" .
+
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_7e09092f840b4ac7a612ecfba82e0dd3> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_62962e29cfe2453da4ac3bcf0a3ed31f> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_0f5a19575414415c92f9b7cd97c66f88> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_e98a57bac7794f0ca1889b722b47c8b9> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_9bac9f4d99a445029a8b17e1d5422f90> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_0452fd8dfde749f9ad813b605b90d5a3> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_acae817916a84fdc81400c2fc7f1f31e> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_bde3a88938144b4a80eafda687fe06ba> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_1a974ceb4a0d4cd8a2e5a476429000a0> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_374e6e8475ef4cd7a90820a116d3a842> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_7d1b143fc643477090e4b11b533752b4> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_0af616afc40a4154bd4c98cef3c9d4dd> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_443c6923a35340c48615aa2cee851db5> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_a93d7e4d5b4746b3bce2accea4573feb> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_fe5c2864be754485af751d417a0dabad> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_57aef0cf596e45aa8c345e86981ff7f4> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_3f2033c3761f455e80c2db8d5e6cfdae> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_91b50d8552b3433d8f9b10906db5e7f3> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_9640a75b843449d6a2e114aff1b232f7> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_b66b35147c8e4e12998c138bd7f87d9a> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_7c5c353ad6a34e5f99d8d873a4b17d20> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_1a4dab0016404acaa1fa35c977e60b02> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_fcdc111d2318485b896399655507ad75> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_a87d7bb9db2047e290402df7c050856c> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_951ca6d8b52a4d528b25b88b6b6f7329> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_fa6bb5aa7ae5496681b6b1d7ce3930ac> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_24bba6f36bb64021a38b5afc406ffc08> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_d479bd9a9e3547978c6eac807b35c519> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_c0343d67b1b2419d952f413430756604> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_21229a9c57eb4ea8b816ab69ed7b27c1> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_39ffb180a6334416be27a6f3b0c7f32e> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_1bdd8adfea5a44c18e9619fb8937b330> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_eb8be2ddea5e4438898b3e10ce2a7887> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_ca6f3519abab48a7a6167562cd10fde2> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_dbd0e0ce8e9246a89d2fc4a858e55391> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_f8912677df2f4de38e19713d611c10d3> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_8a6709a53a154582b99aff1111d49613> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_caca2e48f0fb4215b1af9f11a516b28b> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_95500add95c34703845cebc0c99bb94c> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_f6b3c4a3fcaf4dd1a6d0732e7e55b374> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_2518849aab7440faafca038e5923667a> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_db0c12103b9d477286e81d0abb925cca> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_63b735752f8245b9849aadc71c6efa1c> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_45f0d06389194d7b82d548df60551b57> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_2bbe38260ab243afaf97023fc0ee7c01> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_19cff0be771a4d19b318ac50be949bb3> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_5b63d25e99874b6fb300bfbcc27e7a80> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_bd0d104d0180481db888da2dc4f72a36> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_62ac96ae72d74db69d4c017e040c412c> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_ee5650f094e549fc91f19e9243ce5cf8> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_568036b5b0f746c094ad37c3e6840c74> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_2c6d11e1c1184147810910d2dce5224d> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_e10cce8ce1b344e4a7d6e336bee3653e> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_52f13e4eb06c4d6abc76eda11dbac843> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_d15aabae1cfd4420956a4bff947202ab> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_8bd91cf2e4164215ba9e64bc013c4177> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_41bc3deee3f0435185a144eecc9ee472> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_be47a03a4b5341c798793405ba2758be> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_88ef8f3021a449139110a4a9218ecd7f> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_0d2913b2a24a483c95aeb96958b3d139> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_1be59c3105e84bf382c2c8b1a8644275> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_0bd51642d754459bbf6390d8652b8435> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_62598c1c5e1e4f6db308966f8e70ffd0> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_03d3d39960a447579f02cf5139836cc0> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_b70dfe80352a4d05abdeaefbb46dda2b> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_4eb1a69846b8463fa274d938691036c5> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_a76210d6e7bf462e94f5dfe19365fe18> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_331fd79c120941b98f138a0ed46ff087> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_22e0d94ddd3d4310816e45e2a727ef7f> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_a48fd178ce504ea09a39ba773d6e3418> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_e727202810f6438e8465d2176413e796> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_39f60a5ae1cf4f1cb22eb5dfa9fbca2b> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_b7e12957b64d44878500ee5bc1e4072b> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_e8600c4d48b24f048c597160724721c5> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_2ffa166a010e462184f46b2b0997034d> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_500fd465d1ec429db8e198cd160143a3> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_e27f36419ee846168488db6471f61f69> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_9060e7d917d0410a98ef74103246907f> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_d0c818b9aa854a839ce4ef6ecec50043> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_deadbf3feed843a9b1901d23634cf806> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_b26e3b19b1534f8a87e71e47fd23c153> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_46e418f041964a41bd81e1d366453148> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_fec4da407dc34b5f9a99c9b650b485f1> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_4a9ed602de444714bbfd8656cc626263> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_5cef11e276ec47de84be9b00ce2ebcd6> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_b1a90e7870d64cee8a562f75930090ca> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_fa0f831723cc4cb0a5358d27985cee83> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_8c77dcbef4ce424a97c7c0257dc9b652> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_f59fb4f0438245f1abfec36b0359f6fb> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_3c51bc23367e43849410736d9788b0fd> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_b13203dd298f40aa8a9351b256073914> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_642be7f314dd46cf97cf943706017541> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_0b63fa43f70141b0a152986795099d8f> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_3202d98464364add9c0a392421532edb> .
+<https://example.org/doc-inst/inst_document_cca687cefc4d493c83812c8de6227f12> <http://purl.obolibrary.org/obo/BFO_0000178> <https://example.org/doc-inst/inst_paragraph_8f5d6ff6aa184ceead2f8222d9bbd45a> .

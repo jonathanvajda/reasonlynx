@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>DocxHund Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Baseline CSS -->
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+  <!-- App-scoped CSS -->
+  <link rel="stylesheet" href="./styles/docxhund-app.css" />
+</head>
+<body>
+  <main class="container app-shell">
+    <header class="app-header">
+      <h1 class="app-title">DocxHund Prototype</h1>
+      <img src="./images/docxhund-base.png" width="150">
+      <p class="app-subtitle">
+        Extract document parts from DOCX and serialize them as Turtle.
+      </p>
+    </header>
+
+    <section class="app-panel">
+      <div class="row">
+        <div class="eight columns">
+          <label for="docxFile"><strong>DOCX file</strong></label>
+          <input id="docxFile" class="u-full-width" type="file" accept=".docx" />
+        </div>
+
+        <div class="four columns">
+          <label for="baseIri"><strong>Base IRI</strong></label>
+          <input
+            id="baseIri"
+            class="u-full-width"
+            type="text"
+            value="https://example.org/doc-inst/"
+          />
+        </div>
+      </div>
+
+      <div class="row app-row-gap">
+        <div class="six columns">
+          <fieldset class="app-fieldset">
+            <legend><strong>Extraction levels</strong></legend>
+
+            <label>
+              <input id="includeParagraphs" type="checkbox" checked />
+              <span class="label-body">Paragraphs</span>
+            </label>
+
+            <label>
+              <input id="includeSections" type="checkbox" checked />
+              <span class="label-body">Sections (heuristic)</span>
+            </label>
+
+            <label>
+              <input id="includeSentences" type="checkbox" />
+              <span class="label-body">Sentences</span>
+            </label>
+
+            <label>
+              <input id="includeWords" type="checkbox" />
+              <span class="label-body">Words</span>
+            </label>
+          </fieldset>
+        </div>
+
+        <div class="six columns">
+          <fieldset class="app-fieldset">
+            <legend><strong>Output</strong></legend>
+
+            <label for="formatSelect">Serialization</label>
+            <select id="formatSelect" class="u-full-width">
+              <option value="text/turtle" selected>Turtle</option>
+            </select>
+
+            <button id="processBtn" class="button-primary u-full-width app-button-gap" type="button">
+              Process DOCX
+            </button>
+
+            <button id="downloadBtn" class="u-full-width" type="button" disabled>
+              Download Turtle
+            </button>
+          </fieldset>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-panel">
+      <h2>Document parts preview</h2>
+      <div id="previewSummary" class="app-muted">No document processed yet.</div>
+      <div id="partsTableWrap" class="app-table-wrap"></div>
+    </section>
+
+    <section class="app-panel">
+      <h2>Turtle output</h2>
+      <textarea
+        id="outputArea"
+        class="app-output"
+        spellcheck="false"
+        placeholder="Turtle serialization will appear here..."
+      ></textarea>
+    </section>
+
+    <section class="app-panel">
+      <h2>Log</h2>
+      <pre id="logArea" class="app-log"></pre>
+    </section>
+  </main>
+
+  <link rel="modulepreload" href="../packages/format-registry/src/mime-registry.js" />
+  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+  <script type="module" src="./scripts/docxhund-main.js"></script>
+</body>
+</html>
+

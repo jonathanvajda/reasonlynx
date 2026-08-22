@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Table Nova is a lightweight browser-based toolkit for creating and manipulating RDF data from tabular data sources, with user inputs for managing datatypes and staging alignment to ontologies." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="dcterms.creator" content="Jonathan Vajda" />
+  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
+  <title>Table Nova</title>
+    <!-- Public CSS -->
+    <link rel="stylesheet" href="../styles/skeleton.css" />
+
+  <!-- App Global CSS -->
+  <script>
+    (function () {
+      const APPBASE_CSS_SOURCES = [
+        "../styles/app-base.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of APPBASE_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load app base CSS from all sources.");
+      })();
+    })();
+  </script>
+  <script>
+    (function () {
+      const HEADER_CSS_SOURCES = [
+        "../styles/site-header.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of HEADER_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load header CSS from all sources.");
+      })();
+    })();
+  </script>
+
+    <!-- App Local CSS -->
+    <link rel="stylesheet" href="./styles/table-nova.css" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/namespace-registry.js" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/curie.js" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/prefix-map.js" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/rdf-serialization-prefixes.js" />
+</head>
+
+<body data-page-id="table-nova">
+
+  <header id="siteHeader" class="sitehdr-root table-nova-header" role="banner" aria-label="Site header">
+    
+  </header>
+
+  <main class="table-nova-main">
+      <div class="table-nova-header__inner">
+      <h1 class="table-nova-header__title">Table Nova</h1>
+      <p class="table-nova-header__subtitle">Drop tabular files, generate RDF, and stash runs in IndexedDB.</p>
+    </div>
+
+    <section class="table-nova-card" aria-labelledby="table-nova-ingest-title">
+      <h2 id="table-nova-ingest-title" class="table-nova-card__title">Ingest</h2>
+
+      <div class="table-nova-dropzone" id="TableNovaDropzone" role="button" tabindex="0" aria-label="Drop a file here or click to select">
+        <div class="table-nova-dropzone__inner">
+          <p class="table-nova-dropzone__headline">Drag &amp; drop a CSV, TSV, or Excel file</p>
+          <p class="table-nova-dropzone__hint">…or click to choose a file.</p>
+        </div>
+        <input id="TableNovaFileInput" class="table-nova-dropzone__input" type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" />
+      </div>
+
+      <div class="table-nova-staging" aria-live="polite">
+        <h3 class="table-nova-section-title">Staging area</h3>
+        <ul class="table-nova-filelist" id="TableNovaFileList" aria-label="Staged files"></ul>
+      </div>
+      <div class="table-nova-actions">
+        <button id="TableNovaClearBtn" class="table-nova-btn table-nova-btn--secondary" type="button">Clear staged</button>
+      </div>
+
+      <div aria-labelledby="table-nova-options-title">
+        <h3 id="table-nova-options-title" class="table-nova-section-title">Options (per file)</h3>
+        <div class="table-nova-options" id="TableNovaOptionsPanel">
+          <p class="table-nova-muted">Add a file to configure preview, header handling, predicate casing, and datatypes.</p>
+        </div>
+      </div>
+
+      <div class="table-nova-actions">
+        <button id="TableNovaRunBtn" class="table-nova-btn table-nova-btn--primary" type="button" disabled>RUN TABLE NOVA</button>
+      </div>
+    </section>
+
+    <section class="table-nova-card" aria-labelledby="table-nova-output-title">
+      <h2 id="table-nova-output-title" class="table-nova-card__title">Output</h2>
+
+      <nav class="table-nova-tabs table-nova-format-tabs" aria-label="Output format and storage">
+        <button class="table-nova-tab table-nova-tab--active" type="button" data-tab="turtle">Turtle</button>
+        <button class="table-nova-tab" type="button" data-tab="ntriples">N-Triples</button>
+        <button class="table-nova-tab" type="button" data-tab="jsonld">JSON-LD</button>
+        <button class="table-nova-tab table-nova-tab--session" type="button" data-tab="session">Session datastore</button>
+        <div class="table-nova-output-metaexport">
+          <button id="TableNovaExportDataDictionaryBtn" class="table-nova-btn table-nova-btn--tertiary" type="button">Export data dictionary</button>
+          <button id="TableNovaExportJsonSchemaBtn" class="table-nova-btn table-nova-btn--tertiary" type="button">Export JSON schema</button>
+        </div>
+      </nav>
+
+      <fieldset class="table-nova-output-scope" aria-label="Output graph content">
+        <legend class="table-nova-label">Graph content</legend>
+        <label class="table-nova-radiochip">
+          <input type="radio" name="TableNovaOutputScope" value="abox" checked />
+          <span>Instance data (A-Box)</span>
+        </label>
+        <label class="table-nova-radiochip">
+          <input type="radio" name="TableNovaOutputScope" value="tbox" />
+          <span>Ontology schema (T-Box)</span>
+        </label>
+        <label class="table-nova-radiochip">
+          <input type="radio" name="TableNovaOutputScope" value="both" />
+          <span>Combined</span>
+        </label>
+      </fieldset>
+
+      <div class="table-nova-tabpanels">
+        <section class="table-nova-tabpanel table-nova-tabpanel--active" data-panel="turtle">
+          <div class="table-nova-output-actions">
+            <button id="TableNovaExportTurtleBtn" class="table-nova-btn table-nova-btn--tertiary" type="button">Export Turtle</button>
+            <button id="TableNovaExportTrigBtn" class="table-nova-btn table-nova-btn--tertiary" type="button">Export TriG</button>
+          </div>
+          <label class="table-nova-label" for="TableNovaTurtleText">Turtle / TriG preview</label>
+          <textarea id="TableNovaTurtleText" class="table-nova-textarea" spellcheck="false" readonly></textarea>
+        </section>
+
+        <section class="table-nova-tabpanel" data-panel="ntriples">
+          <div class="table-nova-output-actions">
+            <button id="TableNovaExportNTriplesBtn" class="table-nova-btn table-nova-btn--tertiary" type="button">Export N-Triples</button>
+            <button id="TableNovaExportNQuadsBtn" class="table-nova-btn table-nova-btn--tertiary" type="button">Export N-Quads</button>
+          </div>
+
+          <div class="table-nova-tabletools">
+            <div class="table-nova-field">
+              <label class="table-nova-label" for="TableNovaQuadFilter">Filter</label>
+              <input id="TableNovaQuadFilter" class="table-nova-input" type="text" placeholder="Type to filter S/P/O/G…" />
+            </div>
+          </div>
+
+          <div class="table-nova-tablewrap" role="region" aria-label="N-Triples table" tabindex="0">
+            <table class="table-nova-table" id="TableNovaQuadTable">
+              <thead>
+                <tr>
+                  <th data-sort="s" scope="col">subject</th>
+                  <th data-sort="p" scope="col">predicate</th>
+                  <th data-sort="o" scope="col">object</th>
+                  <th data-sort="g" scope="col">graph</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="table-nova-tabpanel" data-panel="jsonld">
+          <div class="table-nova-output-actions">
+            <button id="TableNovaExportJsonLdTriplesBtn" class="table-nova-btn table-nova-btn--tertiary" type="button">Export JSON-LD triples</button>
+            <button id="TableNovaExportJsonLdGraphBtn" class="table-nova-btn table-nova-btn--tertiary" type="button">Export JSON-LD dataset</button>
+          </div>
+          <label class="table-nova-label" for="TableNovaJsonLdText">JSON-LD</label>
+          <textarea id="TableNovaJsonLdText" class="table-nova-textarea" spellcheck="false" readonly></textarea>
+        </section>
+
+        <section class="table-nova-tabpanel" data-panel="session">
+          <p class="table-nova-muted">Runs stored in IndexedDB (named graphs):</p>
+          <ul class="table-nova-runlist" id="TableNovaRunList" aria-label="Stored runs"></ul>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <aside id="toast-container" aria-live="polite" aria-relevant="additions"></aside>
+
+  <!-- CDN -->
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/xlsx.full.min.js"></script>
+
+  <script>
+    (function () {
+      const JS_SOURCES = [
+        /*"./app/site-header.js", /* local dev copy first */
+        "../app/site-header.js",
+        "../app/site-header.js",
+      ];
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.defer = true;
+
+          s.onload = () => resolve(src);
+          s.onerror = () => reject(new Error("JS failed: " + src));
+
+          document.head.appendChild(s);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        const div = document.createElement("div");
+        div.style.cssText =
+          "position:fixed;left:0;right:0;bottom:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-top:1px solid rgba(0,0,0,.2)";
+        div.textContent = msg;
+        document.body ? document.body.appendChild(div) : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(div));
+      }
+
+      (async () => {
+        for (const src of JS_SOURCES) {
+          try { await loadScript(src); return; } catch (_) {}
+        }
+        showFailure("Failed to load header JavaScript from all sources.");
+      })();
+    })();
+  </script>
+
+  <!-- Browser ESM imports via CDN -->
+  <link rel="modulepreload" href="../packages/format-registry/src/mime-registry.js" />
+  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/tabular-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+  <script type="module" src="./app/table-nova.js"></script>
+</body>
+</html>
+

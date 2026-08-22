@@ -1,0 +1,637 @@
+/* Table Nova (table-nova-*) – fully scoped styles */
+/* ==========================================
+   Table Nova (table-nova-*) – vars integrated
+   Assumes :root defines --ont-* once elsewhere
+   ========================================== */
+
+/* App container */
+.table-nova-main {
+  max-width: min(1600px, calc(100vw - 2rem));
+  margin: 0 auto;
+  padding: 1rem;
+  display: grid;
+  gap: var(--ont-gap, 1rem);
+  min-width: 0;
+
+  font-family: var(--ont-font-body, system-ui);
+  color: var(--ont-text, #111);
+}
+
+/* Cards */
+.table-nova-card {
+  border: 1px solid var(--ont-border, rgba(0,0,0,0.10));
+  border-radius: calc(var(--ont-radius, 6px) * 2.333); /* ~14px if radius=6px */
+  padding: 1rem;
+  background: var(--ont-panel-bg, #fff);
+  min-width: 0;
+}
+
+.table-nova-card__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: var(--ont-text, #111);
+}
+
+.table-nova-section-title {
+  margin: 0.75rem 0 0.5rem;
+  font-size: 1.12rem;
+  line-height: 1.25;
+  color: var(--ont-text, #111);
+}
+
+.table-nova-muted {
+  color: var(--ont-muted, rgba(0,0,0,0.65));
+}
+
+.table-nova-output-metaexport {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Dropzone */
+.table-nova-dropzone {
+  position: relative;
+  border: 2px dashed var(--ont-border, rgba(0,0,0,0.20));
+  border-radius: calc(var(--ont-radius, 6px) * 2.333);
+  padding: 1.1rem;
+  cursor: pointer;
+  outline: none;
+  background: var(--ont-panel-bg, #fff);
+}
+
+.table-nova-dropzone:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ont-focus, #2563eb) 25%, transparent);
+  border-color: color-mix(in srgb, var(--ont-focus, #2563eb) 55%, var(--ont-border, #d0d7de));
+}
+
+.table-nova-dropzone--dragover {
+  border-color: color-mix(in srgb, var(--ont-accent, #2563eb) 70%, var(--ont-border, #d0d7de));
+  background: color-mix(in srgb, var(--ont-accent, #2563eb) 6%, var(--ont-panel-bg, #fff));
+}
+
+.table-nova-dropzone__headline {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ont-text, #111);
+}
+
+.table-nova-dropzone__hint {
+  margin: 0.35rem 0 0;
+  color: var(--ont-muted, rgba(0,0,0,0.65));
+}
+
+.table-nova-dropzone__input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* File / run lists */
+.table-nova-filelist,
+.table-nova-runlist {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.table-nova-fileitem,
+.table-nova-runitem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  border: 1px solid var(--ont-border, rgba(0,0,0,0.10));
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem;
+
+  background: var(--ont-panel-bg, #fff);
+}
+
+.table-nova-fileitem__meta {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.table-nova-fileitem__name {
+  font-weight: 600;
+  color: var(--ont-text, #111);
+}
+
+.table-nova-fileitem__sub {
+  color: var(--ont-muted, rgba(0,0,0,0.65));
+  font-size: 1.2rem;
+}
+
+.table-nova-fileitem__warning {
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.table-nova-fileitem__warning--warn {
+  color: color-mix(in srgb, #c77700 75%, var(--ont-text, #111));
+}
+
+.table-nova-fileitem__warning--danger {
+  color: color-mix(in srgb, #bf2f2f 78%, var(--ont-text, #111));
+  font-weight: 600;
+}
+
+.table-nova-fileitem--warn {
+  border-color: color-mix(in srgb, #e8a200 55%, var(--ont-border, #d0d7de));
+  background: color-mix(in srgb, #e8a200 9%, var(--ont-panel-bg, #fff));
+}
+
+.table-nova-fileitem--danger {
+  border-color: color-mix(in srgb, #d94b4b 62%, var(--ont-border, #d0d7de));
+  background: color-mix(in srgb, #d94b4b 12%, var(--ont-panel-bg, #fff));
+}
+
+/* Actions */
+.table-nova-actions,
+.table-nova-output-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.table-nova-btn {
+  border: 1px solid color-mix(in srgb, var(--ont-border, #d0d7de) 70%, #000 10%);
+  border-radius: 12px;
+  padding: 0.55rem 0.85rem;
+
+  background: var(--ont-panel-bg, #fff);
+  color: var(--ont-text, #111);
+
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.table-nova-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--ont-accent, #2563eb) 35%, var(--ont-border, #d0d7de));
+}
+
+.table-nova-btn:focus-visible {
+  outline: 2px solid var(--ont-focus, #2563eb);
+  outline-offset: 2px;
+}
+
+.table-nova-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Primary button: use accent */
+.table-nova-btn--primary {
+  border-color: color-mix(in srgb, var(--ont-accent, #2563eb) 35%, var(--ont-border, #d0d7de));
+  background: color-mix(in srgb, var(--ont-accent, #2563eb) 12%, var(--ont-panel-bg, #fff));
+  color: color-mix(in srgb, var(--ont-text, #111) 85%, #000);
+}
+
+.table-nova-btn--primary:not(:disabled) {
+  background: var(--ont-accent, #2563eb);
+  border-color: var(--ont-accent, #2563eb);
+  color: #fff;
+}
+
+.table-nova-btn--secondary {
+  background: color-mix(in srgb, var(--ont-text, #111) 4%, var(--ont-panel-bg, #fff));
+}
+
+.table-nova-btn--tertiary {
+  background: color-mix(in srgb, var(--ont-text, #111) 2%, var(--ont-panel-bg, #fff));
+}
+
+.table-nova-btn--icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+}
+
+/* Options + fields */
+.table-nova-options {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.table-nova-field {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 520px;
+}
+
+.table-nova-label {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--ont-text, #111);
+}
+
+.table-nova-input,
+.table-nova-select {
+  border: 1px solid color-mix(in srgb, var(--ont-border, #d0d7de) 85%, #000 8%);
+  border-radius: 12px;
+  padding: 0.55rem 0.65rem;
+
+  background: var(--ont-panel-bg, #fff);
+  color: var(--ont-text, #111);
+
+  font-family: inherit;
+}
+
+.table-nova-input:focus-visible,
+.table-nova-select:focus-visible {
+  outline: 2px solid var(--ont-focus, #2563eb);
+  outline-offset: 2px;
+}
+
+.table-nova-checkboxrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.table-nova-input--rownum {
+  width: 5rem;
+  padding-right: 0.4rem;
+}
+
+/* Preview */
+.table-nova-preview {
+  border: 1px solid var(--ont-border, rgba(0,0,0,0.10));
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: var(--ont-panel-bg, #fff);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.table-nova-preview__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.table-nova-preview__title {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.25;
+  color: var(--ont-text, #111);
+}
+
+.table-nova-preview__body {
+  margin-top: 0.75rem;
+  overflow: visible;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Table */
+.table-nova-tablewrap {
+  border: 1px solid var(--ont-border, rgba(0,0,0,0.10));
+  border-radius: 12px;
+  overflow: auto;
+  max-height: 420px;
+  background: var(--ont-panel-bg, #fff);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.table-nova-tablewrap + .table-nova-tablewrap {
+  margin-top: 0.75rem;
+}
+
+.table-nova-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  color: var(--ont-text, #111);
+}
+
+.table-nova-table th,
+.table-nova-table td {
+  padding: 0.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ont-border, #d0d7de) 70%, transparent);
+  vertical-align: top;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.table-nova-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--ont-panel-bg, #fff);
+  cursor: pointer;
+}
+
+.table-nova-table .table-nova-input,
+.table-nova-table .table-nova-select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.table-nova-table--preview-schema {
+  width: max-content;
+  min-width: 100%;
+  table-layout: fixed;
+}
+
+.table-nova-tablewrap--preview-schema {
+  inline-size: 100%;
+}
+
+.table-nova-table--preview-schema th:first-child {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.table-nova-table--preview-schema .table-nova-schema-row--first th,
+.table-nova-table--preview-schema .table-nova-schema-row--first td {
+  border-top: 2px solid var(--ont-border, rgba(0,0,0,0.12));
+}
+
+/* Textarea */
+.table-nova-textarea {
+  width: 100%;
+  min-height: 280px;
+
+  border: 1px solid color-mix(in srgb, var(--ont-border, #d0d7de) 75%, transparent);
+  border-radius: 12px;
+
+  padding: 0.75rem;
+
+  font-family: var(--ont-font-mono, ui-monospace);
+  font-size: 0.92rem;
+
+  background: color-mix(in srgb, var(--ont-text, #111) 2%, var(--ont-panel-bg, #fff));
+  color: var(--ont-text, #111);
+}
+
+.table-nova-textarea:focus-visible {
+  outline: 2px solid var(--ont-focus, #2563eb);
+  outline-offset: 2px;
+}
+
+/* Tabs */
+.table-nova-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+  align-items: center;
+}
+
+.table-nova-tab {
+  border: 1px solid color-mix(in srgb, var(--ont-border, #d0d7de) 70%, #000 10%);
+  background: color-mix(in srgb, var(--ont-text, #111) 2%, var(--ont-panel-bg, #fff));
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  font-weight: 700;
+
+  color: var(--ont-text, #111);
+}
+
+.table-nova-tab:hover {
+  border-color: color-mix(in srgb, var(--ont-accent, #2563eb) 35%, var(--ont-border, #d0d7de));
+}
+
+.table-nova-tab:focus-visible {
+  outline: 2px solid var(--ont-focus, #2563eb);
+  outline-offset: 2px;
+}
+
+.table-nova-tab--active {
+  background: var(--ont-accent-soft, #e0e7ff);
+  border-color: color-mix(in srgb, var(--ont-accent, #2563eb) 35%, var(--ont-border, #d0d7de));
+}
+
+.table-nova-tab--session {
+  margin-left: auto;
+}
+
+.table-nova-output-scope {
+  border: 0;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.table-nova-output-scope legend {
+  margin-right: 0.25rem;
+  padding: 0;
+}
+
+.table-nova-radiochip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--ont-border, #d0d7de) 70%, #000 10%);
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  color: var(--ont-text, #111);
+  background: color-mix(in srgb, var(--ont-text, #111) 2%, var(--ont-panel-bg, #fff));
+  font-weight: 700;
+}
+
+.table-nova-radiochip:has(input:checked) {
+  background: var(--ont-accent-soft, #e0e7ff);
+  border-color: color-mix(in srgb, var(--ont-accent, #2563eb) 35%, var(--ont-border, #d0d7de));
+}
+
+.table-nova-tabpanel {
+  display: none;
+}
+
+.table-nova-tabpanel--active {
+  display: block;
+}
+
+/* ------------------------------------------------------------------ */
+/* Table Nova + Skeleton compatibility layer (place LAST in your CSS)  */
+/* ------------------------------------------------------------------ */
+
+:where(.table-nova-main) {
+  font-size: 16px;          /* bump base size inside the app */
+  line-height: 1.45;
+  color: var(--ont-text, rgba(0, 0, 0, 0.92));
+}
+
+/* Header typography: Skeleton can make this feel small */
+.table-nova-header__title {
+  font-size: 3.5rem;
+  line-height: 1.15;
+}
+
+.table-nova-header__subtitle {
+  font-size: 1.5rem;
+  line-height: 1.35;
+}
+
+/* Card titles / section labels: keep readable */
+.table-nova-card__title {
+  font-size: 2.5rem;
+  line-height: 1.2;
+}
+
+.table-nova-section-title {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+/* Skeleton’s button styling (height/line-height/uppercase/letter-spacing)
+   is the main cause of vertical “off” alignment. Force consistent metrics. */
+.table-nova-main .table-nova-btn,
+.table-nova-main button.table-nova-btn,
+.table-nova-main a.table-nova-btn {
+  font-family: inherit;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  height: auto;                /* override Skeleton’s fixed height */
+  text-transform: none;        /* override Skeleton’s uppercase */
+  letter-spacing: normal;      /* override Skeleton’s letter spacing */
+  display: inline-flex;        /* fixes baseline alignment */
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  min-height: 2.5rem;          /* consistent height across buttons */
+  padding: 0.6rem 0.9rem;      /* slightly more comfortable */
+}
+
+/* Icon button alignment */
+.table-nova-main .table-nova-btn--icon {
+  min-height: 2.25rem;
+  min-width: 2.25rem;
+  padding: 0;
+  line-height: 1;
+}
+
+/* If you have any “plain” buttons inside the app that *don’t* have
+   .table-nova-btn (e.g., Refresh Preview), bring them into line. */
+.table-nova-main button:not(.table-nova-btn),
+.table-nova-main .button:not(.table-nova-btn) {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.1;
+  height: auto;
+  text-transform: none;
+  letter-spacing: normal;
+  border-radius: 12px;
+}
+
+/* Inputs/selects can also inherit Skeleton’s smaller font sizing */
+.table-nova-main .table-nova-input,
+.table-nova-main .table-nova-select,
+.table-nova-main .table-nova-textarea {
+  font-family: inherit;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+/* Make “sub” text less tiny under the new baseline */
+.table-nova-fileitem__sub {
+  font-size: 0.95rem;
+}
+
+/* Table readability */
+.table-nova-table {
+  font-size: 1.25rem;
+}
+
+.table-nova-table th {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* Dropdowns in the preview table: keep them readable */
+.table-nova-table select,
+.table-nova-preview select {
+  font-size: 1rem;
+  line-height: 1.2;
+  height: auto;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Checkbox sizing can feel small with Skeleton */
+.table-nova-checkboxrow input[type="checkbox"] {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* Output controls use px so Skeleton's 10px root rem scale cannot skew them. */
+.table-nova-main .table-nova-tabs .table-nova-tab {
+  box-sizing: border-box;
+  font-size: 13px;
+  line-height: 1.2;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.table-nova-main .table-nova-output-metaexport .table-nova-btn {
+  box-sizing: border-box;
+  font-size: 13px;
+  line-height: 1.2;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.table-nova-main .table-nova-output-scope {
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.table-nova-main .table-nova-output-scope .table-nova-label {
+  flex-basis: 100%;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.table-nova-main .table-nova-radiochip {
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 1.2;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.table-nova-main .table-nova-radiochip input {
+  width: 13px;
+  height: 13px;
+  margin: 0;
+}
+
+.table-nova-main .table-nova-output-actions {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.table-nova-main .table-nova-output-actions .table-nova-btn {
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 1.2;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+}
