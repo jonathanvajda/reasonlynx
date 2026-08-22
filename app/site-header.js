@@ -28,8 +28,8 @@ import {
         "tom": { src: "../images/tom.svg", alt: "Tabular Ontology Maker" },
         "table-nova": { src: "../images/table-nova-logo.svg", alt: "Table Nova" },
         "axiolotl": { src: "../images/axiolotl.svg", alt: "Axiolotl SPARQL & Inference" },
-        "myna-iri-swapper": { src: "../images/myna-iri-swapper.png", alt: "Myna RDF IRI Swapper" },
-        "myna-sparql-iri-swapper": { src: "../images/myna-iri-swapper.png", alt: "Myna SPARQL IRI Swapper" },
+        "myna-iri-swapper": { src: "../images/myna-iri-swapper.svg", alt: "Myna RDF IRI Swapper" },
+        "myna-sparql-iri-swapper": { src: "../images/myna-iri-swapper.svg", alt: "Myna SPARQL IRI Swapper" },
         "visual-lynx": { src: "../images/visual-lynx.svg", alt: "Visual Lynx" },
       },
       defaultToolLogo: { src: "../images/default-logo.png", alt: "Semantic Tools" },
@@ -59,8 +59,8 @@ import {
         items: [
           { label: "OntoEagle Semantic Lookup", href: "../onto-eagle/", pageId: "ontoeagle" },
         //  { label: "IRI Registry", href: "/iri-registry.html", pageId: "iri-registry" },
-          { label: "Ontology Tabulator", href: "https://jonathanvajda.github.io/ontology-tabulator/", pageId: "ontology-tabulator" },
-          { label: "Visual Lynx", href: "https://jonathanvajda.github.io/visual-lynx/", pageId: "visual-lynx" },
+          { label: "Ontology Tabulator", href: "../ontology-tabulator/", pageId: "ontology-tabulator" },
+          { label: "Visual Lynx", href: "../visual-lynx/", pageId: "visual-lynx" },
         ],
       },
       {
@@ -76,7 +76,7 @@ import {
         items: [
         //  { label: "Controlled Vocabulary", href: "/controlled-vocabulary-registry.html", pageId: "controlled-vocabulary-registry" },
           { label: "Tabular Ontology Maker (TOM)", href: "../tabular-ontology-maker/", pageId: "tom" },
-          { label: "Table Nova", href: "https://jonathanvajda.github.io/table-nova/", pageId: "table-nova" },
+          { label: "Table Nova", href: "../table-nova/", pageId: "table-nova" },
           { label: "Knowledge Graph Modeler 🔗", href: "https://skreen5hot.github.io/kgModeler/", pageId: "kg-modeler" },
         //  { label: "SHACL Generator", href: "/shacl-generator.html", pageId: "shacl-generator" },
         ],
@@ -84,17 +84,17 @@ import {
       {
       title: "Data Manipulation",
         items: [
-          { label: "Axiolotl SPARQL & Inference", href: "https://jonathanvajda.github.io/axiolotl/", pageId: "axiolotl" },
-          { label: "SPARQL Pattern Visualizer", href: "https://jonathanvajda.github.io/sparql-pattern-visualizer/", pageId: "sparql-pattern-visualizer" },
-          { label: "Linked-Data Transformer", href: "https://jonathanvajda.github.io/visual-lynx/linked-data-transformer.html", pageId: "linked-data-transformer" },
+          { label: "Axiolotl SPARQL & Inference", href: "../axiolotl/", pageId: "axiolotl" },
+          { label: "SPARQL Pattern Visualizer", href: "../sparql-pattern-visualizer/", pageId: "sparql-pattern-visualizer" },
+          { label: "Linked-Data Transformer", href: "../visual-lynx/linked-data-transformer.html", pageId: "linked-data-transformer" },
         ],
       },
       {
         title: "Maintenance",
             items: [
-            { label: "Ontology Compliance Diagnostic", href: "https://jonathanvajda.github.io/ontology-compliance-diagnostic/", pageId: "ontology-compliance-diagnostic" },
-            { label: "Myna RDF IRI Swapper", href: "https://jonathanvajda.github.io/iri-swapper/", pageId: "myna-iri-swapper" },
-            { label: "Myna SPARQL IRI Swapper", href: "https://jonathanvajda.github.io/iri-swapper/sparql-iri-swapper.html", pageId: "myna-sparql-iri-swapper" }, 
+            { label: "Ontology Compliance Diagnostic", href: "../ontology-compliance-diagnostic/", pageId: "ontology-compliance-diagnostic" },
+            { label: "Myna RDF IRI Swapper", href: "../iri-swapper/", pageId: "myna-iri-swapper" },
+            { label: "Myna SPARQL IRI Swapper", href: "../iri-swapper/sparql-iri-swapper.html", pageId: "myna-sparql-iri-swapper" },
             ],
         },
         ],
