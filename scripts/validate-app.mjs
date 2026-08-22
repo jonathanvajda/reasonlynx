@@ -9,6 +9,8 @@ const APP_ROUTES = {
   bundler: 'bundler/index.html',
   'tabular-ontology-maker': 'tabular-ontology-maker/index.html',
   axiolotl: 'axiolotl/index.html',
+  'graph-analyst-playbook': 'graph-analyst-playbook/index.html',
+  'graph-analytics': 'graph-analytics/index.html',
   'visual-lynx': 'visual-lynx/index.html',
   'ontology-compliance-diagnostic': 'ontology-compliance-diagnostic/index.html',
   'iri-swapper': 'iri-swapper/index.html',
