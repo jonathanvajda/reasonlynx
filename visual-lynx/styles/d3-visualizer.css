@@ -1,0 +1,252 @@
+/** d3-visualizer ./docs/styles/d3-visualizer.css */
+/**
+Branding
+  Light #9FCE80
+  Accent #649A88
+  Dark #00583B
+*/
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+
+.viz-panel {
+  padding: 1rem 1.5rem 0.75rem;
+}
+
+.viz-toolbar {
+  display: grid;
+  grid-template-columns: minmax(24rem, 2.2fr) minmax(18rem, 1.4fr) minmax(11rem, 0.8fr) auto;
+  gap: 0.9rem 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.viz-field {
+  min-width: 0;
+}
+
+.viz-field label,
+.viz-textarea-wrap label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.viz-field input,
+.viz-field select,
+.viz-textarea-wrap textarea {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.viz-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.viz-actions .button,
+.viz-actions button,
+.viz-actions .d3_button {
+  margin-bottom: 0;
+}
+
+.viz-textarea-wrap {
+  width: 100%;
+}
+
+#jsonInput {
+  width: 100%;
+  min-height: 20em;
+  resize: vertical;
+  font-family: var(--ont-font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+  white-space: pre;
+}
+
+@media (max-width: 1100px) {
+  .viz-toolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .viz-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .viz-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .viz-actions {
+    grid-column: auto;
+  }
+}
+
+#graph-container {
+  padding-left: 1rem;
+  position: relative;
+  color: #1f2937;
+  width: 98%;
+  height: 66vh;
+  background: #f0f0f0;
+}
+
+textarea {
+  width: 98%;
+  height: 100px;
+  font-family: monospace;
+  margin-bottom: 1rem;
+}
+
+#graph {
+  height: 100%;
+  /* Set the height of the SVG to 100% of the container */
+  width: 100%;
+  /* Optional: Set the width of the SVG to 100% of the container */
+}
+
+svg {
+  border: 1px solid #ccc;
+  width: 100%;
+  height: 600px;
+  background: #f9f9f9;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: 0.6;
+  stroke-width: 1.5px;
+}
+
+text.label {
+  font-size: 10px;
+  font-weight: bold;
+  fill: gray;
+}
+
+.d3_button {
+  padding: 0rem .75rem 0rem .75rem ;
+  margin: 0.75rem;
+}
+
+#propertyBox {
+  border-radius: 5px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 250px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+#propertyBox h3 {
+  margin-top: 0;
+  font-size: 1.1em;
+}
+
+#propertyBox p {
+  margin: 5px 0;
+  overflow-wrap: break-word;
+}
+
+#filterBox {
+  border-radius: 5px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 250px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  height: 80%;
+}
+
+/* Styling the label for better readability and spacing */
+label[for="predicateFilter"],
+label[for="typeFilter"] {
+  display: block;
+  /* Makes the label appear on its own line */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Modern, readable font */
+  /* Slightly larger font size for better visibility */
+  margin: 0.5rem;
+  /* Adds space between the label and the select box */
+  color: #333;
+  /* Darker text for good contrast */
+}
+
+/* Styling the multi-select box */
+#predicateFilter,
+#typeFilter {
+  /* Existing styles from previous modernization */
+  width: 100%;
+  height: 25%;
+  padding: 0;
+  border: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #555;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  /* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+  scrollbar-width: thin;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer and Edge */
+}
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+#predicateFilter::-webkit-scrollbar,
+#typeFilter::-webkit-scrollbar {
+  display: none;
+  /* Refine dev, W3Schools, CoreUI */
+}
+
+
+/* Styling the multi-select box on hover and focus */
+#predicateFilter:hover,
+#typeFilter:hover {
+  border-color: #888;
+  /* Darker border on hover */
+}
+
+#prdicateFilter:focus,
+#typeFilter:focus {
+  outline: none;
+  /* Removes the default outline */
+  border-color: #007bff;
+  /* Blue border on focus for better accessibility */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  /* Subtle blue shadow on focus */
+}
+
+/* Styling the options within the multi-select box (limited styling options) */
+#predicateFilter option,
+#typeFilter option {
+  background-color: #fff;
+  /* White background for options */
+  color: #333;
+  /* Dark text color for options */
+  padding: 0.25rem 0.5rem;
+  /* Padding for individual options */
+}
+
+/* Style for the selected option when the select element is not in focus */
+select.not-focused option:checked {
+  background-color: #b3d4fc;
+  /* Highlight color */
+  color: #000;
+  /* Text color */
+}

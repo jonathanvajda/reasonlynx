@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linked Data Transformer</title>
+
+    <!-- Public CSS -->
+    <link rel="stylesheet" href="../styles/skeleton.css" />
+
+    <!-- App Global CSS -->
+    <script>
+      (function () {
+        const APPBASE_CSS_SOURCES = [
+          "../styles/app-base.css",
+        ];
+
+        function loadCss(href) {
+          return new Promise((resolve, reject) => {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = href;
+
+            link.onload = () => resolve(href);
+            link.onerror = () => reject(new Error("CSS failed: " + href));
+
+            document.head.appendChild(link);
+          });
+        }
+
+        function showFailure(msg) {
+          console.error(msg);
+          // Optional user-visible banner
+          const style = document.createElement("style");
+          style.textContent =
+            ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+            "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+            "border-bottom:1px solid rgba(0,0,0,.2)}";
+          document.head.appendChild(style);
+
+          const div = document.createElement("div");
+          div.className = "asset-fail-banner";
+          div.textContent = msg;
+          document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+        }
+
+        (async () => {
+          for (const href of APPBASE_CSS_SOURCES) {
+            try { await loadCss(href); return; } catch (_) {}
+          }
+          showFailure("Failed to load app base CSS from all sources.");
+        })();
+      })();
+    </script>
+    <script>
+      (function () {
+        const HEADER_CSS_SOURCES = [
+          "../styles/site-header.css",
+        ];
+
+        function loadCss(href) {
+          return new Promise((resolve, reject) => {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = href;
+
+            link.onload = () => resolve(href);
+            link.onerror = () => reject(new Error("CSS failed: " + href));
+
+            document.head.appendChild(link);
+          });
+        }
+
+        function showFailure(msg) {
+          console.error(msg);
+          // Optional user-visible banner
+          const style = document.createElement("style");
+          style.textContent =
+            ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+            "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+            "border-bottom:1px solid rgba(0,0,0,.2)}";
+          document.head.appendChild(style);
+
+          const div = document.createElement("div");
+          div.className = "asset-fail-banner";
+          div.textContent = msg;
+          document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+        }
+
+        (async () => {
+          for (const href of HEADER_CSS_SOURCES) {
+            try { await loadCss(href); return; } catch (_) {}
+          }
+          showFailure("Failed to load header CSS from all sources.");
+        })();
+      })();
+    </script>
+
+    <!-- App Local CSS -->
+    <link rel="stylesheet" href="./styles/linked-data-transformer.css" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/namespace-registry.js" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/prefix-map.js" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/curie.js" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/rdf-prefixes.js" />
+    <link rel="modulepreload" href="../packages/namespace-registry/src/rdf-serialization-prefixes.js" />
+    <link rel="modulepreload" href="../packages/format-registry/src/mime-registry.js" />
+    <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+</head>
+
+<body data-page-id="linked-data-transformer" >
+  <header id="siteHeader" class="sitehdr-root" role="banner" aria-label="Site header"></header>
+ <div id="sitehdr-root" class="sitehdr-root"></div>
+  <div class="container ldt-wrap">
+    <div class="ldt-card">
+      <p class="ldt-subtitle">Client-side RDF transform (N3.js + jsonld.js + rdflib.js for RDF/XML only).</p>
+
+      <div class="row">
+        <div class="twelve columns">
+          <label for="fileInput"><strong>Input file</strong></label>
+          <input class="u-full-width" type="file" id="fileInput" accept=".ttl,.turtle,.n3,.nt,.ntriples,.nq,.nquads,.trig,.jsonld,.json-ld,.json,.rdf,.owl,.xml" />
+        </div>
+      </div>
+
+      <div class="ldt-grid" style="margin-top: 1rem;">
+        <fieldset class="ldt-fieldset">
+          <legend>Input format</legend>
+          <label class="ldt-radio"><input type="radio" name="input" value="application/n-triples" /> N-Triples (.nt)</label>
+          <label class="ldt-radio"><input type="radio" name="input" value="text/turtle" checked /> Turtle (.ttl)</label>
+          <label class="ldt-radio"><input type="radio" name="input" value="application/trig" /> TriG (.trig)</label>
+          <label class="ldt-radio"><input type="radio" name="input" value="application/ld+json" /> JSON-LD (.jsonld)</label>
+          <label class="ldt-radio"><input type="radio" name="input" value="application/rdf+xml" /> RDF/XML (.rdf/.xml/.owl) <span style="opacity:.7">(OWL parsed as RDF/XML)</span></label>
+        </fieldset>
+
+        <fieldset class="ldt-fieldset">
+          <legend>Output format</legend>
+          <label class="ldt-radio"><input type="radio" name="output" value="application/n-triples" checked /> N-Triples (.nt)</label>
+          <label class="ldt-radio"><input type="radio" name="output" value="text/turtle" /> Turtle (.ttl)</label>
+          <label class="ldt-radio"><input type="radio" name="output" value="application/trig" /> TriG (.trig)</label>
+          <label class="ldt-radio"><input type="radio" name="output" value="application/ld+json" /> JSON-LD (.jsonld)</label>
+          <label class="ldt-radio"><input type="radio" name="output" value="application/rdf+xml" /> RDF/XML (.rdf)</label>
+          <label class="ldt-radio"><input type="radio" name="output" value="text/mermaid" /> Mermaid (flowchart)</label>
+          <label class="ldt-radio"><input type="radio" name="output" value="application/d3+json" /> D3 JSON</label>
+        </fieldset>
+      </div>
+
+      <div class="ldt-options">
+        <label class="ldt-checkbox" for="prettifyRdfOutput">
+          <input type="checkbox" id="prettifyRdfOutput" checked />
+          Make that a <span style="background: linear-gradient(to right, red, lime, blue);  -webkit-background-clip: text;  background-clip: text; color: transparent;  font-weight: bold; font-size: 1.7rem;">Sugar Serial™</span> <span style="font-weight: 400; font-size: 1.2rem;">(make the RDF look good, please)</span>
+        </label>
+      </div>
+
+      <div class="ldt-actions" style="margin-top: 1rem;">
+        <button class="button button-primary" id="transformBtn" type="button">Transform</button>
+        <button class="button" id="downloadBtn" type="button">Download</button>
+      </div>
+
+      <div id="status" class="ldt-status" role="status" aria-live="polite"></div>
+
+      <label for="outputArea" style="margin-top: 1rem;"><strong>Output</strong></label>
+      <textarea id="outputArea" class="ldt-output u-full-width" placeholder="Transformed output will appear here..."></textarea>
+
+      <p class="ldt-note">
+        Notes:
+        <br />• RDF/XML + OWL/XML parsing/serialization uses <code>rdflib.js</code>.
+        <br />• Turtle / N-Triples / TriG parsing & writing uses <code>N3.js</code>.
+        <br />• JSON-LD parsing/writing uses <code>jsonld.js</code> (via N-Quads bridge).
+      </p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <script>
+    (function () {
+      const JS_SOURCES = [
+        /* "./app/site-header.js", local dev copy first */
+        "../app/site-header.js",
+        "../app/site-header.js",
+      ];
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.defer = true;
+
+          s.onload = () => resolve(src);
+          s.onerror = () => reject(new Error("JS failed: " + src));
+
+          document.head.appendChild(s);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        const div = document.createElement("div");
+        div.style.cssText =
+          "position:fixed;left:0;right:0;bottom:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-top:1px solid rgba(0,0,0,.2)";
+        div.textContent = msg;
+        document.body ? document.body.appendChild(div) : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(div));
+      }
+
+      (async () => {
+        for (const src of JS_SOURCES) {
+          try { await loadScript(src); return; } catch (_) {}
+        }
+        showFailure("Failed to load header JavaScript from all sources.");
+      })();
+    })();
+  </script>
+
+  <!-- JS libraries (recommended: vendor locally for stable GitHub Pages builds) -->
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/rdflib.min.js"></script>
+
+  <!-- App logic -->
+  <script type="module" src="./app/n3-sugar-serial.js"></script>
+  <script type="module" src="./app/rdflib-sugar-serial.js"></script>
+  <script type="module" src="./app/linked-data-transformer-main.js"></script>
+</body>
+</html>
+
