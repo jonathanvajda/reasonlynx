@@ -4,32 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Analytic Workflow Builder – Clean Layout</title>
-<style>
-:root {
-  --bg:#f5f7fa; --panel:#fff; --border:#d0d7e2; --text:#1f2937; --muted:#6b7280;
-  --accent:#3b5b86; --accent-soft:#eaf0f8; --radius:12px; --gap:14px;
-}
-body { margin:0; font-family:system-ui, sans-serif; background:var(--bg); color:var(--text);} 
-.page { max-width:1400px; margin:auto; padding:16px; }
-.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.tabs { display:flex; gap:8px; margin-bottom:12px; }
-.tab { padding:8px 12px; border:1px solid var(--border); border-radius:8px; cursor:pointer; background:var(--panel);} 
-.tab.active { background:var(--accent); color:#fff; }
-.layout { display:grid; grid-template-columns:240px 1fr 320px; gap:var(--gap); }
-.panel { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:12px; }
-.hidden { display:none; }
-.step { border:1px dashed var(--border); padding:10px; border-radius:8px; margin-bottom:10px; }
-.bottom-drawer { margin-top:12px; border:1px solid var(--border); border-radius:var(--radius); padding:12px; background:var(--panel);} 
-button { padding:6px 10px; border-radius:6px; border:1px solid var(--border); cursor:pointer; }
-.primary { background:var(--accent); color:white; border-color:var(--accent);} 
-</style>
+<link rel="stylesheet" href="./styles/analyst-workflow.css" />
 </head>
 <body>
 <div class="page">
 
 <div class="header">
   <div>
-    <h2 style="margin:0;">Analytic Workflow Builder</h2>
+    <h2 class="page-title">Analytic Workflow Builder</h2>
     <small class="muted">Build, manage, and run conditional query pipelines</small>
   </div>
   <div>
@@ -40,10 +22,10 @@ button { padding:6px 10px; border-radius:6px; border:1px solid var(--border); cu
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('pipelines')">Pipelines</div>
-  <div class="tab" onclick="showTab('data')">Data</div>
-  <div class="tab" onclick="showTab('queries')">Queries</div>
-  <div class="tab" onclick="showTab('run')">Run</div>
+  <div class="tab active" data-tab="pipelines">Pipelines</div>
+  <div class="tab" data-tab="data">Data</div>
+  <div class="tab" data-tab="queries">Queries</div>
+  <div class="tab" data-tab="run">Run</div>
 </div>
 
 <!-- PIPELINES -->
@@ -56,20 +38,20 @@ button { padding:6px 10px; border-radius:6px; border:1px solid var(--border); cu
       <div class="step">QA Review</div>
       <div class="step">Lead Expansion</div>
       <div class="step">Data Transformation</div>
-      <button style="margin-top:8px;">+ New</button>
+      <button class="top-offset">+ New</button>
     </div>
 
     <!-- CENTER: Steps -->
     <div class="panel">
-      <div style="display:flex; justify-content:space-between;">
+      <div class="panel-heading">
         <strong>Workflow Steps</strong>
-        <button onclick="addStep()">+ Add Step</button>
+        <button id="addStepBtn">+ Add Step</button>
       </div>
 
-      <div class="step" onclick="selectStep(this)">
+      <div class="step" data-select-step>
         step_1 · ASK → true/false
       </div>
-      <div class="step" onclick="selectStep(this)">
+      <div class="step" data-select-step>
         step_2 · SELECT → rows/no rows
       </div>
 
@@ -78,15 +60,15 @@ button { padding:6px 10px; border-radius:6px; border:1px solid var(--border); cu
     <!-- RIGHT: Inspector -->
     <div id="inspector" class="panel hidden">
       <strong>Step Inspector</strong>
-      <div style="margin-top:10px;">
+      <div class="field-block">
         <label>Step ID</label>
         <div class="panel">step_1</div>
       </div>
-      <div style="margin-top:10px;">
+      <div class="field-block">
         <label>Query</label>
         <div class="panel">qa_has_version_iri</div>
       </div>
-      <div style="margin-top:10px;">
+      <div class="field-block">
         <label>Branching</label>
         <div class="panel">true → step_2<br>false → step_3</div>
       </div>
@@ -131,23 +113,7 @@ button { padding:6px 10px; border-radius:6px; border:1px solid var(--border); cu
 
 </div>
 
-<script>
-function showTab(id) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-}
-
-function selectStep(el) {
-  document.getElementById('inspector').classList.remove('hidden');
-}
-
-function addStep() {
-  alert('Add step UI goes here');
-}
-</script>
+<script src="./app/analyst-workflow.js"></script>
 
 </body>
 </html>

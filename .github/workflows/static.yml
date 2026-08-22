@@ -38,13 +38,15 @@ jobs:
           - cq-ferret
           - bundler
           - tabular-ontology-maker
-          #- axiolotl
-          #- visual-lynx
-          #- ontology-compliance-diagnostic
-          #- iri-swapper
-          #- sparql-pattern-visualizer
-          #- ontology-tabulator
-          #- table-nova
+          - axiolotl
+          - graph-analyst-playbook
+          - graph-analytics
+          - visual-lynx
+          - ontology-compliance-diagnostic
+          - iri-swapper
+          - sparql-pattern-visualizer
+          - ontology-tabulator
+          - table-nova
           - about
     steps:
       - name: Checkout
