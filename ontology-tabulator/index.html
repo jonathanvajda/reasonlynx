@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Ontology Tabulator is a lightweight browser-based toolkit for displaying RDF data in a convenient table of common columns, with exporting and printing." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="dcterms.creator" content="Jonathan Vajda" />
+  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
+  <title>Ontology Tabulator - Ontology Viewer</title>
+
+  <!-- Public CSS -->
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+  <!-- App Global CSS -->
+  <script>
+    (function () {
+      const APPBASE_CSS_SOURCES = [
+        "../styles/app-base.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of APPBASE_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load app base CSS from all sources.");
+      })();
+    })();
+  </script>
+  <script>
+    (function () {
+      const HEADER_CSS_SOURCES = [
+        "../styles/site-header.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of HEADER_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load header CSS from all sources.");
+      })();
+    })();
+  </script>
+
+  <!-- App Local CSS -->
+  <link rel="stylesheet" href="./styles/ontology-tabulator.css" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/namespace-registry.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/curie.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/prefix-map.js" />
+  <link rel="modulepreload" href="../packages/format-registry/src/mime-registry.js" />
+  <link rel="modulepreload" href="../packages/format-registry/src/rdf-parser-formats.js" />
+  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+</head>
+<body data-page-id="ontology-tabulator" class="ontology-tabulator-root ontology-tabulator-theme-light">
+
+  <header id="siteHeader" class="sitehdr-root table-nova-header" role="banner" aria-label="Site header"></header>
+
+  <div class="ontology-tabulator-header-actions">
+      <label class="ontology-tabulator-file-label">
+        <span>Drop or select ontology files</span>
+        <input
+          id="ontologyFileInput"
+          class="ontology-tabulator-file-input"
+          type="file"
+          multiple
+          accept=".ttl,.turtle,.n3,.nt,.ntriples,.nq,.nquads,.trig,.json,.jsonld,.json-ld,.rdf,.xml,.owl"
+        />
+      </label>
+    </div>
+
+  <main class="ontology-tabulator-main">
+    <section class="ontology-tabulator-filelist-section">
+      <h2 class="ontology-tabulator-section-title">Processed Ontologies</h2>
+      <ul id="ontologyFileList" class="ontology-tabulator-filelist"></ul>
+    </section>
+
+    <section id="ontologyCardsContainer" class="ontology-tabulator-cards-section">
+      <!-- Ontology cards go here -->
+    </section>
+
+    <section id="ontologyTablesContainer" class="ontology-tabulator-tables-section">
+      <!-- Ontology data tables go here -->
+    </section>
+  </main>
+
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="ontology-tabulator-loading-overlay ontology-tabulator-loading-hidden">
+    <div class="ontology-tabulator-loading-spinner"></div>
+  </div>
+
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/rdflib.min.js"></script>
+  <script>
+    (function () {
+      const JS_SOURCES = [
+        /*"./app/site-header.js", local dev copy first */
+        "../app/site-header.js",
+        "../app/site-header.js",
+      ];
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.defer = true;
+
+          s.onload = () => resolve(src);
+          s.onerror = () => reject(new Error("JS failed: " + src));
+
+          document.head.appendChild(s);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        const div = document.createElement("div");
+        div.style.cssText =
+          "position:fixed;left:0;right:0;bottom:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-top:1px solid rgba(0,0,0,.2)";
+        div.textContent = msg;
+        document.body ? document.body.appendChild(div) : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(div));
+      }
+
+      (async () => {
+        for (const src of JS_SOURCES) {
+          try { await loadScript(src); return; } catch (_) {}
+        }
+        showFailure("Failed to load header JavaScript from all sources.");
+      })();
+    })();
+  </script>
+
+  <link rel="modulepreload" href="../packages/tabular-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+  <script type="module" src="./app/main.js"></script>
+</body>
+</html>
+

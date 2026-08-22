@@ -8,6 +8,13 @@ const APP_ROUTES = {
   'cq-ferret': 'cq-ferret/index.html',
   bundler: 'bundler/index.html',
   'tabular-ontology-maker': 'tabular-ontology-maker/index.html',
+  axiolotl: 'axiolotl/index.html',
+  'visual-lynx': 'visual-lynx/index.html',
+  'ontology-compliance-diagnostic': 'ontology-compliance-diagnostic/index.html',
+  'iri-swapper': 'iri-swapper/index.html',
+  'sparql-pattern-visualizer': 'sparql-pattern-visualizer/index.html',
+  'ontology-tabulator': 'ontology-tabulator/index.html',
+  'table-nova': 'table-nova/index.html',
   about: 'about/index.html'
 };
 
