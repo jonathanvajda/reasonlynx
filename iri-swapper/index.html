@@ -1,0 +1,313 @@
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Myna IRI Swapper is a lightweight browser-based toolkit for swapping out IRIs according to a mapping file, with user-friendly features." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="dcterms.creator" content="Jonathan Vajda" />
+  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
+  <title>Myna IRI Mapper</title>
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+
+  <!-- Tabulator (sortable/filterable table) -->
+  <link rel="stylesheet" href="../styles/tabulator.min.css" />
+
+  <!-- App Global CSS -->
+  <script>
+    (function () {
+      const APPBASE_CSS_SOURCES = [
+        "../styles/app-base.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of APPBASE_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load app base CSS from all sources.");
+      })();
+    })();
+  </script>
+  <script>
+    (function () {
+      const HEADER_CSS_SOURCES = [
+        "../styles/site-header.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of HEADER_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load header CSS from all sources.");
+      })();
+    })();
+  </script>
+  
+  <!-- App Local CSS -->
+  <link rel="stylesheet" href="./styles/iri-swapper.css" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/prefix-map.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/rdf-prefixes.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/rdf-serialization-prefixes.js" />
+</head>
+
+<body data-page-id="myna-iri-swapper">
+  <header id="siteHeader" class="sitehdr-root" role="banner" aria-label="Site header"></header>
+
+  <div id="mb-app" class="mb-app">
+    <section class="mb-grid">
+      <div class="mb-card">
+        <h2 class="mb-h2">1) Load ontology</h2 class="mb-h2">
+        <p class="mb-muted">
+          Supports TTL, N-Triples, JSON-LD, RDF/XML (most “.owl” files are RDF/XML).
+        </p>
+
+        <div class="mb-row">
+          <div class="mb-dropzone" id="ontologyDrop">
+            <div class="mb-dropTitle">Drop ontology here</div>
+            <div class="mb-dropHint">…or choose a file</div>
+            <input id="ontologyFile" type="file" accept=".ttl,.turtle,.n3,.nt,.ntriples,.nq,.nquads,.trig,.rdf,.owl,.xml,.jsonld,.json-ld,.json" />
+          </div>
+
+          <div class="mb-panel">
+            <label class="mb-label" for="baseIri">Base IRI (used for RDF/XML parsing if needed)</label>
+            <input id="baseIri" class="mb-input" type="text" value="urn:myna:base:" />
+
+            <label class="mb-check">
+              <input id="useNativePrefixes" type="checkbox" checked />
+              Use ontology’s native prefixes in output (default on)
+            </label>
+
+            <div class="mb-mini">
+              <div><strong>Detected format:</strong> <span id="ontologyFormat">—</span></div>
+              <div><strong>Run ID:</strong> <span id="ontologyRunId">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <details class="mb-details">
+          <summary>Prefixes (JSON)</summary>
+          <pre id="prefixJson" class="mb-pre">{}</pre>
+        </details>
+
+        <div class="mb-actions">
+          <button id="loadOntologyBtn" class="mb-btn" type="button">Ingest ontology</button>
+        </div>
+      </div>
+
+      <div class="mb-card">
+        <h2 class="mb-h2">2) Load mapping file</h2 class="mb-h2">
+        <p class="mb-muted">CSV/TSV/XLS/XLSX with headers: <code>Old IRI</code>, <code>New IRI</code>. Extra columns ignored.</p>
+
+        <div class="mb-row">
+          <div class="mb-dropzone" id="mappingDrop">
+            <div class="mb-dropTitle">Drop mapping file here</div>
+            <div class="mb-dropHint">…or choose a file</div>
+            <input id="mappingFile" type="file" accept=".csv,.tsv,.xls,.xlsx" />
+          </div>
+
+          <div class="mb-panel">
+            <div class="mb-mini">
+              <div><strong>Mapping rows:</strong> <span id="mappingRows">0</span></div>
+              <div><strong>Unique “Old IRI”:</strong> <span id="mappingUniqueOld">0</span></div>
+              <div><strong>Duplicates (Old IRI):</strong> <span id="mappingDupOld">0</span></div>
+            </div>
+            <div class="mb-actions">
+              <button id="loadMappingBtn" class="mb-btn mb-btnSecondary" type="button">Ingest mapping</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-card mb-cardWide">
+        <h2 class="mb-h2">3) Preview staged changes</h2 class="mb-h2">
+
+        <div class="mb-kpis">
+          <div class="mb-kpi">
+            <div class="mb-kpiLabel">IRIs in ontology</div>
+            <div class="mb-kpiValue" id="kpiOntologyIris">0</div>
+          </div>
+          <div class="mb-kpi">
+            <div class="mb-kpiLabel">IRIs in mapping (unique old)</div>
+            <div class="mb-kpiValue" id="kpiMappingIris">0</div>
+          </div>
+          <div class="mb-kpi">
+            <div class="mb-kpiLabel">Changes proposed</div>
+            <div class="mb-kpiValue" id="kpiProposedChanges">0</div>
+          </div>
+          <div class="mb-kpi">
+            <div class="mb-kpiLabel">% resources changed</div>
+            <div class="mb-kpiValue" id="kpiPctChanged">0%</div>
+          </div>
+        </div>
+
+        <div class="mb-actions">
+          <button id="buildPreviewBtn" class="mb-btn" type="button">Build preview table</button>
+          <button id="applyMappingBtn" class="mb-btn mb-btnDanger" type="button">Apply mapping → create output run</button>
+        </div>
+
+        <div id="table" class="mb-table"></div>
+
+        <div class="mb-runbar">
+          <div class="mb-runbarLeft">
+            <label class="mb-label" for="runsSelect">Runs (IndexedDB)</label>
+            <select id="runsSelect" class="mb-select"></select>
+            <button id="loadRunBtn" class="mb-btn mb-btnSecondary" type="button">Load run</button>
+            <button id="deleteRunBtn" class="mb-btn mb-btnSecondary" type="button">Delete run</button>
+            <button id="clearRunsBtn" class="mb-btn mb-btnSecondary" type="button">Clear all</button>
+          </div>
+
+          <div class="mb-runbarRight">
+            <label class="mb-label" for="exportFormat">Export format</label>
+            <select id="exportFormat" class="mb-select">
+              <option value="text/turtle">Turtle (.ttl)</option>
+              <option value="application/n-triples">N-Triples (.nt)</option>
+              <option value="application/n-quads">N-Quads (.nquads)</option>
+              <option value="application/trig">TriG (.trig)</option>
+              <option value="application/rdf+xml">RDF/XML (.rdf)</option>
+              <option value="application/ld+json">JSON-LD (.jsonld)</option>
+            </select>
+            <button id="downloadBtn" class="mb-btn" type="button">Download output</button>
+          </div>
+        </div>
+
+        <details class="mb-details" open>
+          <summary>Output preview (Turtle)</summary>
+          <textarea id="outputPreview" class="mb-textarea" spellcheck="false"></textarea>
+        </details>
+
+        <div class="mb-status" id="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <footer class="mb-footer">
+      <div class="mb-muted">
+        Offline support uses a Service Worker. Works on <code>https://</code> or <code>http://localhost</code>.
+      </div>
+    </footer>
+  </div>
+
+  <!-- Vendor JS (saved locally for stable GitHub Pages builds) -->
+  <script src="../vendor/tabulator.min.js"></script>
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/xlsx.full.min.js"></script>
+  <script src="../vendor/rdflib.min.js"></script>
+
+  <!-- Header -->
+  <script>
+    (function () {
+      const JS_SOURCES = [
+        /* "./app/site-header.js", local dev copy first */
+        "../app/site-header.js",
+        "../app/site-header.js",
+      ];
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.defer = true;
+
+          s.onload = () => resolve(src);
+          s.onerror = () => reject(new Error("JS failed: " + src));
+
+          document.head.appendChild(s);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        const div = document.createElement("div");
+        div.style.cssText =
+          "position:fixed;left:0;right:0;bottom:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-top:1px solid rgba(0,0,0,.2)";
+        div.textContent = msg;
+        document.body ? document.body.appendChild(div) : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(div));
+      }
+
+      (async () => {
+        for (const src of JS_SOURCES) {
+          try { await loadScript(src); return; } catch (_) {}
+        }
+        showFailure("Failed to load header JavaScript from all sources.");
+      })();
+    })();
+  </script>
+
+  <!-- App JS -->
+  <link rel="modulepreload" href="../packages/format-registry/src/mime-registry.js" />
+  <link rel="modulepreload" href="../packages/format-registry/src/rdf-parser-formats.js" />
+  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/tabular-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+  <script type="module" src="./app/ont-iri-swapper.js"></script>
+
+</body>
+</html>
+

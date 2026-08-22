@@ -1,0 +1,830 @@
+/* ont-iri-swapper.js (ES module) - core logic stays out of the DOM; DOM only supplies options/events */
+import { COMMON_NAMESPACE_IRIS } from '../../packages/namespace-registry/src/namespace-registry.js';
+import { normalizePrefixMap } from '../../packages/namespace-registry/src/prefix-map.js';
+import {
+  extractTurtlePrefixDeclarations,
+  extractXmlNamespacePrefixes,
+  extractJsonLdContextPrefixes
+} from '../../packages/namespace-registry/src/rdf-prefixes.js';
+import {
+  getFilenameExtension,
+  getSupportedMimeTypeForFilename
+} from '../../packages/format-registry/src/mime-registry.js';
+import { downloadTextFile } from '../../packages/browser-file-io/src/index.js';
+import {
+  createIriMappingFromRows,
+  parseDelimitedText
+} from '../../packages/tabular-io/src/index.js';
+import {
+  parseRdfTextWithAdapters,
+  serializeRdfDatasetWithAdapters
+} from '../../packages/rdf-io/src/index.js';
+import { classifyOntologyInput } from '../../packages/ontology-utils/src/index.js';
+import {
+  downloadRunOutputForExport,
+  resolveOutputRunForExport,
+  serializeRunOutputForExport
+} from '../../packages/indexeddb-data-management/src/index.js';
+import {
+  clearIriSwapperRuns,
+  createIriSwapperRunId,
+  deleteIriSwapperRun,
+  listIriSwapperRuns,
+  readIriSwapperRun,
+  storeIriSwapperRun
+} from './iri-swapper-run-store.js';
+import {
+  createScopedConsoleLogger,
+  renderStatusMessage
+} from '../../packages/ui-feedback/src/index.js';
+
+const logger = createScopedConsoleLogger({ scope: 'myna' });
+
+const UI = {
+  ontologyFile: document.getElementById("ontologyFile"),
+  mappingFile: document.getElementById("mappingFile"),
+  ontologyDrop: document.getElementById("ontologyDrop"),
+  mappingDrop: document.getElementById("mappingDrop"),
+  loadOntologyBtn: document.getElementById("loadOntologyBtn"),
+  loadMappingBtn: document.getElementById("loadMappingBtn"),
+  buildPreviewBtn: document.getElementById("buildPreviewBtn"),
+  applyMappingBtn: document.getElementById("applyMappingBtn"),
+  downloadBtn: document.getElementById("downloadBtn"),
+  exportFormat: document.getElementById("exportFormat"),
+
+  baseIri: document.getElementById("baseIri"),
+  useNativePrefixes: document.getElementById("useNativePrefixes"),
+
+  ontologyFormat: document.getElementById("ontologyFormat"),
+  ontologyRunId: document.getElementById("ontologyRunId"),
+  prefixJson: document.getElementById("prefixJson"),
+
+  mappingRows: document.getElementById("mappingRows"),
+  mappingUniqueOld: document.getElementById("mappingUniqueOld"),
+  mappingDupOld: document.getElementById("mappingDupOld"),
+
+  kpiOntologyIris: document.getElementById("kpiOntologyIris"),
+  kpiMappingIris: document.getElementById("kpiMappingIris"),
+  kpiProposedChanges: document.getElementById("kpiProposedChanges"),
+  kpiPctChanged: document.getElementById("kpiPctChanged"),
+
+  outputPreview: document.getElementById("outputPreview"),
+  status: document.getElementById("status"),
+
+  runsSelect: document.getElementById("runsSelect"),
+  loadRunBtn: document.getElementById("loadRunBtn"),
+  deleteRunBtn: document.getElementById("deleteRunBtn"),
+  clearRunsBtn: document.getElementById("clearRunsBtn"),
+
+  toggleThemeBtn: document.getElementById("mbToggleThemeBtn"),
+};
+
+let table = null;
+
+const Session = {
+  currentOntologyRunId: null,
+  currentOutputRunId: null,
+  ontologyPrefixes: {},
+  mapping: new Map(), // oldIri -> newIri
+  mappingMeta: { rows: 0, uniqueOld: 0, dupOld: 0 },
+};
+
+init().catch(err => setStatus(`Init error: ${err?.message || err}`, true));
+
+async function init() {
+  wireDropzones();
+  wireButtons();
+  await refreshRunsDropdown();
+  initTable();
+  setStatus("Ready.");
+}
+
+function wireButtons() {
+  UI.loadOntologyBtn.addEventListener("click", async () => {
+    const f = UI.ontologyFile.files?.[0];
+    if (!f) return setStatus("Choose an ontology file first.", true);
+    await ingestOntology(f);
+  });
+
+  UI.loadMappingBtn.addEventListener("click", async () => {
+    const f = UI.mappingFile.files?.[0];
+    if (!f) return setStatus("Choose a mapping file first.", true);
+    await ingestMapping(f);
+  });
+
+  UI.buildPreviewBtn.addEventListener("click", async () => {
+    if (!Session.currentOntologyRunId) return setStatus("Ingest an ontology first.", true);
+    await buildPreviewFromRun(Session.currentOntologyRunId);
+  });
+
+  UI.applyMappingBtn.addEventListener("click", async () => {
+    if (!Session.currentOntologyRunId) return setStatus("Ingest an ontology first.", true);
+    if (Session.mapping.size === 0) return setStatus("Ingest a mapping file first.", true);
+    await applyMappingToCurrentOntology();
+  });
+
+  UI.downloadBtn.addEventListener("click", async () => {
+    const runId = await resolveActiveOutputRunId();
+    if (!runId) return setStatus("Apply mappings to create an output run before downloading.", true);
+    await downloadRun(runId, UI.exportFormat.value);
+  });
+
+  UI.exportFormat.addEventListener("change", async () => {
+    const runId = await resolveActiveOutputRunId();
+    if (!runId) return;
+    await renderOutputPreview(runId, UI.exportFormat.value);
+  });
+
+  UI.loadRunBtn.addEventListener("click", async () => {
+    const runId = UI.runsSelect.value;
+    if (!runId) return setStatus("No run selected.", true);
+    await loadRun(runId);
+  });
+
+  UI.deleteRunBtn.addEventListener("click", async () => {
+    const runId = UI.runsSelect.value;
+    if (!runId) return setStatus("No run selected.", true);
+    await deleteRun(runId);
+    await refreshRunsDropdown();
+    setStatus(`Deleted run: ${runId}`);
+  });
+
+  UI.clearRunsBtn.addEventListener("click", async () => {
+    await clearAllRuns();
+    await refreshRunsDropdown();
+    Session.currentOntologyRunId = null;
+    Session.currentOutputRunId = null;
+    Session.mapping = new Map();
+    initTable();
+    UI.outputPreview.value = "";
+    setStatus("Cleared all runs.");
+  });
+
+  if (UI.toggleThemeBtn) {
+    UI.toggleThemeBtn.addEventListener("click", () => {
+      const root = document.getElementById("mb-app");
+      if (root) root.classList.toggle("mb-light");
+    });
+  }
+}
+
+function wireDropzones() {
+  makeDropzone(UI.ontologyDrop, (file) => {
+    UI.ontologyFile.files = fileListFromSingleFile(file);
+    setStatus(`Ontology selected: ${file.name}`);
+  });
+
+  makeDropzone(UI.mappingDrop, (file) => {
+    UI.mappingFile.files = fileListFromSingleFile(file);
+    setStatus(`Mapping selected: ${file.name}`);
+  });
+}
+
+function makeDropzone(el, onFile) {
+  el.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    el.style.borderColor = "rgba(96,165,250,0.55)";
+  });
+  el.addEventListener("dragleave", () => {
+    el.style.borderColor = "";
+  });
+  el.addEventListener("drop", (e) => {
+    e.preventDefault();
+    el.style.borderColor = "";
+    const file = e.dataTransfer?.files?.[0];
+    if (file) onFile(file);
+  });
+}
+
+function fileListFromSingleFile(file) {
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  return dt.files;
+}
+
+function initTable() {
+  const el = document.getElementById("table");
+  el.innerHTML = "";
+
+  table = new Tabulator(el, {
+    layout: "fitColumns",
+    height: "520px",
+    placeholder: "No data yet.",
+    reactiveData: false,
+    data: [],
+    columns: [
+      { title: "IRI", field: "iri", formatter: "textarea", headerFilter: "input", widthGrow: 3 },
+      { title: "rdfs:label", field: "label", formatter: "textarea", headerFilter: "input", widthGrow: 2 },
+      { title: "To-be IRI", field: "newIri", formatter: "textarea", headerFilter: "input", widthGrow: 3 },
+      {
+        title: "Status",
+        field: "status",
+        headerFilter: "select",
+        headerFilterParams: { values: { "": "All", "Change": "Change", "No change": "No change" } },
+        formatter: (cell) => {
+          const v = cell.getValue();
+          const cls = v === "Change" ? "mb-pill mb-pillChange" : "mb-pill mb-pillNoChange";
+          return `<span class="${cls}">${escapeHtml(v)}</span>`;
+        },
+        width: 140
+      }
+    ],
+    rowFormatter: (row) => {
+      const data = row.getData();
+      const el = row.getElement();
+      el.classList.remove("mb-rowChange", "mb-rowNoChange");
+      if (data.status === "Change") el.classList.add("mb-rowChange");
+      else el.classList.add("mb-rowNoChange");
+    }
+  });
+}
+
+/* -----------------------------
+   Ontology ingest
+------------------------------ */
+
+async function ingestOntology(file) {
+  setStatus(`Ingesting ontology: ${file.name} …`);
+
+  const detected = detectOntologyFormat(file.name);
+  UI.ontologyFormat.textContent = detected.label;
+
+  const createdAt = new Date().toISOString();
+  const runId = makeRunId("input", file.name, createdAt);
+
+  const baseIri = UI.baseIri.value?.trim() || "urn:myna:base:";
+  const useNativePrefixes = !!UI.useNativePrefixes.checked;
+
+  const { nquads, prefixes, stats } = await parseOntologyToNQuads({
+    file,
+    runId,
+    baseIri,
+  });
+
+  Session.currentOntologyRunId = runId;
+  Session.currentOutputRunId = null;
+  Session.ontologyPrefixes = prefixes || {};
+
+  UI.ontologyRunId.textContent = runId;
+  UI.prefixJson.textContent = JSON.stringify(prefixes || {}, null, 2);
+
+  await putRun({
+    runId,
+    kind: "input",
+    parentRunId: null,
+    fileName: file.name,
+    createdAt,
+    sourceFormat: detected.contentType,
+    useNativePrefixes,
+    prefixes: prefixes || {},
+    nquads,
+    stats,
+    mapping: null,
+  });
+
+  await refreshRunsDropdown();
+  await buildPreviewFromRun(runId);
+
+  setStatus(`Ontology ingested. IRIs found: ${stats?.uniqueIris || 0}`);
+}
+
+function detectOntologyFormat(fileName) {
+  const classification = classifyOntologyInput({ filename: fileName });
+  const detected = getSupportedMimeTypeForFilename(fileName);
+  if (classification.isOntologyCandidate && detected && detected.ok && detected.value.category === "rdf") {
+    return { contentType: detected.value.mimeType, label: detected.value.id.replace(/-/g, " ") };
+  }
+  const ext = getFilenameExtension(fileName);
+  if (ext === "json") return { contentType: "application/ld+json", label: "JSON-LD" };
+  return { contentType: "application/octet-stream", label: "Unknown (will attempt parsing)" };
+}
+
+async function parseOntologyToNQuads({ file, runId, baseIri }) {
+  const text = await file.text();
+  const detected = getSupportedMimeTypeForFilename(file.name);
+  const ext = getFilenameExtension(file.name);
+  const contentType = detected && detected.ok && detected.value.category === "rdf"
+    ? detected.value.mimeType
+    : "";
+
+  // Graph name for this run (all imported statements go into this named graph)
+  const DF = N3.DataFactory;
+  const graphNode = DF.namedNode(runId);
+
+  // Prefixes (best effort depending on format)
+  let prefixes = {};
+  let parsed;
+  let quads = [];
+
+  if (contentType === "text/turtle" || contentType === "application/trig") {
+    prefixes = parseTurtlePrefixes(text);
+  } else if (contentType === "application/ld+json" || ext === "json") {
+    prefixes = parseJsonLdPrefixes(text).contextPrefixes;
+  } else if (contentType === "application/rdf+xml") {
+    prefixes = parseXmlnsPrefixes(text);
+  }
+
+  try {
+    parsed = await parseRdfTextWithAdapters(text, {
+      format: contentType || "text/turtle",
+      baseIri,
+      runtime: { N3, jsonld, $rdf }
+    });
+  } catch (error) {
+    if (contentType) throw error;
+    prefixes = parseXmlnsPrefixes(text);
+    parsed = await parseRdfTextWithAdapters(text, {
+      format: "application/rdf+xml",
+      baseIri,
+      runtime: { N3, jsonld, $rdf }
+    });
+  }
+
+  quads = parsed.quads.map(q => DF.quad(q.subject, q.predicate, q.object, graphNode));
+  prefixes = Object.keys(prefixes).length ? prefixes : (parsed.prefixes || {});
+
+  const nquadsOut = await quadsToNQuads(quads);
+  const stats = computeStatsFromQuads(quads);
+
+  return { nquads: nquadsOut, prefixes, stats };
+}
+
+async function quadsToNQuads(quads) {
+  const serialized = await serializeRdfDatasetWithAdapters(quads, {
+    format: "application/n-quads",
+    runtime: { N3, jsonld, $rdf }
+  });
+  return serialized.text;
+}
+
+function parseTurtlePrefixes(text) {
+  return normalizePrefixMap(extractTurtlePrefixDeclarations(text)).prefixes;
+}
+
+function parseXmlnsPrefixes(xmlText) {
+  return normalizePrefixMap(extractXmlNamespacePrefixes(xmlText)).prefixes;
+}
+
+function parseJsonLdPrefixes(text) {
+  const extracted = extractJsonLdContextPrefixes(text);
+  if (!extracted.ok) throw new Error(`Invalid JSON-LD: ${extracted.message}`);
+  return { jsonObj: extracted.jsonObject, contextPrefixes: extracted.prefixes };
+}
+
+function computeStatsFromQuads(quads) {
+  const iris = new Set();
+  let total = 0;
+
+  const labelMap = new Map();
+
+  for (const q of quads) {
+    total++;
+
+    if (q.subject.termType === "NamedNode") iris.add(q.subject.value);
+    if (q.predicate.termType === "NamedNode") iris.add(q.predicate.value);
+    if (q.object.termType === "NamedNode") iris.add(q.object.value);
+
+    // labels
+    if (q.predicate.termType === "NamedNode" && q.predicate.value === COMMON_NAMESPACE_IRIS.rdfs.label) {
+      if (q.subject.termType === "NamedNode" && q.object.termType === "Literal") {
+        const cur = labelMap.get(q.subject.value);
+        // prefer @en if possible
+        if (!cur) labelMap.set(q.subject.value, { value: q.object.value, lang: q.object.language || "" });
+        else if (cur.lang !== "en" && (q.object.language || "") === "en") {
+          labelMap.set(q.subject.value, { value: q.object.value, lang: "en" });
+        }
+      }
+    }
+  }
+
+  return {
+    totalQuads: total,
+    uniqueIris: iris.size,
+    labelCount: labelMap.size
+  };
+}
+
+/* -----------------------------
+   Mapping ingest
+------------------------------ */
+
+async function ingestMapping(file) {
+  setStatus(`Ingesting mapping: ${file.name} …`);
+
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  let rows = [];
+
+  if (ext === "csv" || ext === "tsv") {
+    const text = await file.text();
+    const parsed = parseDelimitedText(text, {
+      header: true,
+      hasHeader: true,
+      trimHeaders: true,
+      trimCells: true,
+      skipEmptyLines: true,
+      delimiter: ext === "tsv" ? "\t" : ",",
+    });
+    if (parsed.warnings?.length) {
+      console.warn("Mapping parse warnings:", parsed.warnings);
+    }
+    rows = parsed.records || [];
+  } else if (ext === "xls" || ext === "xlsx") {
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type: "array" });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+  } else {
+    throw new Error("Unsupported mapping format.");
+  }
+
+  const { mapping, meta } = createIriMappingFromRows(rows);
+  const mappingMeta = {
+    rows: meta.rows,
+    uniqueOld: meta.uniqueOld,
+    dupOld: meta.duplicateOld
+  };
+  Session.mapping = mapping;
+  Session.mappingMeta = mappingMeta;
+
+  UI.mappingRows.textContent = String(mappingMeta.rows);
+  UI.mappingUniqueOld.textContent = String(mappingMeta.uniqueOld);
+  UI.mappingDupOld.textContent = String(mappingMeta.dupOld);
+
+  UI.kpiMappingIris.textContent = String(mappingMeta.uniqueOld);
+
+  setStatus(`Mapping ingested. Unique old IRIs: ${mappingMeta.uniqueOld}`);
+}
+
+function rowsToMapping(rows) {
+  // Try exact headers first, then fallback by fuzzy key match
+  const norm = (s) => String(s || "").trim().toLowerCase();
+
+  let oldKey = null;
+  let newKey = null;
+
+  if (rows.length > 0) {
+    const keys = Object.keys(rows[0] || {});
+    for (const k of keys) {
+      const nk = norm(k);
+      if (nk === "old iri") oldKey = k;
+      if (nk === "new iri") newKey = k;
+    }
+    // fallback: contains patterns
+    for (const k of keys) {
+      const nk = norm(k);
+      if (!oldKey && nk.includes("old") && nk.includes("iri")) oldKey = k;
+      if (!newKey && nk.includes("new") && nk.includes("iri")) newKey = k;
+    }
+  }
+
+  if (!oldKey || !newKey) {
+    throw new Error(`Mapping file must have headers like "Old IRI" and "New IRI". Found: ${rows.length ? Object.keys(rows[0]).join(", ") : "(no rows)"}`);
+  }
+
+  const mapping = new Map();
+  const seen = new Set();
+  let dupOld = 0;
+
+  for (const r of rows) {
+    const oldIri = String(r[oldKey] || "").trim();
+    const newIri = String(r[newKey] || "").trim();
+    if (!oldIri) continue;
+
+    if (seen.has(oldIri)) dupOld++;
+    seen.add(oldIri);
+
+    // Keep last occurrence (common spreadsheet behavior)
+    mapping.set(oldIri, newIri);
+  }
+
+  return {
+    mapping,
+    meta: {
+      rows: rows.length,
+      uniqueOld: mapping.size,
+      dupOld
+    }
+  };
+}
+
+/* -----------------------------
+   Preview table
+------------------------------ */
+
+async function buildPreviewFromRun(runId) {
+  const run = await getRun(runId);
+  if (!run) return setStatus("Run not found in IndexedDB.", true);
+  if (!table) initTable();
+
+  if (run.kind === "input") {
+    Session.currentOntologyRunId = runId;
+  } else {
+    Session.currentOntologyRunId = run.parentRunId || runId;
+    Session.currentOutputRunId = runId;
+  }
+
+  Session.ontologyPrefixes = run.prefixes || {};
+  UI.prefixJson.textContent = JSON.stringify(Session.ontologyPrefixes, null, 2);
+
+  const parsed = await parseRdfTextWithAdapters(run.nquads, {
+    format: "application/n-quads",
+    baseIri: UI.baseIri.value || "urn:myna:base:",
+    runtime: { N3, jsonld, $rdf }
+  });
+  const quads = parsed.quads;
+  const { rows, proposedChanges, uniqueIris } = buildRowsFromQuads(quads, Session.mapping);
+
+  table.replaceData(rows);
+
+  UI.kpiOntologyIris.textContent = String(uniqueIris);
+  UI.kpiProposedChanges.textContent = String(proposedChanges);
+  UI.kpiPctChanged.textContent = uniqueIris ? `${Math.round((proposedChanges / uniqueIris) * 100)}%` : "0%";
+
+  setStatus(`Preview built for run: ${runId}`);
+}
+
+function buildRowsFromQuads(quads, mapping) {
+  const iris = new Set();
+  const labelMap = new Map();
+
+  for (const q of quads) {
+    if (q.subject.termType === "NamedNode") iris.add(q.subject.value);
+    if (q.predicate.termType === "NamedNode") iris.add(q.predicate.value);
+    if (q.object.termType === "NamedNode") iris.add(q.object.value);
+
+    if (q.predicate.termType === "NamedNode" && q.predicate.value === COMMON_NAMESPACE_IRIS.rdfs.label) {
+      if (q.subject.termType === "NamedNode" && q.object.termType === "Literal") {
+        const cur = labelMap.get(q.subject.value);
+        const lang = q.object.language || "";
+        if (!cur) labelMap.set(q.subject.value, { value: q.object.value, lang });
+        else if (cur.lang !== "en" && lang === "en") labelMap.set(q.subject.value, { value: q.object.value, lang: "en" });
+      }
+    }
+  }
+
+  let proposedChanges = 0;
+  const rows = [];
+  const sorted = Array.from(iris).sort((a, b) => a.localeCompare(b));
+
+  for (const iri of sorted) {
+    const lbl = labelMap.get(iri)?.value || "";
+    const mapped = mapping?.has(iri) ? (mapping.get(iri) || "") : "";
+    const isChange = !!mapped && mapped !== iri;
+
+    if (isChange) proposedChanges++;
+
+    rows.push({
+      iri,
+      label: lbl,
+      newIri: isChange ? mapped : "",
+      status: isChange ? "Change" : "No change",
+    });
+  }
+
+  return { rows, proposedChanges, uniqueIris: iris.size };
+}
+
+/* -----------------------------
+   Apply mapping → output run
+------------------------------ */
+
+async function applyMappingToCurrentOntology() {
+  const inputRun = await getRun(Session.currentOntologyRunId);
+  if (!inputRun) return setStatus("Input run not found.", true);
+
+  const createdAt = new Date().toISOString();
+  const outputRunId = makeRunId("output", inputRun.fileName, createdAt);
+
+  const baseIri = UI.baseIri.value?.trim() || "urn:myna:base:";
+  const useNativePrefixes = !!UI.useNativePrefixes.checked;
+
+  const parsed = await parseRdfTextWithAdapters(inputRun.nquads, {
+    format: "application/n-quads",
+    baseIri,
+    runtime: { N3, jsonld, $rdf }
+  });
+  const inputQuads = parsed.quads;
+  const { outputQuads, changeStats } = rewriteQuads(inputQuads, Session.mapping, outputRunId);
+
+  const nquads = await quadsToNQuads(outputQuads);
+
+  await putRun({
+    runId: outputRunId,
+    kind: "output",
+    parentRunId: inputRun.runId,
+    fileName: outputFileName(inputRun.fileName),
+    createdAt,
+    sourceFormat: inputRun.sourceFormat,
+    useNativePrefixes,
+    prefixes: inputRun.prefixes || {},
+    nquads,
+    stats: {
+      ...computeStatsFromQuads(outputQuads),
+      changeStats
+    },
+    mapping: {
+      rows: Session.mappingMeta.rows,
+      uniqueOld: Session.mappingMeta.uniqueOld,
+      dupOld: Session.mappingMeta.dupOld,
+      // Store mapping pairs for reproducibility (can be large; remove if you prefer)
+      pairs: Array.from(Session.mapping.entries())
+    }
+  });
+
+  Session.currentOutputRunId = outputRunId;
+
+  await refreshRunsDropdown(outputRunId);
+  await buildPreviewFromRun(inputRun.runId); // show staged changes vs input
+  await renderOutputPreview(outputRunId);
+
+  // show “% ontology changed” as quad-level impact too
+  const pctQuads = changeStats.totalQuads ? Math.round((changeStats.quadsTouched / changeStats.totalQuads) * 100) : 0;
+  setStatus(`Output run created. Quads touched: ${changeStats.quadsTouched}/${changeStats.totalQuads} (~${pctQuads}%).`);
+}
+
+function rewriteQuads(inputQuads, mapping, outputRunId) {
+  const DF = N3.DataFactory;
+  const outGraph = DF.namedNode(outputRunId);
+
+  let totalQuads = 0;
+  let quadsTouched = 0;
+  let termReplacements = 0;
+
+  const outputQuads = inputQuads.map(q => {
+    totalQuads++;
+
+    let touched = false;
+
+    const s = replaceIfMapped(q.subject, mapping); if (s !== q.subject) touched = true;
+    const p = replaceIfMapped(q.predicate, mapping); if (p !== q.predicate) touched = true;
+    const o = replaceIfMapped(q.object, mapping); if (o !== q.object) touched = true;
+
+    if (touched) {
+      quadsTouched++;
+      // count replacements conservatively as number of terms changed
+      if (s !== q.subject) termReplacements++;
+      if (p !== q.predicate) termReplacements++;
+      if (o !== q.object) termReplacements++;
+    }
+
+    return DF.quad(s, p, o, outGraph);
+  });
+
+  return { outputQuads, changeStats: { totalQuads, quadsTouched, termReplacements } };
+}
+
+function replaceIfMapped(term, mapping) {
+  if (term.termType !== "NamedNode") return term;
+  const next = mapping.get(term.value);
+  if (!next || next === term.value) return term;
+  return N3.DataFactory.namedNode(next);
+}
+
+function outputFileName(inputName) {
+  const idx = inputName.lastIndexOf(".");
+  if (idx <= 0) return `${inputName}.mapped`;
+  return `${inputName.slice(0, idx)}.mapped${inputName.slice(idx)}`;
+}
+
+/* -----------------------------
+   Export / Preview
+------------------------------ */
+
+async function renderOutputPreview(runId, contentType = UI.exportFormat.value || "text/turtle") {
+  try {
+    const run = await getRun(runId);
+    if (!run) throw new Error("Run not found.");
+    const output = await serializeRunOutputForExport(run, {
+      mimeType: contentType,
+      baseIri: UI.baseIri.value?.trim() || "urn:myna:base:",
+      usePrefixes: !!UI.useNativePrefixes.checked,
+      runtime: { N3, jsonld, $rdf }
+    });
+    UI.outputPreview.value = output.text;
+  } catch (e) {
+    UI.outputPreview.value = "";
+    setStatus(`Preview error: ${e?.message || e}`, true);
+  }
+}
+
+async function downloadRun(runId, contentType) {
+  const run = await getRun(runId);
+  if (!run) return setStatus("Run not found.", true);
+  const result = await downloadRunOutputForExport(run, {
+    mimeType: contentType,
+    baseIri: UI.baseIri.value?.trim() || "urn:myna:base:",
+    usePrefixes: !!UI.useNativePrefixes.checked,
+    runtime: { N3, jsonld, $rdf },
+    downloadTextFile
+  });
+  setStatus(`Downloaded: ${result.serialized.fileName}`);
+}
+
+async function resolveActiveOutputRunId() {
+  const resolved = await resolveOutputRunForExport({
+    activeOutputRunId: Session.currentOutputRunId,
+    selectedRunId: UI.runsSelect.value,
+    inputRunId: Session.currentOntologyRunId,
+    readRun: getRun,
+    listRuns
+  });
+  if (!resolved) return null;
+  Session.currentOutputRunId = resolved.runId;
+  Session.currentOntologyRunId = resolved.parentRunId || Session.currentOntologyRunId;
+  UI.runsSelect.value = resolved.runId;
+  return resolved.runId;
+}
+
+/* -----------------------------
+   Runs (IndexedDB)
+------------------------------ */
+
+function makeRunId(kind, fileName, iso) {
+  return createIriSwapperRunId('', kind, fileName, iso);
+}
+
+async function putRun(run) {
+  return storeIriSwapperRun(run, { runKind: 'rdf-iri-rewrite' });
+}
+
+async function getRun(runId) {
+  return readIriSwapperRun(runId);
+}
+
+async function listRuns() {
+  return listIriSwapperRuns({ runKind: 'rdf-iri-rewrite' });
+}
+
+async function deleteRun(runId) {
+  return deleteIriSwapperRun(runId);
+}
+
+async function clearAllRuns() {
+  return clearIriSwapperRuns({ runKind: 'rdf-iri-rewrite' });
+}
+
+async function refreshRunsDropdown(selectRunId = null) {
+  const runs = await listRuns();
+  runs.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+
+  UI.runsSelect.innerHTML = "";
+  for (const r of runs) {
+    const opt = document.createElement("option");
+    opt.value = r.runId;
+    const stamp = r.createdAt?.replace("T", " ").replace("Z", "");
+    opt.textContent = `[${r.kind}] ${stamp} — ${r.fileName}`;
+    UI.runsSelect.appendChild(opt);
+  }
+
+  if (selectRunId) UI.runsSelect.value = selectRunId;
+  else if (runs.length) UI.runsSelect.value = runs[0].runId;
+}
+
+async function loadRun(runId) {
+  const run = await getRun(runId);
+  if (!run) return setStatus("Run not found.", true);
+
+  // set “current” pointers
+  if (run.kind === "input") {
+    Session.currentOntologyRunId = run.runId;
+    Session.currentOutputRunId = null;
+  } else {
+    Session.currentOutputRunId = run.runId;
+    Session.currentOntologyRunId = run.parentRunId || run.runId;
+  }
+
+  UI.ontologyRunId.textContent = Session.currentOntologyRunId || "—";
+  UI.ontologyFormat.textContent = run.sourceFormat || "—";
+  UI.prefixJson.textContent = JSON.stringify(run.prefixes || {}, null, 2);
+
+  await buildPreviewFromRun(Session.currentOntologyRunId);
+
+  if (Session.currentOutputRunId) {
+    await renderOutputPreview(Session.currentOutputRunId);
+  } else {
+    UI.outputPreview.value = "";
+  }
+
+  setStatus(`Loaded run: ${runId}`);
+}
+
+/* -----------------------------
+   Utilities
+------------------------------ */
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function setStatus(msg, isError = false) {
+  renderStatusMessage(UI.status, {
+    message: msg,
+    severity: isError ? 'error' : 'info'
+  }, { classPrefix: 'mb-status' });
+  logger[isError ? 'error' : 'info']('status', { message: msg });
+}
