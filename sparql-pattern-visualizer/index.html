@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="SPARQL Pattern Visualizer is a lightweight browser-based toolkit for rendering queries into nodes and edges." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="dcterms.creator" content="Jonathan Vajda" />
+  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="version" content="0.1.0" />
+  <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
+  <title>SPARQL Pattern Visualizer</title>
+  <!-- Public CSS -->
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+  <!-- App Global CSS -->
+  <script>
+    (function () {
+      const APPBASE_CSS_SOURCES = [
+        "../styles/app-base.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of APPBASE_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load app base CSS from all sources.");
+      })();
+    })();
+  </script>
+  <script>
+    (function () {
+      const HEADER_CSS_SOURCES = [
+        "../styles/site-header.css",
+      ];
+
+      function loadCss(href) {
+        return new Promise((resolve, reject) => {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = href;
+
+          link.onload = () => resolve(href);
+          link.onerror = () => reject(new Error("CSS failed: " + href));
+
+          document.head.appendChild(link);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        // Optional user-visible banner
+        const style = document.createElement("style");
+        style.textContent =
+          ".asset-fail-banner{position:fixed;left:0;right:0;top:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-bottom:1px solid rgba(0,0,0,.2)}";
+        document.head.appendChild(style);
+
+        const div = document.createElement("div");
+        div.className = "asset-fail-banner";
+        div.textContent = msg;
+        document.body ? document.body.prepend(div) : document.addEventListener("DOMContentLoaded", () => document.body.prepend(div));
+      }
+
+      (async () => {
+        for (const href of HEADER_CSS_SOURCES) {
+          try { await loadCss(href); return; } catch (_) {}
+        }
+        showFailure("Failed to load header CSS from all sources.");
+      })();
+    })();
+  </script>
+
+  <!-- App Local CSS -->
+  <link rel="stylesheet" href="./styles/sviz.css" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/curie.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/prefix-map.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/sparql-utils/src/index.js" />
+  <link rel="modulepreload" href="../packages/sparql-utils/src/query-patterns.js" />
+  <link rel="modulepreload" href="../packages/cytoscape-visualization/src/index.js" />
+  <link rel="modulepreload" href="../packages/cytoscape-visualization/src/sparql-to-graph.js" />
+  <link rel="modulepreload" href="../packages/cytoscape-visualization/src/cytoscape-elements.js" />
+  <link rel="modulepreload" href="../packages/cytoscape-visualization/src/cytoscape-styles.js" />
+  <link rel="modulepreload" href="../packages/cytoscape-visualization/src/layout-presets.js" />
+</head>
+
+<body data-page-id="sparql-pattern-visualizer">
+  <header id="siteHeader" class="sitehdr-root sviz-header" role="banner" aria-label="Site header"></header>
+
+  <main class="sviz-main">
+    <div>
+      <div class="row sviz-layout">
+        <section class="six columns sviz-panel" aria-label="SPARQL editor">
+          <label class="sviz-label" for="svizQuery">SPARQL query</label>
+          <textarea id="svizQuery" class="sviz-textarea" rows="14" spellcheck="false"></textarea>
+
+          <div class="sviz-actions">
+            <button id="svizRenderBtn" class="button-primary">Render diagram</button>
+            <button id="svizResetBtn" class="button">Reset</button>
+          </div>
+
+          <div class="sviz-settings" aria-label="Settings">
+            <label class="sviz-check">
+              <input id="svizShowPrefixes" type="checkbox" checked />
+              <span>Show prefix legend</span>
+            </label>
+
+            <label class="sviz-check">
+              <input id="svizAttachFilters" type="checkbox" />
+              <span>Attach FILTER nodes to variables</span>
+            </label>
+          </div>
+
+          <section class="sviz-meta" aria-label="Query metadata">
+            <div><strong>Query type:</strong> <span id="svizQueryType">—</span></div>
+            <div><strong>Triples (WHERE):</strong> <span id="svizTripleCount">0</span></div>
+          </section>
+        </section>
+
+        <section class="six columns sviz-panel" aria-label="Diagram">
+          <div class="sviz-diagram-wrap">
+            <div id="svizDiagram" class="sviz-diagram" role="img" aria-label="SPARQL graph diagram"></div>
+          </div>
+
+          <section id="svizPrefixes" class="sviz-prefixes" aria-label="Prefixes"></section>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="sviz-footer">
+    <div class="container">
+      <small>Local-only. No query execution. AST → GraphModel → Render.</small>
+    </div>
+  </footer>
+
+  <!-- Toast region -->
+  <div id="toast-container" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Vendor libs (saved locally) -->
+  <script src="../vendor/cytoscape.min.js" defer></script>
+  <script src="../vendor/sparqljs.umd.js" defer></script>
+
+  <!-- App JS -->
+  <script>
+    (function () {
+      const JS_SOURCES = [
+        /* "./app/site-header.js", local dev copy first */
+        "../app/site-header.js",
+        "../app/site-header.js",
+      ];
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.defer = true;
+
+          s.onload = () => resolve(src);
+          s.onerror = () => reject(new Error("JS failed: " + src));
+
+          document.head.appendChild(s);
+        });
+      }
+
+      function showFailure(msg) {
+        console.error(msg);
+        const div = document.createElement("div");
+        div.style.cssText =
+          "position:fixed;left:0;right:0;bottom:0;z-index:9999;" +
+          "padding:.5rem .75rem;font:14px system-ui;background:#ffe8e8;color:#400;" +
+          "border-top:1px solid rgba(0,0,0,.2)";
+        div.textContent = msg;
+        document.body ? document.body.appendChild(div) : document.addEventListener("DOMContentLoaded", () => document.body.appendChild(div));
+      }
+
+      (async () => {
+        for (const src of JS_SOURCES) {
+          try { await loadScript(src); return; } catch (_) {}
+        }
+        showFailure("Failed to load header JavaScript from all sources.");
+      })();
+    })();
+  </script>
+  <script type="module" src="./app/ui_app.js"></script>
+</body>
+</html>
