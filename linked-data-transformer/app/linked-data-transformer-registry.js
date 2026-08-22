@@ -1,4 +1,4 @@
-// ./docs/app/linked-data-transformer-registry.js
+// linked-data-transformer/app/linked-data-transformer-registry.js
 import {
   getPreferredExtensionForMimeType,
   getSupportedMimeTypeForFilename,

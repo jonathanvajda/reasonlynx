@@ -1,6 +1,6 @@
 // docs/app/jsonld-visualizer-loader.js
 
-import { createTransformer } from './linked-data-transformer-core.js';
+import { createTransformer } from '../../linked-data-transformer/app/linked-data-transformer-core.js';
 import { readFileAsText } from '../../packages/browser-file-io/src/index.js';
 import {
   getSupportedMimeTypeForFilename,

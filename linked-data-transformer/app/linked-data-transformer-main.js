@@ -1,4 +1,4 @@
-// docs/app/linked-data-transformer-main.js
+// linked-data-transformer/app/linked-data-transformer-main.js
 
 import {
   normalizeMimeType,

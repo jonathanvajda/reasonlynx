@@ -1,4 +1,4 @@
-// docs/app/linked-data-transformer-core.js
+// linked-data-transformer/app/linked-data-transformer-core.js
 
 import { normalizeMimeType } from './linked-data-transformer-registry.js';
 import { COMMON_NAMESPACE_IRIS } from '../../packages/namespace-registry/src/namespace-registry.js';

@@ -12,6 +12,7 @@ const APP_ROUTES = {
   'graph-analyst-playbook': 'graph-analyst-playbook/index.html',
   'graph-analytics': 'graph-analytics/index.html',
   'visual-lynx': 'visual-lynx/index.html',
+  'linked-data-transformer': 'linked-data-transformer/index.html',
   'ontology-compliance-diagnostic': 'ontology-compliance-diagnostic/index.html',
   'iri-swapper': 'iri-swapper/index.html',
   'sparql-pattern-visualizer': 'sparql-pattern-visualizer/index.html',

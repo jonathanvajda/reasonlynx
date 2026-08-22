@@ -86,7 +86,7 @@ import {
         items: [
           { label: "Axiolotl SPARQL & Inference", href: "../axiolotl/", pageId: "axiolotl" },
           { label: "SPARQL Pattern Visualizer", href: "../sparql-pattern-visualizer/", pageId: "sparql-pattern-visualizer" },
-          { label: "Linked-Data Transformer", href: "../visual-lynx/linked-data-transformer.html", pageId: "linked-data-transformer" },
+          { label: "Linked-Data Transformer", href: "../linked-data-transformer/", pageId: "linked-data-transformer" },
         ],
       },
       {

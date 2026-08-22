@@ -42,6 +42,7 @@ jobs:
           - graph-analyst-playbook
           - graph-analytics
           - visual-lynx
+          - linked-data-transformer
           - ontology-compliance-diagnostic
           - iri-swapper
           - sparql-pattern-visualizer

@@ -4,8 +4,8 @@ The RDF serialization sugar helpers are browser-friendly modules for adding OWLA
 
 The code is split by serialization engine:
 
-- `docs/app/n3-sugar-serial.js` owns N3.js-supported serializations: Turtle, TriG, N-Triples, and N-Quads.
-- `docs/app/rdflib-sugar-serial.js` owns RDFLib/RDF-XML behavior, including XML repairs.
+- `./app/n3-sugar-serial.js` owns N3.js-supported serializations: Turtle, TriG, N-Triples, and N-Quads.
+- `./app/rdflib-sugar-serial.js` owns RDFLib/RDF-XML behavior, including XML repairs.
 
 These modules are intentionally separate from the linked-data transformer core and UI modules so other tools can reuse them without adopting the linked-data transformer interface.
 
