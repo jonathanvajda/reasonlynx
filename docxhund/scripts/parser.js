@@ -1,4 +1,4 @@
-// docs/scripts/parser.js
+// docxhund/scripts/parser.js
 
 import { HEADING_STYLE_PATTERN, PART_TYPES_WITH_TEXT_VALUE } from './config.js';
 import { makeGeneratedLabel, mintInstanceIri } from './utils.js';

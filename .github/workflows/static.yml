@@ -47,6 +47,7 @@ jobs:
           - sparql-pattern-visualizer
           - ontology-tabulator
           - table-nova
+          - docxhund
           - about
     steps:
       - name: Checkout

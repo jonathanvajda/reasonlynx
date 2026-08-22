@@ -1,4 +1,4 @@
-// docs/scripts/ui.js
+// docxhund/scripts/ui.js
 
 import { escapeHtml } from './utils.js';
 

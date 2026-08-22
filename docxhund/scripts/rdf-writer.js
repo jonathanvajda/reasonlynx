@@ -1,4 +1,4 @@
-// docs/scripts/rdf-writer.js
+// docxhund/scripts/rdf-writer.js
 
 import { COMMON_NAMESPACE_IRIS, namespacePrefixMapFromRegistry } from '../../packages/namespace-registry/src/namespace-registry.js';
 import {

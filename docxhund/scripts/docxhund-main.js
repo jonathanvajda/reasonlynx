@@ -1,4 +1,4 @@
-// docs/scripts/main.js
+// docxhund/scripts/docxhund-main.js
 
 import { normalizeBaseIri } from './utils.js';
 import { loadDocxParts } from './docx-reader.js';

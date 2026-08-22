@@ -1,4 +1,4 @@
-// docs/scripts/utils.js
+// docxhund/scripts/utils.js
 
 /**
  * Small shared helpers.

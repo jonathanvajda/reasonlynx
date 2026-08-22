@@ -1,4 +1,4 @@
-// docs/scripts/config.js
+// docxhund/scripts/config.js
 
 /**
  * Centralized configuration and IRI constants.

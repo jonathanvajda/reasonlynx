@@ -17,6 +17,7 @@ const APP_ROUTES = {
   'sparql-pattern-visualizer': 'sparql-pattern-visualizer/index.html',
   'ontology-tabulator': 'ontology-tabulator/index.html',
   'table-nova': 'table-nova/index.html',
+  docxhund: 'docxhund/index.html',
   about: 'about/index.html'
 };
 

@@ -1,5 +1,5 @@
-// docs/scripts/docx-reader.js
-import JSZip from 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
+// docxhund/scripts/docx-reader.js
+import JSZip from '../../vendor/jszip-esm.js';
 import { readFileAsArrayBuffer } from '../../packages/browser-file-io/src/index.js';
 
 /**
