@@ -1,0 +1,24 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+SELECT DISTINCT ?resource ?versionIRI
+WHERE {
+  ?resource a owl:Ontology .
+
+  OPTIONAL {
+    ?resource owl:versionIRI ?versionIRI .
+  }
+
+  FILTER(
+    !BOUND(?versionIRI)
+    ||
+    !REGEX(
+      STR(?versionIRI),
+      "(^|[/#])([0-9]{4}-[0-9]{2}-[0-9]{2})([/#]|$)"
+    )
+    &&
+    !REGEX(
+      STR(?versionIRI),
+      "(^|[/#])v?[0-9]+\\.[0-9]+\\.[0-9]+(-[A-Za-z0-9.-]+)?(\\+[A-Za-z0-9.-]+)?([/#]|$)"
+    )
+  )
+}

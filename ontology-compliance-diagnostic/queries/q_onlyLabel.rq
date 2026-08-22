@@ -1,0 +1,14 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# Resources that have a label but no other predicates
+SELECT DISTINCT ?resource
+WHERE {
+  ?resource rdfs:label ?label .
+
+  # There is no triple with this subject and a predicate other than rdfs:label
+  FILTER NOT EXISTS {
+    ?resource ?p ?o .
+    FILTER (?p != rdfs:label)
+  }
+FILTER(isIRI(?resource))
+}
