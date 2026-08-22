@@ -1,0 +1,218 @@
+// Dependencies
+  // comunica-indexeddb-bridge.js
+    //  parseIntoNamedGraph,
+    //  loadGraphFromIndexedDB,
+    //  stashGraphToIndexedDB
+
+// List of functions in this file:
+  // debuggingConsoleEnabled
+  // showToast
+  // toastFromQueryError 
+  // toastInfo
+  // toastSuccess
+  // toastError
+  // commonSPARQLPrefixes
+  // defaultActivePrefixes
+  // readFileAsText
+  // getSelectedOutputMime
+
+import { getSupportedMimeTypeForFilename } from '../../packages/format-registry/src/index.js';
+import { readFileAsText } from '../../packages/browser-file-io/src/index.js';
+import { namespacePrefixMapFromRegistry } from '../../packages/namespace-registry/src/index.js';
+import { renderToastNotification } from '../../packages/ui-feedback/src/index.js';
+
+export const debuggingConsoleEnabled = true; // set to false to disable debug logs
+const PREFIXES = namespacePrefixMapFromRegistry();
+
+/**
+ * Safely logs a variable to the console, limiting the output size for large data.
+ * @param {string} functionName - The name of the function being debugged.
+ * @param {*} argument - The argument passed to the function.
+ * @param {number} [maxLength=500] - The maximum number of characters to preview.
+ */
+export function safeConsoleLog(functionName, argument, maxLength = 500) {
+    if (typeof argument === 'string') {
+        // Handle large strings
+        const preview = argument.length > maxLength
+            ? argument.substring(0, maxLength) + '...'
+            : argument;
+        console.info(`[${functionName}] Argument: "${preview}" (Type: string, Length: ${argument.length})`);
+    } else if (typeof argument === 'object' && argument !== null) {
+        // Handle objects (including arrays)
+        try {
+            const str = JSON.stringify(argument, null, 2); // Stringify with 2-space indentation
+            const preview = str.length > maxLength
+                ? str.substring(0, maxLength) + '...'
+                : str;
+            console.info(`[${functionName}] Argument Preview: ${preview} (Type: ${Array.isArray(argument) ? 'array' : 'object'})`);
+        } catch (e) {
+            // Fallback for circular references or complex objects that can't be stringified
+            console.info(`[${functionName}] Argument:`, argument, `(Cannot stringify - logging directly)`);
+        }
+    } else {
+        // Handle primitives (number, boolean, undefined, null, function, symbol)
+        console.info(`[${functionName}] Argument:`, argument, `(Type: ${typeof argument})`);
+    }
+}
+
+/** @param {string} name @param {any[]} args */
+function __logStart(name, args = []) {
+  if (!debuggingConsoleEnabled) return;
+  try {
+    // Use your safeConsoleLog for each argument preview
+    if (typeof safeConsoleLog === 'function') {
+      if (args.length === 0) safeConsoleLog(name, '[no-args]');
+      else args.forEach(a => safeConsoleLog(name, a, 500));
+    } else {
+      console.info(`[${name}] start`, ...args);
+    }
+  } catch {}
+}
+
+/** @param {string} name @param {any} summary */
+function __logSuccess(name, summary) {
+  if (!debuggingConsoleEnabled) return;
+  try {
+    if (typeof safeConsoleLog === 'function') {
+      safeConsoleLog(`${name} ok`, summary, 500);
+    } else {
+      console.info(`[${name}] ok`, summary);
+    }
+  } catch {}
+}
+
+/** @param {string} name @param {any} err */
+function __logError(name, err) {
+  try {
+    // Surface to your UI log as well
+    globalThis.transformationLogWarn?.(`${name} failed: ${err?.message || err}`);
+  } catch {}
+  if (!debuggingConsoleEnabled) return;
+  try {
+    if (typeof safeConsoleLog === 'function') {
+      safeConsoleLog(`${name} error`, (err?.stack || err?.message || err), 800);
+    } else {
+      console.error(`[${name}] error`, err);
+    }
+  } catch {}
+}
+
+/**
+ * Wrap any function to auto-log start/success/error.
+ * Works for sync and async functions (Promises).
+ * @template {(...a:any[])=>any} F
+ * @param {string} name
+ * @param {F} fn
+ * @returns {F}
+ */
+export function withDebug(name, fn) {
+  return /** @type {F} */ (function (...args) {
+    __logStart(name, args);
+    try {
+      const out = fn.apply(this, args);
+      if (out && typeof out.then === 'function') {
+        return out.then(
+          (val) => { __logSuccess(name, '[async resolved]'); return val; },
+          (e)    => { __logError(name, e); throw e; }
+        );
+      }
+      __logSuccess(name, '[sync returned]');
+      return out;
+    } catch (e) {
+      __logError(name, e);
+      throw e;
+    }
+  });
+}
+
+// Simple toast notification system
+export function showToast(message, type = 'info', { timeout = 3500 } = {}) {
+  const result = renderToastNotification({
+    message,
+    severity: type,
+    timeoutMs: timeout,
+    containerId: 'toast-container'
+  });
+  if (!result.ok && debuggingConsoleEnabled) console.error('[showToast] failed', result.error);
+}
+
+// Show user-friendly toast from a query error object/message
+export function toastFromQueryError(err) {
+  const msg = (err && (err.userMessage || err.message || String(err))) || 'Unknown error';
+
+  // Normalize common issues
+  if (/Unknown prefix/i.test(msg)) {
+    return showToast('Query failed: an unknown PREFIX was used.', 'error');
+  }
+  if (/Parse error on line (\d+)/i.test(msg)) {
+    const line = msg.match(/Parse error on line (\d+)/i)[1];
+    return showToast(`Query parse error (line ${line}). Check syntax near that line.`, 'error');
+  }
+  if (/Cannot resolve relative IRI.*no base IRI/i.test(msg)) {
+    return showToast('Query failed: relative IRI used but no BASE IRI was set.', 'error');
+  }
+  // Comunica “serialize/mediator” style
+  if (/mediated over all rejecting actors/i.test(msg)) {
+    return showToast('Query failed: unsupported result format in this build.', 'error');
+  }
+
+  // Default
+  return showToast(`Query failed: ${msg}`, 'error');
+}
+
+// Convenience wrappers for different toast types
+export const toastInfo    = (m, t=3500) => showToast(m, 'info',    { timeout: t });
+export const toastSuccess = (m, t=3500) => showToast(m, 'success', { timeout: t });
+export const toastError   = (m, t=4500) => showToast(m, 'error',   { timeout: t });
+
+
+/** 
+ * Defines common prefixes in SPARQL
+ */
+  export const commonSPARQLPrefixes = {
+    "rdf": `PREFIX rdf: <${PREFIXES.rdf}>`,
+    "rdfs": `PREFIX rdfs: <${PREFIXES.rdfs}>`,
+    "owl": `PREFIX owl: <${PREFIXES.owl}>`,
+    "xsd": `PREFIX xsd: <${PREFIXES.xsd}>`,
+    "skos": `PREFIX skos: <${PREFIXES.skos}>`,
+    "dc": `PREFIX dc: <${PREFIXES.dc}>`,
+    "dcterms": `PREFIX dcterms: <${PREFIXES.dcterms}>`,
+    "obo": `PREFIX obo: <${PREFIXES.obo}>`,
+    "cco2": `PREFIX cco2: <${PREFIXES.cco2}>`,
+    "cceo": `PREFIX cceo: <${PREFIXES.cceo}>`,
+    "geo": `PREFIX geo: <${PREFIXES.geo}>`,
+    "geojson": `PREFIX geojson: <${PREFIXES.geojson}>`,
+    "foaf": `PREFIX foaf: <${PREFIXES.foaf}>`,
+    "prov": `PREFIX prov: <${PREFIXES.prov}>`,
+    "dcat": `PREFIX dcat: <${PREFIXES.dcat}>`,
+    "vcard": `PREFIX vcard: <${PREFIXES.vcard}>`,
+    "wd": "PREFIX wd: <http://www.wikidata.org/entity/>",
+    "bd": "PREFIX bd: <http://www.bigdata.com/rdf#>"
+  }
+
+/**
+ * Reads file content and loads it into IndexedDB under its own graph name.
+ * @param {File} file
+ */
+export async function handleFileUpload(file) {
+  if (!file) {
+    if (debuggingConsoleEnabled) {console.warn('[handleFileUpload] No file provided.');}
+    return;
+  }
+  const store = $rdf.graph();
+
+  try {
+    const content = await readFileAsText(file);
+    const { parseIntoNamedGraph } = await import('./comunica-indexeddb-bridge.js');
+    const detected = getSupportedMimeTypeForFilename(file.name);
+    const mimeType = detected.ok && detected.value.category === 'rdf' ? detected.value.mimeType : 'text/turtle';
+    const graphIRI = `urn:upload:${encodeURIComponent(file.name)}`;
+
+    await parseIntoNamedGraph(content, store, graphIRI, mimeType);
+
+    if (debuggingConsoleEnabled) {console.info(`[handleFileUpload] Parsed ${file.name} as ${mimeType}`);}
+  } catch (error) {
+    if (debuggingConsoleEnabled) {console.error('[handleFileUpload] Failed:', error);}
+  }
+}
+

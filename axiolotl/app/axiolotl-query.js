@@ -1,0 +1,1651 @@
+// axiolotl-query.js
+// This file manages UI interactions and connects them to inference logic
+
+import {
+  clearInferenceConsole,
+  getSelectedRulesFromCheckboxes,
+  inferUntilStable,
+  insertOverlayIntoEndpoint,
+  setInferenceBusy
+} from './axiolotl-inference.js';
+import {
+  addFilesToDB,
+  buildQuery,
+  clearActiveSavedQueries,
+  clearActiveSettings,
+  clearActiveTriples,
+  flushActiveWorkspace,
+  loadGraphFromIndexedDB,
+  makeNamedGraphIRI,
+  makePreviewConstructs,
+  getQueryKind,
+  parseIntoNamedGraph,
+  runConstructPreview,
+  runQueryOnEndpoint,
+  runQueryOnLocalDataset,
+  stashGraphToIndexedDB
+} from './comunica-indexeddb-bridge.js';
+import {
+  clearSavedQueries,
+  countAllTriples,
+  countNamedGraphs,
+  deleteExactTriples,
+  deleteSavedQuery,
+  exportSavedQueriesAsCsv,
+  exportSavedQueriesAsJsonLd,
+  getAllSavedQueries,
+  getSetting,
+  importSavedQueriesFromCsv,
+  saveSavedQuery,
+  saveSetting,
+  storeTriplesInNamedGraph
+} from './indexeddb-triplestore.js';
+import { COMMON_NAMESPACE_IRIS } from '../../packages/namespace-registry/src/index.js';
+import {
+  commonSPARQLPrefixes,
+  debuggingConsoleEnabled,
+  handleFileUpload,
+  showToast,
+  toastFromQueryError
+} from './semantic-core.js';
+import { downloadTextFile, readFileAsText } from '../../packages/browser-file-io/src/index.js';
+import {
+  serializeWorkspaceExport
+} from './axiolotl-workspace-export.js';
+import {
+  getMimeTypeForFormatKey,
+  getPreferredExtensionForMimeType,
+  getSupportedMimeTypeForFilename
+} from '../../packages/format-registry/src/index.js';
+import {
+  serializeRdfGraphExport,
+  parseRdfTextWithAdapters,
+  serializeRdfDatasetWithAdapters
+} from '../../packages/rdf-io/src/index.js';
+import { createUuid } from '../../packages/ontology-utils/src/index.js';
+import { applySparqlUpdateToQuadStore } from '../../packages/sparql-utils/src/index.js';
+import {
+  createStatusPresentation,
+  renderStatusMessage
+} from '../../packages/ui-feedback/src/index.js';
+
+// Where the ontology files live (folder that also contains ontology-list.json)
+const CANON_ONTOLOGIES_BASE = 'ontology-files/' ;
+const CANON_ONTOLOGIES_LIST = CANON_ONTOLOGIES_BASE + 'ontology-list.json' ;
+
+/**
+ * Build a fetchable ontology URL from a name or path
+ * @param {*} name 
+ * @returns {string} Absolute URL or path
+ */
+function buildOntologyUrlFromName(name) {
+  if (!name) return '';
+  if (/^[a-z]+:\/\//i.test(name) || name.startsWith('/')) return name; // already absolute
+  return `${CANON_ONTOLOGIES_BASE.replace(/\/+$/,'')}/${String(name).replace(/^\/+/,'')}`;
+}
+
+// Treat JSON "None" (string) like null
+function nullIfNone(v) {
+  return (v == null || String(v).toLowerCase() === 'none') ? null : v;
+}
+
+// Assumes the commonSPARQLPrefixes enumerages the relevant dictionary
+const defaultActivePrefixes = ['rdfs', 'owl', 'skos'];
+const ACTIVE_PREFIXES_SETTING_KEY = 'activePrefixes';
+let activePrefixesCache = [...defaultActivePrefixes];
+
+/**
+ * Update the RDF preview box from the last overlay graph
+ * Assumes:
+ * window.__lastOverlayGraph exists
+ * element with id="rdf-preview" exists
+ * getSelectedOutputMime() function exists
+ * @returns 
+ */
+async function updatePreviewFromOverlay() {
+  const g = window.__lastOverlayGraph;
+  const box = document.getElementById('rdf-preview');
+  if (!g || !box) return;
+
+  try {
+    const mime = getSelectedOutputMime();
+    const text = await serializeStore(g, mime);
+    box.value = text;
+  } catch (e) {
+    if (debuggingConsoleEnabled) {
+      console.error('[updatePreviewFromOverlay] serialize error:', e);
+    }
+    box.value = `Serialization error: ${e && (e.message || e)}`;
+  }
+}
+
+async function serializeStore(store, mime = 'text/turtle') {
+  if (!store || typeof store.getQuads !== 'function') {
+    throw new Error('serializeStore expected an N3.Store or compatible RDF/JS source.');
+  }
+
+  const serialized = await serializeRdfGraphExport(store, {
+    scope: 'all',
+    format: mime,
+    runtime: { N3, jsonld: globalThis.jsonld, $rdf: globalThis.$rdf }
+  });
+  return serialized.text;
+}
+
+async function serializeStoreToNTriples(store) {
+  const { serializeRdfDatasetWithAdapters } = await import('../../packages/rdf-io/src/index.js');
+  const serialized = await serializeRdfDatasetWithAdapters(store, {
+    format: 'application/n-triples',
+    runtime: { N3, jsonld: globalThis.jsonld, $rdf: globalThis.$rdf }
+  });
+  return serialized.text;
+}
+
+function getWorkspaceExportOptions() {
+  return {
+    scope: document.getElementById('workspace-export-scope')?.value || 'default',
+    mime: document.getElementById('workspace-export-format')?.value || 'text/turtle',
+  };
+}
+
+function getWorkspaceExportFormats(scope) {
+  if (scope === 'default') {
+    return [
+      ['text/turtle', 'Turtle'],
+      ['application/n-triples', 'N-Triples'],
+      ['application/ld+json', 'JSON-LD'],
+    ];
+  }
+
+  return [
+    ['application/trig', 'TriG'],
+    ['application/n-quads', 'N-Quads'],
+    ['application/ld+json', 'JSON-LD'],
+  ];
+}
+
+function timestampUTC() {
+  return new Date().toISOString().replace(/[:.]/g, '-');
+}
+
+function syncWorkspaceExportFormatOptions() {
+  const scope = document.getElementById('workspace-export-scope')?.value || 'default';
+  const formatSelect = document.getElementById('workspace-export-format');
+  const hint = document.getElementById('workspace-export-hint');
+  if (!formatSelect) return;
+
+  const previous = formatSelect.value;
+  const formats = getWorkspaceExportFormats(scope);
+  formatSelect.innerHTML = formats
+    .map(([value, label]) => `<option value="${value}">${label}</option>`)
+    .join('');
+  formatSelect.value = formats.some(([value]) => value === previous) ? previous : formats[0][0];
+
+  if (hint) {
+    hint.textContent = scope === 'default'
+      ? 'Default graph exports support Turtle, N-Triples, and JSON-LD.'
+      : 'Named graph exports support TriG, N-Quads, and JSON-LD.';
+  }
+}
+
+async function handleDownloadActiveWorkspace() {
+  try {
+    const { scope, mime } = getWorkspaceExportOptions();
+    const store = await getWorkspaceExportStore(scope);
+    const { text, count } = await serializeWorkspaceExport(store, {
+      scope: 'all',
+      mimeType: mime,
+      runtime: { N3, jsonld: globalThis.jsonld, $rdf: globalThis.$rdf }
+    });
+
+    if (!count) {
+      showToast('No triples found for that export scope.', 'info');
+      return;
+    }
+
+    const extension = getPreferredExtensionForMimeType(mime);
+    downloadTextFile(
+      `active-workspace-${scope}-${timestampUTC()}.${extension.ok ? extension.value : 'rdf'}`,
+      text,
+      { mimeType: mime }
+    );
+    showToast(`Downloaded ${count} triple${count === 1 ? '' : 's'}.`, 'success');
+  } catch (err) {
+    if (debuggingConsoleEnabled) {
+      console.error('[handleDownloadActiveWorkspace] failed:', err);
+    }
+    showToast(err.message || String(err), 'error');
+  }
+}
+
+async function getWorkspaceExportStore(scope) {
+  const store = await loadGraphFromIndexedDB();
+  if (scope === 'all') return store;
+
+  const { Store, DataFactory } = N3;
+  const { defaultGraph } = DataFactory;
+  const scoped = new Store();
+  const quads = scope === 'default'
+    ? store.getQuads(null, null, null, defaultGraph())
+    : store.getQuads(null, null, null, null).filter(q => q.graph.termType !== 'DefaultGraph');
+
+  scoped.addQuads(quads);
+  return scoped;
+}
+
+async function serializeJsonLdFromNQuads(nquads) {
+  const parsed = await parseRdfTextWithAdapters(nquads, {
+    format: 'application/n-quads',
+    runtime: { N3, jsonld: globalThis.jsonld, $rdf: globalThis.$rdf }
+  });
+  const serialized = await serializeRdfDatasetWithAdapters(parsed.dataset, {
+    format: 'application/ld+json',
+    runtime: { N3, jsonld: globalThis.jsonld, $rdf: globalThis.$rdf }
+  });
+  return serialized.text;
+}
+
+/**
+ * Loads the active SPARQL prefix selection from shared IndexedDB settings.
+ *
+ * @returns {Promise<string[]>} Active prefix keys.
+ */
+async function hydrateActivePrefixes() {
+  const active = await getSetting(ACTIVE_PREFIXES_SETTING_KEY);
+  activePrefixesCache = Array.isArray(active) && active.length
+    ? active.filter((prefix) => typeof prefix === 'string')
+    : [...defaultActivePrefixes];
+  return [...activePrefixesCache];
+}
+
+/**
+ * Reads the cached active SPARQL prefix selection.
+ *
+ * @returns {string[]} Active prefix keys.
+ */
+function getActivePrefixes() {
+  return [...activePrefixesCache];
+}
+
+/**
+ * Persists the active SPARQL prefix selection to shared IndexedDB settings.
+ *
+ * @param {string[]} prefixArr Active prefix keys.
+ * @returns {Promise<void>}
+ */
+async function storeActivePrefixes(prefixArr) {
+  activePrefixesCache = Array.isArray(prefixArr) ? [...prefixArr] : [...defaultActivePrefixes];
+  await saveSetting(ACTIVE_PREFIXES_SETTING_KEY, activePrefixesCache);
+}
+
+// Render the prefix bar with active prefixes and [manage prefixes] button
+// Assumes:
+//  element with id="prefix-bar" exists
+//  commonSPARQLPrefixes object exists
+//  getActivePrefixes() function exists
+//  openPrefixModal() function exists
+//  storeActivePrefixes() function exists
+
+function renderPrefixBar() {
+  const bar = document.getElementById('prefix-bar');
+  bar.innerHTML = '';
+  getActivePrefixes().forEach(prefix => {
+    if (commonSPARQLPrefixes[prefix]) {
+      const prefixBtn = document.createElement('button');
+      prefixBtn.textContent = `${prefix}`;
+      prefixBtn.classList.add('prefix-button');
+      bar.appendChild(prefixBtn);
+    }
+  });
+  // Create [add prefix] button dynamically
+  const addPrefixBtn = document.createElement('button');
+  addPrefixBtn.textContent = 'manage prefixes';
+  addPrefixBtn.classList.add('prefix-button');
+  addPrefixBtn.onclick = openPrefixModal;
+  bar.appendChild(addPrefixBtn);
+}
+
+
+function openPrefixModal() {
+  const modal = document.getElementById('prefix-annotation-modal');
+  const modalContent = modal.querySelector('.prefix-list');
+
+  // (Re)render the inner controls
+  modalContent.innerHTML = `
+    <h3>Manage Prefixes</h3>
+    <form id="prefix-toggle-form" style="display:flex; flex-wrap:wrap; justify-content:flex-start; align-items:flex-start;">
+      ${Object.entries(commonSPARQLPrefixes).map(([key, value]) => {
+        const checked = getActivePrefixes().includes(key) ? 'checked' : '';
+        return `<label style="display:block;margin-bottom:0.5em;">
+          <input type="checkbox" name="prefix" value="${key}" ${checked}>
+          <b>${key}</b>: <span style="font-size:0.95em;">${value.replace(/^PREFIX\\s+\\w+:\\s+/, '')}</span>
+        </label>`;
+      }).join('')}
+    </form>
+    <div>
+      <label for="edit-prefix-label">Prefix:</label>
+      <input type="text" id="edit-prefix-label">
+    </div>
+    <div>
+      <label for="edit-prefix-iri">IRI:</label>
+      <input type="text" id="edit-prefix-iri">
+    </div>
+    <button id="save-prefix-edit">Add Prefix</button>
+    <button id="save-prefixes-btn" style="float:right">Save to Active Workspace</button>
+  `;
+
+  modal.style.display = 'block';
+
+  // Buttons INSIDE .prefix-list
+  const addBtn = modalContent.querySelector('#save-prefix-edit');
+  if (addBtn) {
+    addBtn.onclick = (e) => {
+      e.preventDefault();
+      const label = modalContent.querySelector('#edit-prefix-label')?.value.trim();
+      const iri   = modalContent.querySelector('#edit-prefix-iri')?.value.trim();
+      if (label && iri) {
+        commonSPARQLPrefixes[label] = `PREFIX ${label}: <${iri}>`;
+        renderPrefixBar();
+        modalContent.querySelector('#edit-prefix-label').value = '';
+        modalContent.querySelector('#edit-prefix-iri').value = '';
+      } else {
+        alert('Both prefix label and IRI are required to add a new prefix.');
+      }
+    };
+  }
+
+  const saveBtn = modalContent.querySelector('#save-prefixes-btn');
+  if (saveBtn) {
+    saveBtn.onclick = async (e) => {
+      e.preventDefault();
+      const checked = Array.from(modalContent.querySelectorAll('input[name="prefix"]:checked'))
+        .map(cb => cb.value);
+      await storeActivePrefixes(checked);
+      modal.style.display = 'none';
+      renderPrefixBar();
+    };
+  }
+
+  // Close button is OUTSIDE .prefix-list (in your HTML header area)
+  const closeBtn = modal.querySelector('#close-prefix-modal');
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      modal.style.display = 'none';
+      renderPrefixBar();
+    };
+  }
+}
+
+/**
+ * Runs inference using selected rules and updates UI.
+ */
+async function handleRunInference() {
+  try {
+    const selectedRules = getSelectedRulesFromCheckboxes();
+    const baseIRI = 'http://example.org/';
+    const overlayIRI = `${baseIRI}overlay/inferred#${Date.now()}`;
+
+    const { overlayGraph, metrics } = await inferUntilStable(selectedRules, baseIRI, overlayIRI);
+
+    window.__lastOverlayGraph = overlayGraph;
+
+    const previewText = await serializeStore(overlayGraph, getSelectedOutputMime());
+    document.getElementById('rdf-preview').value = previewText;
+
+    await stashGraphToIndexedDB(overlayGraph, 'named', overlayIRI);
+
+    if (debuggingConsoleEnabled) {
+      console.info('[handleRunInference] Inference metrics:', metrics);
+    }
+  } catch (error) {
+    if (debuggingConsoleEnabled) {
+      console.error('[handleRunInference] Failed:', error);
+    }
+  }
+}
+
+/**
+ * Downloads current preview RDF as a file.
+ * @param {string} format - MIME type (e.g., 'text/turtle')
+ */
+function handleDownloadPreview(format = 'text/turtle') {
+  try {
+    const text = document.getElementById('rdf-preview').value;
+    const extension = getPreferredExtensionForMimeType(format);
+    const filename = `inferred-overlay.${extension.ok ? extension.value : 'rdf'}`;
+    downloadTextFile(filename, text, { mimeType: format });
+    if (debuggingConsoleEnabled) {console.info('[handleDownloadPreview] RDF download triggered');}
+  } catch (error) {
+    if (debuggingConsoleEnabled) {console.error('[handleDownloadPreview] Failed:', error);}
+  }
+}
+
+// Get user choice of where to save inferred triples
+function getSaveTarget() {
+  const isNamed = document.getElementById('save-target-named')?.checked;
+
+  if (isNamed) {
+    const iriForOverlay = document.getElementById('iri-for-save-target')?.value;
+
+    return {
+      mode: 'named',
+      // Uses iriForOverlay if it has a value, otherwise generates one
+      graphIRI: iriForOverlay?.trim() ? iriForOverlay : makeNamedGraphIRI('http://example.org/inferred')
+    };
+  }
+
+  return { mode: 'default', graphIRI: null };
+}
+
+// Save inferred overlay graph to IndexedDB
+async function runInference() {
+  try {
+    clearInferenceConsole?.();
+    setInferenceBusy(true);
+
+    const rules = getSelectedRulesFromCheckboxes();
+    const { overlayGraph, metrics } = await inferUntilStable(rules);
+
+    window.__lastOverlayGraph = overlayGraph;
+    await updatePreviewFromOverlay();
+
+    const n = overlayGraph.getQuads(null, null, null, null).length;
+
+    showToast(
+      n
+        ? `Inference finished — ${n} triple${n === 1 ? '' : 's'} materialized.`
+        : 'Inference finished — no new triples.',
+      n ? 'success' : 'info'
+    );
+  } catch (err) {
+    if (debuggingConsoleEnabled) {
+      console.error('[run-inference] failed:', err);
+    }
+    showToast(`Inference error: ${err.message || err}`, 'error');
+  } finally {
+    setInferenceBusy(false);
+  }
+}
+
+// Insert overlay graph into SPARQL endpoint
+async function saveOverlayToIndexedDB(overlayGraph, { mode, graphIRI }) {
+  if (!overlayGraph) throw new Error('No overlay graph to save.');
+  // one canonical write path (default or named)
+  return await stashGraphToIndexedDB(overlayGraph, mode ?? 'default', graphIRI ?? null);
+}
+
+// Save inferred overlay graph to IndexedDB
+async function saveInferredTriplesToDB() {
+  try {
+    const g = window.__lastOverlayGraph;
+    if (!g) throw new Error('Nothing to save. Run inference first.');
+    const target = getSaveTarget();
+    const res = await saveOverlayToIndexedDB(g, target);
+    showToast(`Saved ${res.count} triple${res.count === 1 ? '' : 's'} to ${res.graphIRI}.`, 'success');
+  } catch (e) {
+    if (debuggingConsoleEnabled) {console.error(e);}
+    showToast(e.message || String(e), 'error');
+  }
+};
+
+// Insert inferred overlay graph into SPARQL endpoint
+async function insertInferredTriplesIntoEndpoint() {
+  try {
+      const g = window.__lastOverlayGraph;
+      if (!g) throw new Error('Nothing to insert. Run inference first.');
+      const endpointUrl = document.getElementById('endpoint-reference')?.value?.trim();
+      const target = getSaveTarget();
+      if (target.mode === 'named' && !target.graphIRI) {
+        target.graphIRI = makeNamedGraphIRI('http://example.org/inferred');
+      }
+      await insertOverlayIntoEndpoint(g, endpointUrl, { ...target, authHeaders: endpointAuthHeaders });
+      showToast('Inserted inferred data into SPARQL endpoint.', 'success');
+    } catch (e) {
+      if (debuggingConsoleEnabled) {console.error(e);}
+      showToast(e.message || String(e), 'error');
+    }
+};
+
+// Export inferred overlay graph as a file in chosen format
+async function exportInferredOverlay() {
+  try {
+    const g = window.__lastOverlayGraph;
+    if (!g) throw new Error('Nothing to export. Run inference first.');
+
+    const mime = getSelectedOutputMime();
+    const text = await serializeStore(g, mime);
+
+    const extension = getPreferredExtensionForMimeType(mime);
+
+    downloadTextFile(`inferred-${timestampUTC()}.${extension.ok ? extension.value : 'rdf'}`, text, { mimeType: mime });
+    showToast('Download started.', 'success');
+  } catch (e) {
+    if (debuggingConsoleEnabled) {
+      console.error(e);
+    }
+    showToast(e.message || String(e), 'error');
+  }
+}
+
+// Dynamically add file + IRI input rows
+function createFileInputRow(index) {
+  const row = document.createElement('div');
+  row.classList.add('file-upload-row');
+  row.style.marginBottom = '0.5em';
+
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.classList.add('rdf-file');
+  fileInput.setAttribute('data-index', index);
+
+  const iriInput = document.createElement('input');
+  iriInput.type = 'text';
+  iriInput.placeholder = "Named Graph IRI (leave blank for default)";
+  iriInput.classList.add('graph-iri');
+  iriInput.setAttribute('data-index', index);
+  iriInput.style.marginLeft = '1em';
+  iriInput.style.width = '40%';
+
+  row.appendChild(fileInput);
+  row.appendChild(iriInput);
+
+  return row;
+}
+
+let fileRowCounter = 0;
+
+// Add initial row on load
+function addNewFileRow() {
+  const container = document.getElementById('file-upload-container');
+  const row = createFileInputRow(fileRowCounter++);
+  container.appendChild(row);
+}
+
+// This function shows/hides the save/insert buttons based on reasoner source choice
+function toggleReasonerButtons() {
+  const useDB = document.getElementById('reasoner-source-indexeddb')?.checked;
+  const saveBtn = document.getElementById('save-inferred-to-db');
+  if (saveBtn)   saveBtn.style.display   = useDB ? '' : 'none';
+}
+// run at load + when radios change
+['reasoner-source-indexeddb','reasoner-source-endpoint'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('change', toggleReasonerButtons);
+});
+toggleReasonerButtons();
+
+// Event handlers
+document.getElementById('run-inference')?.addEventListener('click', runInference);
+document.getElementById('save-inferred-to-db')?.addEventListener('click', saveInferredTriplesToDB);
+document.getElementById('export-inferred')?.addEventListener('click', async () => {
+  await exportInferredOverlay();
+});
+document.getElementById('output-format')?.addEventListener('change', async () => {
+  await updatePreviewFromOverlay();
+});
+
+// Event handler for adding new rows
+document.getElementById('add-file-row').addEventListener('click', addNewFileRow);
+
+document.getElementById('add-to-db').addEventListener('click', () => {
+  const rows = document.querySelectorAll('.file-upload-row');
+  const errors = [];
+  const namedGraphError = document.getElementById('namedGraphError');
+  addFilesToDB(rows, errors, namedGraphError);
+});
+
+// Auth type selector changes visible fields
+document.getElementById('auth-type').addEventListener('change', () => {
+  const authType = document.getElementById('auth-type').value;
+  const container = document.getElementById('auth-fields');
+  container.innerHTML = '';
+  setAuthTypeFromSettings(authType, container);
+});
+
+// Set auth fields based on saved settings on load
+async function setAuthTypeFromSettings (authType, container) {
+  if (authType === 'basic') {
+    container.innerHTML = `
+      <input type="text" id="auth-username" placeholder="Username" style="width: 40%; margin-right: 1em;">
+      <input type="password" id="auth-password" placeholder="Password" style="width: 40%;">
+    `;
+  } else if (authType === 'bearer') {
+    container.innerHTML = `
+      <input type="text" id="auth-token" placeholder="Bearer token" style="width: 80%;">
+    `;
+  } else if (authType === 'custom') {
+    container.innerHTML = `
+      <input type="text" id="auth-header-name" placeholder="Header Name (e.g., X-API-Key)" style="width: 40%; margin-right: 1em;">
+      <input type="text" id="auth-header-value" placeholder="Header Value" style="width: 40%;">
+    `;
+  }
+};
+
+
+
+// Global variable to hold current auth headers for endpoint queries
+let endpointAuthHeaders = {};
+
+// Helper to read and trim input values
+function readValue(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+// Set and persist SPARQL endpoint + auth settings
+document.getElementById('set-endpoint-auth')?.addEventListener('click', async () => {
+  const authType = readValue('auth-type');
+  let headers = {};
+  const toSave = { sparqlAuthType: authType }; // keys you can persist
+
+  try {
+    if (authType === 'none') {
+      headers = {};
+      // Clear any previously saved creds
+      toSave.sparqlAuthToken = '';
+      toSave.sparqlAuthUser  = '';
+      toSave.sparqlAuthPass  = '';
+      toSave.sparqlAuthHeaderName  = '';
+      toSave.sparqlAuthHeaderValue = '';
+    }
+
+    else if (authType === 'basic') {
+      const username = readValue('auth-username');
+      const password = readValue('auth-password');
+      if (!username || !password) throw new Error('Username and password are required for Basic auth.');
+      headers = { 'Authorization': `Basic ${btoa(`${username}:${password}`)}` };
+      toSave.sparqlAuthUser = username;
+      toSave.sparqlAuthPass = password;
+    }
+
+    else if (authType === 'bearer') {
+      // Support either #auth-token or legacy #endpoint-authentication
+      const token = readValue('auth-token') || readValue('endpoint-authentication');
+      if (!token) throw new Error('Token is required for Bearer auth.');
+      headers = { 'Authorization': `Bearer ${token}` };
+      toSave.sparqlAuthToken = token;
+    }
+
+    else if (authType === 'custom') {
+      const name  = readValue('auth-header-name');
+      const value = readValue('auth-header-value');
+      if (!name || !value) throw new Error('Header name and value are required for Custom auth.');
+      headers = { [name]: value };
+      toSave.sparqlAuthHeaderName  = name;
+      toSave.sparqlAuthHeaderValue = value;
+    }
+
+    // 1) make headers available to the query code
+    endpointAuthHeaders = headers;
+
+    // 2) persist settings (adjust if your saveSetting accepts only one key/value)
+    for (const [k, v] of Object.entries(toSave)) {
+      await saveSetting(k, v);
+    }
+    // Fire one event for the batch and repaint:
+    try { notifyIdbChange?.({ db: 'OntologyWorkbenchProjects', store: 'settings', type: 'put' }); } catch {}
+    await refreshSparqlStatus();
+
+    // 3) UI feedback
+    document.getElementById('current-endpoint-auth-status').textContent =
+      authType === 'none' ? 'Auth disabled' : `Auth set for: ${authType}`;
+    showToast(authType === 'none' ? 'Authentication disabled.' : `Authentication set: ${authType}`, 'success');
+
+  } catch (e) {
+    if (debuggingConsoleEnabled) {console.error('[set-endpoint-auth] failed:', e);}
+    showToast(e.message || String(e), 'error');
+  }
+});
+
+// Set and persist SPARQL endpoint URL
+document.getElementById('set-endpoint')?.addEventListener('click', async () => {
+  const endpoint = document.getElementById('endpoint-reference').value;
+  await saveSetting('sparqlEndpoint', endpoint);
+
+  // Tell listeners (and other tabs) that settings changed:
+  try { notifyIdbChange?.({ db: 'OntologyWorkbenchProjects', store: 'settings', type: 'put', key: 'sparqlEndpoint' }); } catch {}
+
+  // Paint immediately in this tab:
+  await refreshSparqlStatus();
+
+  document.getElementById('current-endpoint').textContent = `Current: ${endpoint}`;
+});
+
+// Call this whenever you switch tabs
+function activateTab(panelId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const isActive = btn.dataset.tab === panelId;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    btn.tabIndex = isActive ? 0 : -1;
+  });
+
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === panelId);
+  });
+}
+
+// Initialize tab buttons
+function initTabs() {
+  const btns = document.querySelectorAll('.tab-btn');
+  if (!btns.length) return;
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+  });
+
+  // Default: first tab or hash
+  const initial = location.hash && document.getElementById(location.hash.slice(1))
+    ? location.hash.slice(1)
+    : btns[0].dataset.tab;
+
+  activateTab(initial);
+}
+
+// UI event bindings
+window.addEventListener('DOMContentLoaded', () => {
+  setInferenceBusy(false);
+  initTabs();
+  document.getElementById('file-upload')?.addEventListener('change', async (e) => {
+    for (const file of e.target.files) {
+      await handleFileUpload(file);
+    }
+  });
+  renderOntologyList();
+  document.getElementById('load-selected-ontologies')?.addEventListener('click', loadSelectedOntologiesToDB);
+  document.getElementById('download-overlay')?.addEventListener('click', () => handleDownloadPreview('text/turtle'));
+});
+
+/** 
+ * User data management DOM handlers
+ */
+// Clears data
+document.getElementById('clear-active-triples') ?.addEventListener('click', clearActiveTriples);
+// Clears queries
+document.getElementById('clear-saved-queries') ?.addEventListener('click', clearActiveSavedQueries);
+// Clears settings
+document.getElementById('clear-active-settings') ?.addEventListener('click', clearActiveSettings);
+// Removes databases
+document.getElementById('flush-active-workspace') ?.addEventListener('click', flushActiveWorkspace);
+
+window.addEventListener('DOMContentLoaded', async () => {
+  // Load saved endpoint + auth settings
+  const endpoint = await getSetting('sparqlEndpoint');
+  if (endpoint) {
+    document.getElementById('endpoint-reference').value = endpoint;
+    document.getElementById('current-endpoint').textContent = `Current: ${endpoint}`;
+  }
+  // Auth type
+  const token = await getSetting('sparqlAuthToken');
+  if (token) {
+    document.getElementById('endpoint-authentication').value = token;
+    document.getElementById('current-endpoint-auth-status').textContent = 'Token loaded';
+  }
+  // Refresh status display
+  await Promise.all([
+    refreshSparqlStatus(),
+    refreshWorkspaceStatus()
+  ]);
+});
+
+// -- UI wire-up: read/write radios --
+const $modeRead  = document.getElementById('mode-read');
+const $modeWrite = document.getElementById('mode-write');
+const $writeOpts = document.getElementById('write-options');
+
+[$modeRead, $modeWrite].forEach(el=>{
+  el?.addEventListener('change', ()=>{
+    const isWrite = $modeWrite?.checked;
+    if ($writeOpts) $writeOpts.style.display = isWrite ? '' : 'none';
+  });
+});
+
+const stashInferenceDefaultGraphMode = document.getElementById('save-target-default');
+const stashInferenceNamedGraphMode = document.getElementById('save-target-named');
+const nameSaveTargetEl = document.getElementById('name-save-target');
+
+[stashInferenceDefaultGraphMode, stashInferenceNamedGraphMode].forEach(el=>{
+  el?.addEventListener('change', ()=>{
+    const namedGraphOptionChosen = stashInferenceNamedGraphMode?.checked;
+    if (nameSaveTargetEl) nameSaveTargetEl.style.display = namedGraphOptionChosen ? 'block' : 'none';
+  });
+});
+
+/**
+ * Validate that query kind matches UI mode. Returns {ok:boolean,reason?:string}
+ * Pure; logs for developer visibility.
+ */
+const validateModeVsQuery = (kind, mode) => {
+  if (mode === 'read' && kind === 'UPDATE') {
+    if (debuggingConsoleEnabled) {console.warn('[validateModeVsQuery] UPDATE blocked in Read mode');}
+    return { ok:false, reason:'This query modifies data. Switch to Write mode.' };
+  }
+  if (mode === 'write' && kind !== 'UPDATE') {
+    if (debuggingConsoleEnabled) {console.warn('[validateModeVsQuery] Read query blocked in Write mode');}
+    return { ok:false, reason:'This is a read query. Switch to Read mode.' };
+  }
+  return { ok:true };
+};
+
+// ! This function is not yet called by anything !
+// Summarize a query response so we can toast the right message.
+function summarizeResults(results) {
+  // Nothing / empty
+  if (!results || (Array.isArray(results) && results.length === 0)) {
+    return { kind: 'empty' };
+  }
+
+  // ASK: your DB path returns [{ ASK: { value: "true"|"false" } }]
+  if (Array.isArray(results) && results[0] && results[0].ASK) {
+    const val = String(results[0].ASK.value).toLowerCase() === 'true';
+    return { kind: 'ask', value: val };
+  }
+
+  // CONSTRUCT/DESCRIBE (DB path): array of { nt: { value: line } }
+  if (Array.isArray(results) && results[0] && results[0].nt) {
+    return { kind: 'graph', tripleCount: results.length };
+  }
+
+  // SELECT (DB path via bindings array) – your current DB path normalizes to plain objects
+  if (Array.isArray(results) && typeof results[0] === 'object' && !results[0].nt && !results[0].ASK) {
+    return { kind: 'select', rowCount: results.length };
+  }
+
+  // Endpoint path returns plain bindings array (same detection as above)
+  if (Array.isArray(results)) {
+    return { kind: 'select', rowCount: results.length };
+  }
+
+  // Fallback
+  return { kind: 'unknown' };
+}
+
+// Render query results into HTML table or appropriate format
+function structureQueryResults(result) {
+  // SELECT: new shape { vars, rows }
+  if (result && Array.isArray(result.rows) && Array.isArray(result.vars)) {
+    const { vars, rows } = result;
+    if (rows.length === 0) return '<em>No results.</em>';
+
+    let html = `<table><thead><tr>${
+      vars.map(v => `<th class="query-results-th">${renderQueryCell(v, 40)}</th>`).join('')
+    }</tr></thead><tbody>`;
+
+    for (const row of rows) {
+      html += `<tr class="query-results-tr">` +
+        vars.map(v => `<td class="query-results-td">${renderQueryCell(row[v]?.value ?? '', 75)}</td>`).join('') +
+        `</tr>`;
+    }
+    html += '</tbody></table>';
+    return html;
+  }
+
+  // ASK
+  if (result && result.kind === 'ask') {
+    return `<pre>${result.value ? 'true' : 'false'}</pre>`;
+  }
+
+  // Graph/Quads
+  if (Array.isArray(result) && result[0] && result[0].nt) {
+    return `<pre>${escapeHtml(result.map(x => x.nt.value).join('\n'))}</pre>`;
+  }
+
+  // Legacy / fallback: previous array-of-bindings shape
+  if (Array.isArray(result) && result.length) {
+    const vars = Object.keys(result[0]);
+    let html = `<table><thead><tr>${
+      vars.map(v => `<th class="query-results-th">${renderQueryCell(v, 40)}</th>`).join('')
+    }</tr></thead><tbody>`;
+
+    for (const row of result) {
+      html += `<tr class="query-results-tr">` +
+        vars.map(v => `<td class="query-results-td">${renderQueryCell(row[v]?.value ?? '', 75)}</td>`).join('') +
+        `</tr>`;
+    }
+    html += '</tbody></table>';
+    return html;
+  }
+
+  return '<em>No results.</em>';
+}
+
+document.getElementById('query-results').addEventListener('click', function (event) {
+  const cell = event.target.closest('.query-cell');
+  if (cell) {
+    cell.classList.toggle('is-expanded');
+  }
+});
+
+async function commitUpdateByMaterialization(updateStr, targetMode = 'default') {
+  const result = await applySparqlUpdateToQuadStore(updateStr, {
+    runConstructQuery: async (query, { format }) => runConstructPreview(query, format),
+    parseConstructResult: async (rdfText, { format }) => parseRdfTextWithAdapters(rdfText, {
+      format,
+      baseIri: 'http://example.org/',
+      runtime: { N3, jsonld: globalThis.jsonld, $rdf: globalThis.$rdf }
+    }),
+    deleteQuadRows: async (rows) => deleteExactTriples(rows),
+    insertQuadRows: async (rows, context) => {
+      const store = createStoreFromQuadRows(rows);
+      await stashGraphToIndexedDB(store, context.targetMode, context.graphIri || null);
+      return rows.length;
+    }
+  }, {
+    targetMode,
+    createGraphIri: makeNamedGraphIRI,
+    autoGraphBase: 'http://example.org/updated'
+  });
+
+  return {
+    deleted: result.deleted,
+    inserted: result.inserted,
+    graphIRI: result.graphIri
+  };
+}
+
+function createStoreFromQuadRows(rows) {
+  const store = new N3.Store();
+  for (const row of rows || []) {
+    store.addQuad(N3.DataFactory.quad(
+      row.subjectType === 'BlankNode' ? N3.DataFactory.blankNode(row.subject) : N3.DataFactory.namedNode(row.subject),
+      N3.DataFactory.namedNode(row.predicate),
+      createObjectTermFromQuadRow(row),
+      row.graph ? N3.DataFactory.namedNode(row.graph) : N3.DataFactory.defaultGraph()
+    ));
+  }
+  return store;
+}
+
+function createObjectTermFromQuadRow(row) {
+  if (row.objectType === 'NamedNode') return N3.DataFactory.namedNode(row.object);
+  if (row.objectType === 'BlankNode') return N3.DataFactory.blankNode(row.object);
+  if (row.objectLang) return N3.DataFactory.literal(row.object, row.objectLang);
+  if (row.objectDatatype) return N3.DataFactory.literal(row.object, N3.DataFactory.namedNode(row.objectDatatype));
+  return N3.DataFactory.literal(row.object);
+}
+// Display results in the designated div
+function displayQueryResults(resultsHtml) {
+  const resultsDiv = document.getElementById('query-results');
+  resultsDiv.innerHTML = resultsHtml;
+}
+
+addNewFileRow(); // start with one row
+hydrateActivePrefixes()
+  .catch((error) => {
+    if (debuggingConsoleEnabled) console.warn('[hydrateActivePrefixes] failed:', error);
+  })
+  .finally(renderPrefixBar);
+
+// Tab switching
+document.querySelectorAll('.tab').forEach((tab, idx) => {
+  tab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.tab-content')[idx].classList.add('active');
+  };
+});
+
+
+/**
+ * Loads ontology-list.json and renders the ontology selection list.
+ */
+async function renderOntologyList() {
+  const listElem = document.getElementById('ontology-list');
+  listElem.innerHTML = '<li>Loading...</li>';
+
+  try {
+    const resp = await fetch(CANON_ONTOLOGIES_LIST, { cache: 'no-store' });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+    const data = await resp.json();
+
+    listElem.innerHTML = '';
+    const seenLabels = {};
+
+    data.forEach((entry, idx) => {
+      const labelRaw =
+        nullIfNone(entry['rdfs:label']) ??
+        nullIfNone(entry['dcterms:title']) ??
+        nullIfNone(entry['dc:title']) ??
+        entry['file:name'] ??
+        'Unknown';
+
+      let label = labelRaw;
+      if (seenLabels[label]) {
+        const ver = nullIfNone(entry['owl:versionInfo']) ?? nullIfNone(entry['owl:versionIRI']) ?? idx;
+        label += ` (${ver})`;
+      }
+      seenLabels[label] = true;
+
+      const version  = nullIfNone(entry['owl:versionInfo']) ?? nullIfNone(entry['owl:versionIRI']) ?? '';
+      const dataIri  = nullIfNone(entry['owl:ontologyIRI']) ?? '';
+      const fileName = entry['file:name'] || '';
+      const dataPath = buildOntologyUrlFromName(fileName);
+
+      const warnMissing = !fileName || !dataPath;
+      const li = document.createElement('li');
+      li.style.marginLeft = '1.5em';
+      li.style.marginBottom = '0.4em';
+      li.innerHTML = `
+        <label ${warnMissing ? 'style="color:red;" title="Missing file name"' : ''}>
+          <input type="checkbox" class="ontology-checkbox"
+                 data-path="${dataPath}"
+                 data-iri="${dataIri}"
+                 data-version="${version}">
+          ${label}
+        </label>
+      `;
+      listElem.appendChild(li);
+    });
+  } catch (e) {
+    listElem.innerHTML = '<li style="color:red;">Failed to load ontology list.</li>';
+    if (debuggingConsoleEnabled) {console.error('[renderOntologyList] Error:', e);}
+    showToast('Failed to load ontology list.', 'error');
+  }
+}
+
+/**
+ * Build one normalized saved-query record from textarea content.
+ * @param {string} queryText
+ * @returns {{id:string,type:string,value:string,createdAt:string}}
+ */
+function buildSavedQueryRecord(queryText,queryLabel) {
+  return {
+    id: `urn:uuid:${createUuid()}`,
+    label: String(queryLabel ?? 'Untitled'),
+    type: COMMON_NAMESPACE_IRIS.cco2.informationContentEntity,
+    value: String(queryText ?? ''),
+    createdAt: new Date().toISOString()
+  };
+}
+
+async function handleSaveQueryForLater() {
+  try {
+    const textarea = document.getElementById('sparql-query');
+    const queryText = textarea?.value ?? '';
+    const queryLabelInput = document.getElementById('query-label');
+    const queryLabel = queryLabelInput?.value ?? 'Untitled';
+
+    if (!queryText.trim()) {
+      showToast('There is no SPARQL query text to save.', 'warning');
+      return;
+    }
+    if (!queryLabel.trim()) {
+      showToast('Please provide a name for your query.', 'warning');
+      return;
+    }
+
+    const record = buildSavedQueryRecord(queryText,queryLabel);
+    await saveSavedQuery(record);
+    await renderSavedQuerySidebar();
+
+    showToast('Query saved for later.', 'success');
+  } catch (err) {
+    if (debuggingConsoleEnabled) {
+      console.error('[handleSaveQueryForLater] failed:', err);
+    }
+    showToast(err.message || String(err), 'error');
+  }
+}
+
+/**
+ * Render the saved query list in the sidebar.
+ */
+async function renderSavedQuerySidebar() {
+  const listEl = document.getElementById('saved-query-list');
+  if (!listEl) return;
+
+  try {
+    const rows = await getAllSavedQueries();
+    listEl.innerHTML = '';
+
+    if (!rows.length) {
+      listEl.innerHTML = '<li><em>No saved queries yet.</em></li>';
+      return;
+    }
+
+    for (const row of rows) {
+      const li = document.createElement('li');
+      li.className = 'saved-query-item';
+
+      const loadBtn = document.createElement('button');
+      loadBtn.type = 'button';
+      loadBtn.className = 'saved-query-load';
+      loadBtn.textContent = summarizeSavedQueryLabel(row);
+      loadBtn.title = row.id;
+      loadBtn.addEventListener('click', () => {
+        const textarea = document.getElementById('sparql-query');
+        if (textarea) textarea.value = row.value || '';
+        showToast('Saved query loaded into editor.', 'success');
+      });
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'saved-query-delete';
+      deleteBtn.textContent = '×';
+      deleteBtn.title = 'Delete saved query';
+      deleteBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await deleteSavedQuery(row.id);
+        await renderSavedQuerySidebar();
+        showToast('Saved query deleted.', 'success');
+      });
+
+      li.appendChild(loadBtn);
+      li.appendChild(deleteBtn);
+      listEl.appendChild(li);
+    }
+  } catch (err) {
+    if (debuggingConsoleEnabled) {
+      console.error('[renderSavedQuerySidebar] failed:', err);
+    }
+    listEl.innerHTML = '<li style="color:red;">Failed to load saved queries.</li>';
+  }
+}
+
+function summarizeSavedQueryLabel(row) {
+  const text = String(row.label || '').trim().replace(/\s+/g, ' ');
+  if (!text) return '(empty query)';
+  return text.length > 80 ? text.slice(0, 80) + '…' : text;
+}
+
+async function handleDownloadSavedQueriesJsonLd() {
+  try {
+    const jsonld = await exportSavedQueriesAsJsonLd();
+    downloadTextFile(
+      `saved-queries-${Date.now()}.jsonld`,
+      JSON.stringify(jsonld, null, 2),
+      { mimeType: 'application/ld+json' }
+    );
+    showToast('Saved queries JSON-LD download started.', 'success');
+  } catch (err) {
+    if (debuggingConsoleEnabled) {
+      console.error('[handleDownloadSavedQueriesJsonLd] failed:', err);
+    }
+    showToast(err.message || String(err), 'error');
+  }
+}
+
+async function handleDownloadSavedQueriesCsv() {
+  try {
+    const csv = await exportSavedQueriesAsCsv();
+    downloadTextFile(
+      `saved-queries-${Date.now()}.csv`,
+      csv,
+      { mimeType: 'text/csv' }
+    );
+    showToast('Saved queries CSV download started.', 'success');
+  } catch (err) {
+    if (debuggingConsoleEnabled) {
+      console.error('[handleDownloadSavedQueriesCsv] failed:', err);
+    }
+    showToast(err.message || String(err), 'error');
+  }
+}
+
+async function handleUploadSavedQueriesCsv(file) {
+  try {
+    if (!file) {
+      showToast('No CSV file selected.', 'warning');
+      return;
+    }
+
+    const text = await readFileAsText(file);
+    const result = await importSavedQueriesFromCsv(text);
+    await renderSavedQuerySidebar();
+
+    showToast(`Imported ${result.count} saved quer${result.count === 1 ? 'y' : 'ies'}.`, 'success');
+  } catch (err) {
+    if (debuggingConsoleEnabled) {
+      console.error('[handleUploadSavedQueriesCsv] failed:', err);
+    }
+    showToast(err.message || String(err), 'error');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  syncWorkspaceExportFormatOptions();
+  document.getElementById('workspace-export-scope')
+    ?.addEventListener('change', syncWorkspaceExportFormatOptions);
+
+  document.getElementById('download-active-workspace')
+    ?.addEventListener('click', handleDownloadActiveWorkspace);
+
+  document.getElementById('save-query-for-later')
+    ?.addEventListener('click', handleSaveQueryForLater);
+
+  document.getElementById('download-saved-queries-jsonld')
+    ?.addEventListener('click', handleDownloadSavedQueriesJsonLd);
+
+  document.getElementById('download-saved-queries-csv')
+    ?.addEventListener('click', handleDownloadSavedQueriesCsv);
+
+  document.getElementById('upload-saved-queries-csv')
+    ?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      await handleUploadSavedQueriesCsv(file);
+      e.target.value = '';
+    });
+
+  renderSavedQuerySidebar();
+});
+
+window.addEventListener('saved-queries-changed', renderSavedQuerySidebar);
+
+/**
+ * Live updates: initialize + listen for changes
+ * 
+ * We support two mechanisms:
+ * 1) Custom DOM events your code can dispatch after writes:
+ *    window.dispatchEvent(new CustomEvent('settings-changed'));
+ *    window.dispatchEvent(new CustomEvent('triples-changed'));
+ *
+ * 2) Cross-tab notifications via BroadcastChannel 'idb-updates'
+ */
+
+const bc = 'BroadcastChannel' in window ? new BroadcastChannel('idb-updates') : null;
+
+function notifyIdbChange(payload) {
+  // Call this AFTER your own IDB writes to sync other tabs & listeners
+  try { bc?.postMessage(payload); } catch {}
+  try {
+    const type = (payload?.store === 'settings') ? 'settings-changed'
+              : (payload?.store === 'quadRows') ? 'triples-changed'
+              : 'idb-changed';
+    window.dispatchEvent(new CustomEvent(type, { detail: payload }));
+  } catch {}
+}
+
+// Listen for events
+window.addEventListener('settings-changed', refreshSparqlStatus);
+window.addEventListener('triples-changed', refreshWorkspaceStatus);
+
+bc?.addEventListener('message', (evt) => {
+  const { db, store } = evt.data || {};
+  if (db === 'OntologyWorkbenchProjects' && store === 'settings') refreshSparqlStatus();
+  if (db === 'OntologyWorkbenchProjects' && store === 'quadRows') refreshWorkspaceStatus();
+});
+
+// PURE: decide what the SPARQL status should look like
+function presentSparqlStatus(hasEndpoint) {
+  return createStatusPresentation({
+    message: hasEndpoint ? 'SPARQL Endpoint Assigned' : 'No SPARQL Endpoint Assigned',
+    severity: hasEndpoint ? 'success' : 'idle',
+    metadata: {
+      isOk: !!hasEndpoint
+    }
+  });
+}
+
+// PURE: decide what the workspace status should look like
+function presentWorkspaceStatus(tripleCount, namedGraphCount) {
+  const t = Number(tripleCount) || 0;
+  const g = Number(namedGraphCount) || 0;
+  const isOk = (t > 0 || g > 0);
+  return createStatusPresentation({
+    message: `Active Workspace: ${t} triple${t===1?'':'s'}, ${g} named graph${g===1?'':'s'}`,
+    severity: isOk ? 'success' : 'idle',
+    metadata: { isOk }
+  });
+}
+
+// IMPURE: apply a presentation to the SPARQL button
+function renderSparqlStatus(pres) {
+  const el = document.getElementById('sparql-endpoint-status');
+  if (!el) return;
+  renderStatusMessage(el, pres, { classPrefix: 'status' });
+  const isOk = !!pres.metadata?.isOk;
+  el.classList.toggle('status-ok', isOk);
+  el.classList.toggle('status-idle', !isOk);
+}
+
+// IMPURE: apply a presentation to the workspace button
+function renderWorkspaceStatus(pres) {
+  const el = document.getElementById('active-workspace-status');
+  if (!el) return;
+  renderStatusMessage(el, pres, { classPrefix: 'status' });
+  const isOk = !!pres.metadata?.isOk;
+  el.classList.toggle('status-ok', isOk);
+  el.classList.toggle('status-idle', !isOk);
+}
+
+// IMPURE: IO -> PURE -> DOM
+// refresh SPARQL status from IndexedDB
+async function refreshSparqlStatus() {
+  const val = await getSetting('sparqlEndpoint');                // IO
+  renderSparqlStatus(presentSparqlStatus(!!(val && val.trim()))); // PURE -> DOM
+}
+// refresh workspace status from IndexedDB
+async function refreshWorkspaceStatus() {
+  try {
+    const [tripleCount, namedGraphCount] = await Promise.all([
+      countAllTriples(),
+      countNamedGraphs()
+    ]);
+
+    renderWorkspaceStatus(
+      presentWorkspaceStatus(tripleCount, namedGraphCount)
+    );
+  } catch (error) {
+    if (debuggingConsoleEnabled) {
+      console.error('[refreshWorkspaceStatus] Failed:', error);
+    }
+    renderWorkspaceStatus(presentWorkspaceStatus(0, 0));
+  }
+}
+
+// Initial idle states
+function instantIdleSparqlStatus() {
+  renderSparqlStatus(presentSparqlStatus(false));
+}
+function instantIdleWorkspaceStatus() {
+  renderWorkspaceStatus(presentWorkspaceStatus(0, 0));
+}
+
+
+
+/**
+ * Loads selected ontologies into IndexedDB as named graphs.
+ * Updates UI with success/error per ontology and a summary toast.
+ * Assumes:
+ * - fetch(), parseIntoNamedGraph(text, g, base, mime), storeTriplesInNamedGraph(triples)
+ * - showToast(msg, level)
+ * - shared format-registry MIME detection
+ * - debuggingConsoleEnabled global for logging 
+ */
+async function loadSelectedOntologiesToDB() {
+  const checkboxes = document.querySelectorAll('.ontology-checkbox:checked');
+  if (!checkboxes.length) {
+    showToast('No ontologies selected.', 'info');
+    return;
+  }
+
+  let ok = 0, err = 0;
+
+  for (const cb of checkboxes) {
+    const filePath = cb.getAttribute('data-path') || '';
+    const labelEl  = cb.parentElement;
+
+    if (!filePath) {
+      err++; labelEl.style.color = 'red';
+      showToast('Missing file path for a selected ontology.', 'error');
+      continue;
+    }
+
+    try {
+      const resp = await fetch(filePath, { cache: 'no-store' });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+      const text = await resp.text();
+      const detected = getSupportedMimeTypeForFilename(filePath);
+      const mime = detected.ok && detected.value.category === 'rdf' ? detected.value.mimeType : 'text/turtle';
+      const g = $rdf.graph();
+
+      await parseIntoNamedGraph(text, g, null, mime); // default graph
+      await storeTriplesInNamedGraph(g.statements);
+
+      ok++;
+      labelEl.style.fontWeight = 'bold';
+      labelEl.style.color = '#007acc';
+      showToast(`Loaded ${g.statements.length} triple(s) from ${filePath}`, 'success');
+    } catch (e) {
+      err++; labelEl.style.color = 'red';
+      if (debuggingConsoleEnabled) {console.error(`[loadSelectedOntologiesToDB] Failed for ${filePath}:`, e);}
+      showToast(`Failed to load ${filePath}: ${e.message}`, 'error');
+    }
+  }
+
+  showToast(`Done: ${ok} loaded, ${err} failed.`, err ? 'error' : 'success');
+}
+
+// Handle special characters in HTML
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function abbreviateText(value, maxChars) {
+  const text = String(value ?? '');
+  if (text.length <= maxChars) return text;
+
+  const slice = text.slice(0, maxChars);
+  const lastSpace = slice.lastIndexOf(' ');
+
+  if (lastSpace > 20) {
+    return slice.slice(0, lastSpace) + '...';
+  }
+
+  return slice + '...';
+}
+
+function renderQueryCell(value, maxChars = 75) {
+  const raw = String(value ?? '');
+  const safeFull = escapeHtml(raw);
+
+  if (raw.length <= maxChars) {
+    return `<div class="query-cell">${safeFull}</div>`;
+  }
+
+  const safeShort = escapeHtml(abbreviateText(raw, maxChars));
+
+  return `
+    <details class="query-cell query-cell-details">
+      <summary class="query-cell-summary" title="${safeFull}">${safeShort}</summary>
+      <div class="query-cell-full">${safeFull}</div>
+    </details>
+  `;
+}
+
+/**
+ * Render a query error with possible hints into the results div.
+ * @param {} err 
+ * @returns 
+ */
+function renderQueryError(err) {
+  const resultsDiv = document.getElementById('query-results');
+  if (!resultsDiv) return;
+
+  const raw = (err && (err.message || err.toString())) || 'Unknown error';
+
+  // Friendly hints for the 3 cases you mentioned
+  let hint = '';
+  if (/Unknown prefix/i.test(raw)) {
+    // Example: "Query error: Error: Unknown prefix: foo"
+    const m = raw.match(/Unknown prefix:\s*([^\s"'`]+)/i);
+    const missing = m ? m[1] : '(unknown)';
+    hint = `Tip: add <code>PREFIX ${missing}: &lt;…&gt;</code> via the Prefix Bar or inline in your query.`;
+  } else if (/Parse error on line\s+(\d+)/i.test(raw)) {
+    const line = raw.match(/Parse error on line\s+(\d+)/i)[1];
+    hint = `Tip: check syntax near line ${line} — common issues are missing <code>.</code>, unmatched braces, or stray commas.`;
+  } else if (/no base IRI was set/i.test(raw)) {
+    hint = `Tip: add <code>BASE &lt;http://example.org/&gt;</code> to the top, or avoid relative IRIs.`;
+  }
+
+  const html = `
+    <div class="error-box" style="border:1px solid #c33; background:#fee; padding:10px; border-radius:8px;">
+      <div style="font-weight:600; margin-bottom:6px;">Query error</div>
+      <pre style="white-space:pre-wrap; margin:0 0 6px 0">${escapeHtml(raw)}</pre>
+      ${hint ? `<div style="color:#900">${hint}</div>` : ''}
+    </div>
+  `;
+  resultsDiv.innerHTML = html;
+}
+
+// Utility to get selected output MIME type from dropdown
+function getSelectedOutputMime() {
+  const sel = document.getElementById('output-format');
+  const label = sel?.value || 'Turtle';
+  const result = getMimeTypeForFormatKey(label);
+  return result.ok ? result.value.mimeType : 'text/turtle';
+}
+
+/**
+ * Run button handler (Read/Write aware with Preview/Commit for UPDATE).
+ * - Builds the final query from active prefixes + editor text.
+ * - Validates that the query kind (READ vs UPDATE) matches the chosen UI mode.
+ * - READ mode:
+ *    * If "endpoint" selected -> runQueryOnEndpoint and render as usual.
+ *    * Else -> runQueryOnLocalDataset and render as usual.
+ * - WRITE mode:
+ *    * If action=Preview -> transforms UPDATE into 1..n CONSTRUCTs, runs each locally, renders serialized RDF.
+ *    * If action=Commit -> materializes INSERT/DELETE deltas against IndexedDB and reports counts.
+ *
+ * Assumptions:
+ *   getActivePrefixes(), buildQuery(prefixes, queryText),
+ *   runQueryOnEndpoint(endpoint, query), runQueryOnLocalDataset(selectedGraphs, query),
+ *   structureQueryResults(response), displayQueryResults(html),
+ *   renderQueryError(err), toastFromQueryError(err), showToast(msg, level)
+ *
+ * New helpers used (from our added module utilities):
+ *   getQueryKind(q), validateModeVsQuery(kind, mode),
+ *   makePreviewConstructs(updateStr), runConstructPreview(constructQuery, format),
+ *   commitUpdateByMaterialization(updateStr, targetMode)
+ */
+document.getElementById('run-query').onclick = async () => {
+  // ---- small local helper for preview rendering (pure string builder)
+  const makePreviewHtml = (sections) => {
+    // sections: Array<{label:string, text:string}>
+    const esc = (s) => String(s ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+    const blocks = sections.map(({ label, text }) =>
+      `\n<h4 style="margin:.6em 0;">${esc(label)}</h4>\n<pre style="white-space:pre-wrap">${esc(text)}</pre>`
+    );
+    return blocks.join('\n');
+  };
+
+  try {
+    if (debuggingConsoleEnabled) {console.info('[run-query] Start');}
+    const prefixes       = getActivePrefixes();
+    const queryText      = document.getElementById('sparql-query')?.value ?? '';
+    const useEndpoint    = !!document.getElementById('endpoint-radio')?.checked;
+
+    // Read/Write UI state
+    const isWriteMode    = !!document.getElementById('mode-write')?.checked;
+    const writeAction    = (document.querySelector('input[name="write-action"]:checked')?.value) || 'preview';
+    const targetMode     = (document.getElementById('update-target-graph')?.value === 'named') ? 'named' : 'default';
+    const previewFormat  = document.getElementById('update-preview-format')?.value || 'text/turtle';
+
+    // Build the final query (prefixes + user text)
+    const query = buildQuery(prefixes, queryText);
+
+    // Determine query kind and enforce mode
+    const kind = getQueryKind(query); // 'READ' | 'UPDATE' | 'UNKNOWN'
+    const { ok, reason } = validateModeVsQuery(kind, isWriteMode ? 'write' : 'read');
+    if (!ok) {
+      if (debuggingConsoleEnabled) {console.warn('[run-query] Mode validation failed:', reason);}
+      showToast(reason, 'warning');
+      return;
+    }
+
+    // -------------------------------------------------------------------
+    // READ MODE
+    // -------------------------------------------------------------------
+    if (!isWriteMode) {
+      if (debuggingConsoleEnabled) {console.info('[run-query] READ mode');}
+      let response;
+
+      if (useEndpoint) {
+        if (debuggingConsoleEnabled) {console.info('[run-query] Using remote endpoint for READ');}
+        const endpoint = document.getElementById('endpoint-reference')?.value ?? '';
+        response = await runQueryOnEndpoint(endpoint, query, endpointAuthHeaders); // expected { vars, rows } for SELECT
+      } else {
+        if (debuggingConsoleEnabled) {console.info('[run-query] Using local database for READ');}
+        response = await runQueryOnLocalDataset(query);
+      }
+
+      // Render using your existing pipeline
+      const resultsHtml = structureQueryResults(response);
+      displayQueryResults(resultsHtml);
+
+      // Optional: success toast for SELECT-like shapes
+      const isSelect = response && Array.isArray(response.vars) && Array.isArray(response.rows);
+      if (isSelect) {
+        showToast(`Query finished — ${response.rows.length} row${response.rows.length === 1 ? '' : 's'}.`, 'success');
+      } else {
+        showToast('Query finished.', 'success');
+      }
+      return;
+    }
+
+    // -------------------------------------------------------------------
+    // WRITE MODE
+    // -------------------------------------------------------------------
+    if (debuggingConsoleEnabled) {console.info('[run-query] WRITE mode');}
+
+    // Guard: UPDATE queries against remote endpoints are not supported here (preview or commit).
+    if (useEndpoint) {
+      const msg = 'Update queries against a remote endpoint are not supported in this UI. Switch to local database.';
+      if (debuggingConsoleEnabled) {console.warn('[run-query] Blocked UPDATE to endpoint');}
+      showToast(msg, 'warning');
+      return;
+    }
+
+    // Safety gate for CLEAR/DROP/LOAD/CREATE/COPY/MOVE/ADD
+    if (/\b(CLEAR|DROP|LOAD|CREATE|COPY|MOVE|ADD)\b/i.test(query)) {
+      const confirmed = window.confirm('This operation looks administrative/destructive. Are you sure you want to continue?');
+      if (!confirmed) {
+        showToast('Canceled.', 'info');
+        return;
+      }
+    }
+
+    if (writeAction === 'preview') {
+      if (debuggingConsoleEnabled) {console.info('[run-query] UPDATE preview');}
+      const constructs = makePreviewConstructs(query); // 0..n {label, query}
+      if (!constructs.length) {
+        showToast('No preview available for this UPDATE shape.', 'info');
+        displayQueryResults('<p>No preview available for this UPDATE shape.</p>');
+        return;
+      }
+
+      const sections = [];
+      for (const c of constructs) {
+        if (!c.query) {
+          sections.push({ label: c.label, text: '(operation has no preview)' });
+          continue;
+        }
+        const serialized = await runConstructPreview(c.query, previewFormat); // 'text/turtle' | 'application/n-triples'
+        sections.push({ label: c.label, text: serialized || '(no matching triples)' });
+      }
+
+      displayQueryResults(makePreviewHtml(sections));
+      showToast('Preview generated.', 'success');
+      return;
+    }
+
+    // Commit (materialize against IndexedDB)
+    if (writeAction === 'commit') {
+      if (debuggingConsoleEnabled) {console.info('[run-query] UPDATE commit (materialization)', { targetMode });}
+      const { inserted, deleted, graphIRI } = await commitUpdateByMaterialization(query, targetMode);
+      const summary = `Committed update: +${inserted} inserted, -${deleted} deleted → ${graphIRI}.`;
+      if (debuggingConsoleEnabled) {console.info('[run-query] Commit summary:', summary);}
+      displayQueryResults(`<pre>${summary}</pre>`);
+      showToast(summary, 'success');
+      return;
+    }
+
+    // Fallback (shouldn’t happen)
+    if (debuggingConsoleEnabled) {console.warn('[run-query] Unknown writeAction:', writeAction);}
+    showToast('Unknown write action.', 'warning');
+
+  } catch (err) {
+    if (debuggingConsoleEnabled) {console.error('[run-query] Query error:', err);}
+    renderQueryError(err);
+    toastFromQueryError(err);
+  } finally {
+    if (debuggingConsoleEnabled) {console.info('[run-query] End');}
+  }
+};
+
+document.getElementById('get-all-triples').addEventListener('click', function() {
+    // This is the text you want to insert. It could be from a variable,
+    // a data attribute, or even the placeholder itself.
+    const suggestedText = "SELECT ?s ?p ?o WHERE { ?s ?p ?o } ## This may be slow, maybe LIMIT 100";
+    
+    // Set the value of the textbox.
+    document.getElementById('sparql-query').value = suggestedText;
+});
