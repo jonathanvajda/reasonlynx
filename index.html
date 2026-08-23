@@ -220,6 +220,20 @@
       letter-spacing: 0.03em;
     }
 
+    .landing-page__feature-media:has(img)::before {
+      content: none;
+    }
+
+    .landing-page__feature-media img {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      max-width: min(68%, 18rem);
+      max-height: 12rem;
+      object-fit: contain;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 1.4rem 2.4rem rgba(0, 0, 0, 0.16));
+    }
+
     .landing-page__feature-body {
       padding: 1.8rem;
       display: flex;
@@ -421,6 +435,166 @@
               </p>
             </div>
           </article>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/Eagle-VI_1753264913.svg" alt="OntoEagle Semantic Lookup logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">OntoEagle Semantic Lookup</h3>
+              <p class="landing-page__feature-text">Search and inspect ontology terms from local and shared semantic catalogs.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/Eagle-VI_1753264913.svg" alt="Ontology Viewer logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Ontology Viewer</h3>
+              <p class="landing-page__feature-text">Browse ontology assets with the shared catalog viewer experience.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/cq-ferret.svg" alt="Competency Question Ferret logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Competency Question Ferret</h3>
+              <p class="landing-page__feature-text">Extract and organize competency questions for ontology analysis.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/default-logo.png" alt="Slim Bundle Builder logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Slim Bundle Builder</h3>
+              <p class="landing-page__feature-text">Collect selected semantic resources into portable bundles.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/tom.svg" alt="Tabular Ontology Maker logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Tabular Ontology Maker</h3>
+              <p class="landing-page__feature-text">Build ontology structures from spreadsheet-oriented workflows.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="axiolotl/images/axiolotl.svg" alt="Axiolotl logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Axiolotl</h3>
+              <p class="landing-page__feature-text">Run SPARQL and inference workflows for RDF graph analysis.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/default-logo.png" alt="Graph Analyst Playbook logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Graph Analyst Playbook</h3>
+              <p class="landing-page__feature-text">Stage analyst workflows and playbook steps for graph investigation.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/default-logo.png" alt="Graph Analytics logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Graph Analytics</h3>
+              <p class="landing-page__feature-text">Explore paths and relationships across RDF graph structures.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/visual-lynx.svg" alt="Visual Lynx logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Visual Lynx</h3>
+              <p class="landing-page__feature-text">Visualize linked data and graph structures for inspection.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/default-logo.png" alt="Linked-Data Transformer logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Linked-Data Transformer</h3>
+              <p class="landing-page__feature-text">Transform linked data between practical browser-based workflow stages.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="ontology-compliance-diagnostic/favicon.svg" alt="Ontology Compliance Diagnostic logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Ontology Compliance Diagnostic</h3>
+              <p class="landing-page__feature-text">Evaluate ontology quality and compliance against diagnostic criteria.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="iri-swapper/icon.svg" alt="Myna IRI Swapper logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Myna IRI Swapper</h3>
+              <p class="landing-page__feature-text">Rewrite RDF and SPARQL IRIs from mapping files in one app.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="sparql-pattern-visualizer/images/default-logo-uncropped.png" alt="SPARQL Pattern Visualizer logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">SPARQL Pattern Visualizer</h3>
+              <p class="landing-page__feature-text">Inspect query patterns and SPARQL structures visually.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/ontology-tabulator.svg" alt="Ontology Tabulator logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Ontology Tabulator</h3>
+              <p class="landing-page__feature-text">Review ontology statements through tabular inspection workflows.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="images/table-nova-logo.svg" alt="Table Nova logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">Table Nova</h3>
+              <p class="landing-page__feature-text">Work with tabular data as part of semantic toolchain preparation.</p>
+            </div>
+          </div>
+
+          <div class="landing-page__feature-card js-reveal-card is-visible">
+            <div class="landing-page__feature-media">
+              <img src="docxhund/images/docxhund-base.png" alt="DocxHund logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">DocxHund</h3>
+              <p class="landing-page__feature-text">Prototype document-oriented workflows alongside the semantic app suite.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

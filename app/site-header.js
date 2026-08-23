@@ -18,36 +18,55 @@ import {
   // --- Your config (as you provided) ---
   const HEADER_CONFIG = {
     brand: {
-      mainLogo: { href: "../about/", src: "../images/main-logo.png", alt: "Erhaben Semantic Solutions" },
+      mainLogo: { href: "../", src: "../images/block-logo.png", alt: "ReasonLynx placeholder logo" },
       toolLogoByPageId: {
         "ontoeagle": { src: "../images/Eagle-VI_1753264913.svg", alt: "OntoEagle Semantic Lookup" },
+        "ontology-viewer": { src: "../images/Eagle-VI_1753264913.svg", alt: "Ontology Viewer" },
         "ontology-tabulator": { src: "../images/ontology-tabulator.svg", alt: "Ontology Tabulator" },
         "cq-ferret": { src: "../images/cq-ferret.svg", alt: "CQ Ferret" },
+        "bundler": { src: "../images/default-logo.png", alt: "Slim Bundle Builder" },
         "bp-weaver": { src: "../images/bp-weaver.svg", alt: "BP Weaver" },
         "controlled-vocabulary-registry": { src: "../images/controlled-vocabulary-registry.svg", alt: "Controlled Vocabulary Registry" },
         "tom": { src: "../images/tom.svg", alt: "Tabular Ontology Maker" },
         "table-nova": { src: "../images/table-nova-logo.svg", alt: "Table Nova" },
-        "axiolotl": { src: "../images/axiolotl.svg", alt: "Axiolotl SPARQL & Inference" },
+        "axiolotl": { src: "../axiolotl/images/axiolotl.svg", alt: "Axiolotl SPARQL & Inference" },
+        "graph-analyst-playbook": { src: "../images/default-logo.png", alt: "Graph Analyst Playbook" },
+        "graph-analytics": { src: "../images/default-logo.png", alt: "Graph Analytics" },
         "myna-iri-swapper": { src: "../images/myna-iri-swapper.png", alt: "Myna IRI Swapper" },
+        "docxhund": { src: "../docxhund/images/docxhund-base.png", alt: "DocxHund" },
         "visual-lynx": { src: "../images/visual-lynx.svg", alt: "Visual Lynx" },
+        "sparql-pattern-visualizer": { src: "../sparql-pattern-visualizer/images/default-logo-uncropped.png", alt: "SPARQL Pattern Visualizer" },
+        "linked-data-transformer": { src: "../images/default-logo.png", alt: "Linked-Data Transformer" },
+        "ontology-compliance-diagnostic": { src: "../ontology-compliance-diagnostic/favicon.svg", alt: "Ontology Compliance Diagnostic" },
+        "nlp-quality-assurance": { src: "../ontology-compliance-diagnostic/favicon.svg", alt: "NLP Quality Assurance" },
+        "ontology-measures": { src: "../ontology-compliance-diagnostic/favicon.svg", alt: "Ontology Measures" },
+        "about-page": { src: "../images/block-logo.png", alt: "ReasonLynx" },
       },
       defaultToolLogo: { src: "../images/default-logo.png", alt: "Semantic Tools" },
       titleByPageId: {
         "ontoeagle": { title: "OntoEagle Semantic Lookup" },
+        "ontology-viewer": { title: "Ontology Viewer" },
         "iri-registry": { title: "IRI Registry" },
         "ontology-tabulator": { title: "Ontology Tabulator" },
         "cq-ferret": { title: "Competency Question Ferret" },
+        "bundler": { title: "Slim Bundle Builder" },
         "bp-weaver": { title: "BP Weaver" },
         "controlled-vocabulary-registry": { title: "Controlled Vocabulary Registry" },
         "tom": { title: "Tabular Ontology Maker" },
         "table-nova": { title: "Table Nova" },
         "shacl-generator": { title: "SHACL Generator" },
         "axiolotl": { title: "Axiolotl SPARQL & Inference" },
+        "graph-analyst-playbook": { title: "Graph Analyst Playbook" },
+        "graph-analytics": { title: "Graph Analytics" },
         "sparql-pattern-visualizer": { title: "SPARQL Pattern Visualizer" },
         "ontology-compliance-diagnostic": { title: "Ontology Compliance Diagnostic" },
+        "nlp-quality-assurance": { title: "NLP Quality Assurance" },
+        "ontology-measures": { title: "Ontology Measures" },
         "myna-iri-swapper": { title: "Myna IRI Swapper" },
         "visual-lynx": { title: "Visual Lynx" },
         "linked-data-transformer": { title: "Linked-Data Transformer" },
+        "docxhund": { title: "DocxHund" },
+        "about-page": { title: "ReasonLynx" },
         }
     },
 
@@ -56,6 +75,7 @@ import {
         title: "Data Exploration",
         items: [
           { label: "OntoEagle Semantic Lookup", href: "../onto-eagle/", pageId: "ontoeagle" },
+        //  { label: "Ontology Viewer", href: "../ontology-viewer/", pageId: "ontology-viewer" },
         //  { label: "IRI Registry", href: "/iri-registry.html", pageId: "iri-registry" },
           { label: "Ontology Tabulator", href: "../ontology-tabulator/", pageId: "ontology-tabulator" },
           { label: "Visual Lynx", href: "../visual-lynx/", pageId: "visual-lynx" },
@@ -65,18 +85,26 @@ import {
         title: "Domain Analysis",
         items: [
           { label: "Competency Question Ferret", href: "../cq-ferret/", pageId: "cq-ferret" },
+          { label: "Graph Analyst Playbook", href: "../graph-analyst-playbook/", pageId: "graph-analyst-playbook" },
           /*{ label: "Business Process Weaver", href: "/bp-weaver.html", pageId: "bp-weaver" },*/
-          { label: "Mermaid Diagram Builder 🔗", href: "https://skreen5hot.github.io/mermaid/", pageId: "mermaid-diagram-builder" },
+          { label: "Graph Analytics", href: "../graph-analytics/", pageId: "graph-analytics" },
         ],
       },
       {
         title: "Building Tools",
         items: [
-        //  { label: "Controlled Vocabulary", href: "/controlled-vocabulary-registry.html", pageId: "controlled-vocabulary-registry" },
           { label: "Tabular Ontology Maker (TOM)", href: "../tabular-ontology-maker/", pageId: "tom" },
-          { label: "Table Nova", href: "../table-nova/", pageId: "table-nova" },
           { label: "Knowledge Graph Modeler 🔗", href: "https://skreen5hot.github.io/kgModeler/", pageId: "kg-modeler" },
+          { label: "Mermaid Diagram Builder 🔗", href: "https://skreen5hot.github.io/mermaid/", pageId: "mermaid-diagram-builder" },
         //  { label: "SHACL Generator", href: "/shacl-generator.html", pageId: "shacl-generator" },
+        ],
+      },
+      {
+        title: "Data Transformation",
+        items: [
+          { label: "Table Nova (Converts to RDF)", href: "../table-nova/", pageId: "table-nova" },
+          { label: "DocxHund (Converts to RDF)", href: "../docxhund/", pageId: "docxhund" },
+          { label: "Linked-Data Transformer", href: "../linked-data-transformer/", pageId: "linked-data-transformer" },
         ],
       },
       {
@@ -84,13 +112,15 @@ import {
         items: [
           { label: "Axiolotl SPARQL & Inference", href: "../axiolotl/", pageId: "axiolotl" },
           { label: "SPARQL Pattern Visualizer", href: "../sparql-pattern-visualizer/", pageId: "sparql-pattern-visualizer" },
-          { label: "Linked-Data Transformer", href: "../linked-data-transformer/", pageId: "linked-data-transformer" },
+          { label: "Slim Bundle Builder", href: "../bundler/", pageId: "bundler" },
         ],
       },
       {
         title: "Maintenance",
             items: [
             { label: "Ontology Compliance Diagnostic", href: "../ontology-compliance-diagnostic/", pageId: "ontology-compliance-diagnostic" },
+            { label: "NLP Quality Assurance", href: "../ontology-compliance-diagnostic/nlp-quality-assurance.html", pageId: "nlp-quality-assurance" },
+            { label: "Ontology Measures", href: "../ontology-compliance-diagnostic/ontology-measures.html", pageId: "ontology-measures" },
             { label: "Myna IRI Swapper for SPARQL & RDF", href: "../iri-swapper/", pageId: "myna-iri-swapper" },
             ],
         },
