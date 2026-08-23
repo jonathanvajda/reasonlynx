@@ -246,6 +246,7 @@ const SHELL_ASSETS = [
   './graph-analytics/styles/graph-analytics.css',
   './iri-swapper/',
   './iri-swapper/app/iri-swapper-run-store.js',
+  './iri-swapper/app/iri-swapper-mode.js',
   './iri-swapper/app/ont-iri-swapper.js',
   './iri-swapper/app/sparql-iri-swapper.js',
   './iri-swapper/examples/bfo-core.ttl',
