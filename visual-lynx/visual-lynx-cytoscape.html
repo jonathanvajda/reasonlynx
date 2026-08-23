@@ -153,6 +153,7 @@
         return new Promise((resolve, reject) => {
           const script = document.createElement("script");
           script.src = src;
+          script.type = "module";
           script.defer = true;
           script.onload = () => resolve(src);
           script.onerror = () => reject(new Error("JS failed: " + src));

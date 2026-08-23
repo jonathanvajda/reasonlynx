@@ -328,7 +328,7 @@
   --toggle-inset: 3px;
   --toggle-thumb: 24px;
   --sun-nudge: 3px;
-  --moon-nudge: 10px;
+  --moon-nudge: 0px;
 }
 
 .theme-toggle__icon {

@@ -300,7 +300,7 @@ hr {
 
   /* Optional fine-tuning (glyph nudges inside the slots) */
   --sun-nudge: 0px;        /* try 3px */
-  --moon-nudge: 0px;       /* try 10px */
+  --moon-nudge: 0px;
 }
 
 .theme-toggle__icon {
@@ -372,7 +372,7 @@ hr {
 
 :root {
   --sun-nudge: 3px;
-  --moon-nudge: 10px;
+  --moon-nudge: 0px;
 }
 
 /* Screen-reader only helper */
