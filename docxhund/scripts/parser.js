@@ -142,14 +142,16 @@ function createPartNode(options) {
 export function parseDocumentParts(docxParts, options) {
   var baseIri = options.baseIri;
   var includeSections = Boolean(options.includeSections);
-  var includeParagraphs = Boolean(options.includeParagraphs);
-  var includeSentences = Boolean(options.includeSentences);
   var includeWords = Boolean(options.includeWords);
+  var includeSentences = Boolean(options.includeSentences) || includeWords;
+  var includeParagraphs = Boolean(options.includeParagraphs) || includeSentences;
 
   var parts = [];
   var documentCounter = 1;
   var sectionCounter = 0;
   var paragraphCounter = 0;
+  var sentenceCounter = 0;
+  var wordCounter = 0;
 
   var documentIri = mintInstanceIri(baseIri, 'document');
   var documentNode = createPartNode({
@@ -250,6 +252,7 @@ export function parseDocumentParts(docxParts, options) {
         }
 
         var sentenceIri = mintInstanceIri(baseIri, 'sentence');
+        sentenceCounter += 1;
         var sentenceNode = createPartNode({
           iri: sentenceIri,
           partType: 'sentence',
@@ -278,6 +281,7 @@ export function parseDocumentParts(docxParts, options) {
 
           for (var w = 0; w < words.length; w += 1) {
             var wordText = words[w];
+            wordCounter += 1;
             var wordIri = mintInstanceIri(baseIri, 'word');
             var wordNode = createPartNode({
               iri: wordIri,
@@ -310,6 +314,8 @@ export function parseDocumentParts(docxParts, options) {
     documentIri: documentIri,
     sectionCount: sectionCounter,
     paragraphCount: paragraphCounter,
+    sentenceCount: sentenceCounter,
+    wordCount: wordCounter,
     parts: parts
   };
 }

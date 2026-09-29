@@ -465,7 +465,17 @@ export const COMMON_NAMESPACE_REGISTRY = Object.freeze({
       hasDateValue: 'ont00001771',
       hasBooleanValue: 'ont00001772',
       hasIntegerValue: 'ont00001773',
-      isSubjectOf: 'ont00001801'
+      isSubjectOf: 'ont00001801',
+      prohibits: 'ont00001800',
+      isAbout: 'ont00001808',
+      permits: 'ont00001910',
+      requires: 'ont00001974',
+      ProcessRegulation: 'ont00001324',
+      actOfInformationProcessing: 'ont00000366',
+      actOfDataTransformation: 'ont00001158',
+      hasInput: 'ont00001921',
+      hasOutput: 'ont00001986',
+      hasAgent: 'ont00001833'
     }
   }),
   foaf: defineEntry({

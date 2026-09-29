@@ -2,117 +2,105 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>DocxHund Prototype</title>
+  <title>DocxHund RDF Annotation Workbench</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Baseline CSS -->
   <link rel="stylesheet" href="../styles/skeleton.css" />
-  <!-- App-scoped CSS -->
   <link rel="stylesheet" href="./styles/docxhund-app.css" />
 </head>
 <body>
   <main class="container app-shell">
     <header class="app-header">
-      <h1 class="app-title">DocxHund Prototype</h1>
-      <img src="./images/docxhund-base.png" width="150">
-      <p class="app-subtitle">
-        Extract document parts from DOCX and serialize them as Turtle.
-      </p>
+      <div><h1 class="app-title">DocxHund</h1><p class="app-subtitle">RDF-native document annotation workbench</p></div>
+      <img src="./images/docxhund-base.png" width="110" alt="DocxHund mascot" />
     </header>
-
-    <section class="app-panel">
-      <div class="row">
-        <div class="eight columns">
-          <label for="docxFile"><strong>DOCX file</strong></label>
-          <input id="docxFile" class="u-full-width" type="file" accept=".docx" />
+    <section class="app-toolbar" aria-label="Project controls">
+      <label for="projectSelect">Project</label><select id="projectSelect"></select>
+      <button id="newProjectBtn" type="button">New project</button>
+      <span id="persistenceStatus" class="app-status">Opening workspace…</span>
+    </section>
+    <div class="workbench-grid">
+      <aside class="app-panel source-panel">
+        <h2>Project / sources</h2>
+        <label for="docxFile"><strong>Add DOCX</strong></label>
+        <input id="docxFile" type="file" accept=".docx" />
+        <label for="knowledgeFile"><strong>Add ontology / knowledge graph</strong></label>
+        <input id="knowledgeFile" type="file" accept=".ttl,.turtle,.nt,.nq,.trig,.n3,.jsonld,.rdf,.owl" />
+        <button id="importKnowledgeBtn" type="button">Import knowledge base</button>
+        <h3>Documents</h3>
+        <select id="documentSelect" class="u-full-width"><option value="">No documents</option></select>
+        <h3>Knowledge bases</h3>
+        <ul id="knowledgeBaseList" class="resource-list"><li class="app-muted">None loaded</li></ul>
+        <h3>Document outline</h3>
+        <nav id="documentOutline" class="outline"><span class="app-muted">Process or open a document.</span></nav>
+      </aside>
+      <section class="app-panel document-panel">
+        <div class="document-heading">
+          <div><h2 id="documentTitle">Document</h2><div id="previewSummary" class="app-muted">No document processed yet.</div></div>
+          <button id="processBtn" class="button-primary" type="button">Process DOCX</button>
         </div>
-
-        <div class="four columns">
-          <label for="baseIri"><strong>Base IRI</strong></label>
-          <input
-            id="baseIri"
-            class="u-full-width"
-            type="text"
-            value="https://example.org/doc-inst/"
-          />
+        <p id="previewModeNote" class="app-muted preview-note">The document view will appear here after processing.</p>
+        <div id="documentViewer" class="document-viewer" tabindex="0" aria-label="Document preview">
+          <p class="app-muted">The document preview will appear here.</p>
         </div>
-      </div>
-
+        <div id="wordPreviewStyles"></div>
+      </section>
+      <aside class="app-panel annotation-panel">
+        <h2>Annotation / knowledge</h2>
+        <label for="selectedPassage">Selected passage</label>
+        <textarea id="selectedPassage" rows="5" readonly placeholder="Select text in the document."></textarea>
+        <label for="annotationType">Annotation type</label>
+        <select id="annotationType" class="u-full-width">
+          <option value="about">is about</option>
+          <option value="entity-mention">entity mention</option>
+          <option value="class-mention">class mention</option>
+          <option value="permission">permission</option>
+          <option value="prohibition">prohibition</option>
+          <option value="obligation">obligation / requirement</option>
+          <option value="definition">definition</option>
+        </select>
+        <label id="resourceIriLabel" for="aboutResource">About resource IRI</label>
+        <input id="aboutResource" class="u-full-width" type="text" list="resourceSuggestions" autocomplete="off" placeholder="Search label or enter an IRI" />
+        <datalist id="resourceSuggestions"></datalist>
+        <p id="resourceLookupHint" class="app-muted lookup-hint">Import a knowledge base to search its labels.</p>
+        <div id="processResourceFields" hidden>
+          <label for="processResource">Process IRI</label>
+          <input id="processResource" class="u-full-width" type="text" placeholder="https://… or urn:…" />
+        </div>
+        <button id="commitAnnotationBtn" type="button" disabled>Commit annotation</button>
+        <p id="annotationStatus" class="app-muted" role="status">Select text in the document to begin.</p>
+      </aside>
+    </div>
+    <details class="app-panel advanced-panel">
+      <summary><strong>Extraction, RDF, and diagnostics</strong></summary>
       <div class="row app-row-gap">
         <div class="six columns">
-          <fieldset class="app-fieldset">
-            <legend><strong>Extraction levels</strong></legend>
-
-            <label>
-              <input id="includeParagraphs" type="checkbox" checked />
-              <span class="label-body">Paragraphs</span>
-            </label>
-
-            <label>
-              <input id="includeSections" type="checkbox" checked />
-              <span class="label-body">Sections (heuristic)</span>
-            </label>
-
-            <label>
-              <input id="includeSentences" type="checkbox" />
-              <span class="label-body">Sentences</span>
-            </label>
-
-            <label>
-              <input id="includeWords" type="checkbox" />
-              <span class="label-body">Words</span>
-            </label>
+          <label for="baseIri"><strong>Base IRI</strong></label>
+          <input id="baseIri" class="u-full-width" type="text" value="https://example.org/doc-inst/" />
+          <fieldset class="app-fieldset"><legend>Extraction levels</legend>
+            <label><input id="includeParagraphs" type="checkbox" checked /> <span class="label-body">Paragraphs</span></label>
+            <label><input id="includeSections" type="checkbox" checked /> <span class="label-body">Sections</span></label>
+            <label><input id="includeSentences" type="checkbox" checked /> <span class="label-body">Sentences</span></label>
+            <label><input id="includeWords" type="checkbox" /> <span class="label-body">Words</span></label>
+            <small>Sentences require paragraphs; words require sentences and paragraphs.</small>
           </fieldset>
         </div>
-
         <div class="six columns">
-          <fieldset class="app-fieldset">
-            <legend><strong>Output</strong></legend>
-
-            <label for="formatSelect">Serialization</label>
-            <select id="formatSelect" class="u-full-width">
-              <option value="text/turtle" selected>Turtle</option>
-            </select>
-
-            <button id="processBtn" class="button-primary u-full-width app-button-gap" type="button">
-              Process DOCX
-            </button>
-
-            <button id="downloadBtn" class="u-full-width" type="button" disabled>
-              Download Turtle
-            </button>
-          </fieldset>
+          <label for="formatSelect">Serialization</label>
+          <select id="formatSelect" class="u-full-width"><option value="text/turtle">Turtle</option></select>
+          <button id="downloadBtn" type="button" disabled>Download Turtle</button>
         </div>
       </div>
-    </section>
-
-    <section class="app-panel">
-      <h2>Document parts preview</h2>
-      <div id="previewSummary" class="app-muted">No document processed yet.</div>
-      <div id="partsTableWrap" class="app-table-wrap"></div>
-    </section>
-
-    <section class="app-panel">
-      <h2>Turtle output</h2>
-      <textarea
-        id="outputArea"
-        class="app-output"
-        spellcheck="false"
-        placeholder="Turtle serialization will appear here..."
-      ></textarea>
-    </section>
-
-    <section class="app-panel">
-      <h2>Log</h2>
-      <pre id="logArea" class="app-log"></pre>
-    </section>
+      <h3>Document parts</h3><div id="partsTableWrap" class="app-table-wrap"></div>
+      <h3>Document and annotation RDF</h3><textarea id="outputArea" class="app-output" spellcheck="false"></textarea>
+      <h3>Log</h3><pre id="logArea" class="app-log"></pre>
+    </details>
   </main>
-
-  <link rel="modulepreload" href="../packages/format-registry/src/mime-registry.js" />
-  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
-  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
-  <link rel="modulepreload" href="../vendor/jszip-esm.js" />
+  <script src="../vendor/jszip.min.js"></script>
+  <script src="../vendor/docx-preview.min.js"></script>
+  <script src="../vendor/purify.min.js"></script>
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/rdflib.min.js"></script>
   <script type="module" src="./scripts/docxhund-main.js"></script>
 </body>
 </html>
-

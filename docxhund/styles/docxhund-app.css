@@ -12,13 +12,18 @@ body {
 }
 
 .app-shell {
-  max-width: 1100px;
+  width: min(1760px, calc(100% - 3rem));
+  max-width: none;
+  box-sizing: border-box;
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
 
 .app-header {
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .app-title {
@@ -106,4 +111,44 @@ body {
   background: var(--app-code-bg);
   padding: 0.1rem 0.25rem;
   border-radius: 3px;
+}
+
+.app-toolbar { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.app-toolbar label { margin: 0; }
+.app-toolbar select { min-width: 16rem; margin: 0; }
+.app-status { margin-left: auto; color: var(--app-text-muted); }
+.workbench-grid { display: grid; grid-template-columns: minmax(260px, 300px) minmax(560px, 1fr) minmax(280px, 340px); gap: 1rem; align-items: start; }
+.workbench-grid .app-panel { min-width: 0; }
+.workbench-grid h2 { font-size: 2.8rem; line-height: 1.2; overflow-wrap: anywhere; }
+.document-panel h2 { font-size: clamp(2.8rem, 2.5vw, 4rem); }
+.source-panel input[type="file"] { width: 100%; margin-bottom: .75rem; }
+.source-panel h3, .annotation-panel h3 { font-size: 1.8rem; margin: 1.4rem 0 .5rem; }
+.resource-list { margin-left: 1.5rem; max-height: 12rem; overflow: auto; }
+.document-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
+.document-viewer { min-height: 48rem; max-height: 70vh; overflow: auto; padding: 3rem clamp(1.25rem, 3vw, 3rem); margin-top: 1rem; border: 1px solid var(--app-border); background: white; box-shadow: 0 2px 10px rgba(0,0,0,.08); line-height: 1.65; }
+.document-viewer [data-rdf-resource] { scroll-margin-top: 1rem; }
+.document-viewer [data-rdf-resource]:hover { background: #fffce8; }
+.preview-note { margin: 1rem 0 0; font-size: .9em; }
+.document-viewer .docx-wrapper { background: transparent; padding: 0; }
+.document-viewer .docx-wrapper > section.docx { margin: 0 auto 1rem; }
+.document-viewer .rdf-projected-part { scroll-margin-top: 1rem; }
+.document-viewer .rdf-projected-part:hover { outline: 1px solid rgba(27, 91, 140, .18); outline-offset: 2px; }
+.document-viewer mark.manual-annotation { background: #ffe58f; border-bottom: 2px solid #b7791f; padding: 0; }
+.outline { max-height: 18rem; overflow: auto; display: flex; flex-direction: column; gap: .3rem; }
+.outline a { text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.annotation-panel textarea, .annotation-panel input { width: 100%; box-sizing: border-box; }
+.lookup-hint { margin-top: -.8rem; font-size: .85em; overflow-wrap: anywhere; }
+.advanced-panel summary { cursor: pointer; }
+
+@media (max-width: 1200px) {
+  .workbench-grid { grid-template-columns: 1fr; }
+  .document-panel { grid-row: 1; }
+  .document-viewer { min-height: 30rem; }
+}
+
+@media (max-width: 550px) {
+  .app-shell { width: min(100% - 1rem, 1760px); }
+  .app-header { align-items: flex-start; }
+  .app-header img { width: 80px; height: auto; }
+  .app-status { width: 100%; margin-left: 0; }
 }

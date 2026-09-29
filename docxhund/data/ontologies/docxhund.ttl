@@ -1,0 +1,57 @@
+@prefix docxhund: <https://github.com/jonathanvajda/reasonlynx/docxhund/vocabulary/> .
+@prefix cco: <https://www.commoncoreontologies.org/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://github.com/jonathanvajda/reasonlynx/docxhund/ontology>
+    a owl:Ontology ;
+    rdfs:label "DocxHund Ontology"@en ;
+    rdfs:comment "Application ontology for document parsing, text selectors, annotations, and their provenance."@en .
+
+docxhund:Annotation a owl:Class ;
+    rdfs:subClassOf cco:ont00000958 ;
+    rdfs:label "Annotation"@en .
+
+docxhund:TextSelection a owl:Class ;
+    rdfs:subClassOf cco:ont00000958 ;
+    rdfs:label "Text Selection"@en .
+
+docxhund:SourceDocument a owl:Class ;
+    rdfs:subClassOf cco:ont00000958 ;
+    rdfs:label "Source Document"@en .
+
+docxhund:DocumentParsingAct a owl:Class ;
+    rdfs:subClassOf cco:ont00001158 ;
+    rdfs:label "DocxHund Document Parsing Act"@en ;
+    rdfs:comment "An Act of Data Transformation in which DocxHund transforms a DOCX information content entity into an RDF document model."@en .
+
+docxhund:DocumentAnnotationAct a owl:Class ;
+    rdfs:subClassOf cco:ont00000366 ;
+    rdfs:label "DocxHund Document Annotation Act"@en ;
+    rdfs:comment "An Act of Information Processing in which a user commits an annotation about selected document content."@en .
+
+docxhund:targetTextResource a owl:ObjectProperty ;
+    rdfs:domain docxhund:Annotation ; rdfs:range docxhund:TextSelection .
+docxhund:targetDocumentPart a owl:ObjectProperty ;
+    rdfs:domain docxhund:Annotation ; rdfs:range cco:ont00000958 .
+docxhund:annotationType a owl:ObjectProperty ;
+    rdfs:domain docxhund:Annotation .
+
+docxhund:exactText a owl:DatatypeProperty ;
+    rdfs:domain docxhund:TextSelection ; rdfs:range xsd:string .
+docxhund:prefixText a owl:DatatypeProperty ;
+    rdfs:domain docxhund:TextSelection ; rdfs:range xsd:string .
+docxhund:suffixText a owl:DatatypeProperty ;
+    rdfs:domain docxhund:TextSelection ; rdfs:range xsd:string .
+docxhund:startOffset a owl:DatatypeProperty ;
+    rdfs:domain docxhund:TextSelection ; rdfs:range xsd:nonNegativeInteger .
+docxhund:endOffset a owl:DatatypeProperty ;
+    rdfs:domain docxhund:TextSelection ; rdfs:range xsd:nonNegativeInteger .
+docxhund:occurredAt a owl:DatatypeProperty ;
+    rdfs:domain <http://purl.obolibrary.org/obo/BFO_0000015> ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "occurred at"@en ;
+    rdfs:comment "Records the application timestamp for an execution. This specific property is used instead of CCO's deprecated generic has datetime value."@en .
+

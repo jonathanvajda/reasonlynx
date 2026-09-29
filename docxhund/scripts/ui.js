@@ -20,8 +20,92 @@ export function getUiElements() {
     outputArea: document.getElementById('outputArea'),
     logArea: document.getElementById('logArea'),
     previewSummary: document.getElementById('previewSummary'),
-    partsTableWrap: document.getElementById('partsTableWrap')
+    partsTableWrap: document.getElementById('partsTableWrap'),
+    projectSelect: document.getElementById('projectSelect'),
+    newProjectBtn: document.getElementById('newProjectBtn'),
+    persistenceStatus: document.getElementById('persistenceStatus'),
+    knowledgeFile: document.getElementById('knowledgeFile'),
+    importKnowledgeBtn: document.getElementById('importKnowledgeBtn'),
+    knowledgeBaseList: document.getElementById('knowledgeBaseList'),
+    documentSelect: document.getElementById('documentSelect'),
+    documentOutline: document.getElementById('documentOutline'),
+    documentViewer: document.getElementById('documentViewer'),
+    documentTitle: document.getElementById('documentTitle'),
+    selectedPassage: document.getElementById('selectedPassage'),
+    commitAnnotationBtn: document.getElementById('commitAnnotationBtn'),
+    annotationType: document.getElementById('annotationType'),
+    aboutResource: document.getElementById('aboutResource'),
+    resourceSuggestions: document.getElementById('resourceSuggestions'),
+    resourceLookupHint: document.getElementById('resourceLookupHint'),
+    resourceIriLabel: document.getElementById('resourceIriLabel'),
+    processResource: document.getElementById('processResource'),
+    processResourceFields: document.getElementById('processResourceFields'),
+    annotationStatus: document.getElementById('annotationStatus'),
+    wordPreviewStyles: document.getElementById('wordPreviewStyles'),
+    previewModeNote: document.getElementById('previewModeNote')
   };
+}
+
+/** @param {HTMLSelectElement} target @param {object[]} projects @param {string} activeId */
+export function renderProjectOptions(target, projects, activeId) {
+  target.replaceChildren(...projects.map((project) => {
+    const option = document.createElement('option');
+    option.value = project.projectId;
+    option.textContent = project.label;
+    option.selected = project.projectId === activeId;
+    return option;
+  }));
+}
+
+/** @param {HTMLSelectElement} target @param {object[]} artifacts */
+export function renderDocumentOptions(target, artifacts) {
+  const documents = artifacts.filter((item) => item.artifactKind === 'document');
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = documents.length ? 'Choose a document' : 'No documents';
+  target.replaceChildren(placeholder, ...documents.map((item) => {
+    const option = document.createElement('option');
+    option.value = item.artifactId;
+    option.textContent = item.label;
+    return option;
+  }));
+}
+
+/** @param {HTMLElement} target @param {object[]} datasets */
+export function renderKnowledgeBases(target, datasets) {
+  target.replaceChildren();
+  if (!datasets.length) {
+    const empty = document.createElement('li');
+    empty.className = 'app-muted';
+    empty.textContent = 'None loaded';
+    target.append(empty);
+    return;
+  }
+  datasets.forEach((dataset) => {
+    const item = document.createElement('li');
+    item.textContent = `${dataset.label} (${dataset.metadata?.quadCount || 0} quads)`;
+    target.append(item);
+  });
+}
+
+/** @param {HTMLElement} target @param {object[]} parts */
+export function renderOutline(target, parts) {
+  const headings = parts.filter((part) => part.partType === 'paragraph' && part.headingLevel != null);
+  target.replaceChildren();
+  if (!headings.length) {
+    const empty = document.createElement('span');
+    empty.className = 'app-muted';
+    empty.textContent = 'No headings detected.';
+    target.append(empty);
+    return;
+  }
+  headings.forEach((part) => {
+    const link = document.createElement('a');
+    link.href = `#rdf-part-${encodeURIComponent(part.iri)}`;
+    link.style.paddingLeft = `${Math.max(0, Number(part.headingLevel) - 1)}rem`;
+    link.textContent = part.textValue;
+    target.append(link);
+  });
 }
 
 /**
@@ -51,7 +135,9 @@ export function renderSummary(target, result) {
     'Processed <span class="app-code-inline">' + escapeHtml(String(result.parts.length)) + '</span> parts ' +
     '(' +
     'sections: <span class="app-code-inline">' + escapeHtml(String(result.sectionCount)) + '</span>, ' +
-    'paragraphs: <span class="app-code-inline">' + escapeHtml(String(result.paragraphCount)) + '</span>' +
+    'paragraphs: <span class="app-code-inline">' + escapeHtml(String(result.paragraphCount)) + '</span>, ' +
+    'sentences: <span class="app-code-inline">' + escapeHtml(String(result.sentenceCount || 0)) + '</span>, ' +
+    'words: <span class="app-code-inline">' + escapeHtml(String(result.wordCount || 0)) + '</span>' +
     ').';
 }
 
