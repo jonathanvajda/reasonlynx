@@ -15,6 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  PAGES_ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
   TOM_LOOKUP_OUTPUT_DIR: tabular-ontology-maker/json
   TOM_LOOKUP_SOURCE_DIR: src/ontologies
   TOM_LOOKUP_SOURCE_PATH: ""
@@ -27,7 +28,7 @@ env:
 jobs:
   test-apps:
     name: Test ${{ matrix.app }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -52,10 +53,10 @@ jobs:
           - about
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
@@ -64,13 +65,13 @@ jobs:
 
   test-service-worker:
     name: Test service worker manifest
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
@@ -85,13 +86,13 @@ jobs:
     environment:
       name: github-pages
       url: https://reasonlynx.com/
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -207,13 +208,16 @@ jobs:
             ./ "${NAMECHEAP_SSH_USER}@${NAMECHEAP_SSH_HOST}:${NAMECHEAP_DEPLOY_PATH}/"
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
+          name: ${{ env.PAGES_ARTIFACT_NAME }}
           path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
