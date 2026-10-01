@@ -70,7 +70,7 @@ import {
         }
     },
 
-    groups: [
+    classicGroups: [
       {
         title: "Data Exploration",
         items: [
@@ -126,6 +126,100 @@ import {
         },
         ],
     };
+
+  const TOOL_CATALOG = Object.freeze({
+    "ontoeagle": { label: "OntoEagle Semantic Lookup", href: "../onto-eagle/" },
+    "ontology-tabulator": { label: "Ontology Tabulator", href: "../ontology-tabulator/" },
+    "visual-lynx": { label: "Visual Lynx", href: "../visual-lynx/" },
+    "cq-ferret": { label: "Competency Question Ferret", href: "../cq-ferret/" },
+    "graph-analyst-playbook": { label: "Graph Analyst Playbook", href: "../graph-analyst-playbook/" },
+    "graph-analytics": { label: "Graph Analytics", href: "../graph-analytics/" },
+    "tom": { label: "Tabular Ontology Maker", href: "../tabular-ontology-maker/" },
+    "kg-modeler": { label: "Knowledge Graph Modeler", href: "https://skreen5hot.github.io/kgModeler/", external: true },
+    "mermaid-diagram-builder": { label: "Mermaid Diagram Builder", href: "https://skreen5hot.github.io/mermaid/", external: true },
+    "table-nova": { label: "Table Nova", href: "../table-nova/" },
+    "docxhund": { label: "DocxHund", href: "../docxhund/" },
+    "linked-data-transformer": { label: "Linked-Data Transformer", href: "../linked-data-transformer/" },
+    "axiolotl": { label: "Axiolotl SPARQL & Inference", href: "../axiolotl/" },
+    "sparql-pattern-visualizer": { label: "SPARQL Pattern Visualizer", href: "../sparql-pattern-visualizer/" },
+    "bundler": { label: "Slim Bundle Builder", href: "../bundler/" },
+    "ontology-compliance-diagnostic": { label: "Ontology Compliance Diagnostic", href: "../ontology-compliance-diagnostic/" },
+    "nlp-quality-assurance": { label: "NLP Quality Assurance", href: "../ontology-compliance-diagnostic/nlp-quality-assurance.html" },
+    "myna-iri-swapper": { label: "Myna IRI Swapper", href: "../iri-swapper/" },
+    "controlled-vocabulary-registry": { label: "Controlled Vocabulary", status: "planned" },
+    "onto-merge": { label: "OntoMerge", status: "external route pending" },
+    "onto-diff": { label: "OntoDiff", status: "planned" }
+  });
+
+  const TOOL_DESCRIPTIONS = Object.freeze({
+    "ontoeagle": "Search ontology terms, labels, definitions, and related semantic resources.",
+    "ontology-tabulator": "Flatten an ontology into a table for inspection, comparison, and editing.",
+    "visual-lynx": "Explore RDF resources and their relations as an interactive node-edge diagram.",
+    "cq-ferret": "Capture competency questions and connect them with people, sources, diagrams, and queries.",
+    "graph-analyst-playbook": "Author decision trees that guide analysts through SPARQL query execution.",
+    "graph-analytics": "Analyze RDF graphs with path finding, community detection, and related measures.",
+    "tom": "Build ontologies or instance data from curated, flattened tables.",
+    "kg-modeler": "Draw semantic node-edge models and produce RDF, ontology seeds, and diagrams.",
+    "mermaid-diagram-builder": "Create and edit Mermaid diagrams visually.",
+    "table-nova": "Transform CSV and spreadsheet tables into RDF and lightweight ontology drafts.",
+    "docxhund": "Transform Word documents into RDF and annotate passages with semantic resources.",
+    "linked-data-transformer": "Transform RDF datasets into new RDF structures and serializations.",
+    "axiolotl": "Load and query graphs with SPARQL, EL inference, and consistency-oriented workflows.",
+    "sparql-pattern-visualizer": "Turn SPARQL graph patterns into an easier-to-read visual representation.",
+    "bundler": "Build ontology seed files and reusable ontology slims from selected terms.",
+    "ontology-compliance-diagnostic": "Inspect ontologies and generate bulk curation-status recommendations.",
+    "nlp-quality-assurance": "Check ontology annotations for spelling, grammar, and definition structure.",
+    "myna-iri-swapper": "Apply controlled IRI replacements to RDF datasets and SPARQL queries.",
+    "controlled-vocabulary-registry": "Curate governed terms, labels, identifiers, and vocabulary metadata.",
+    "onto-merge": "Create an ontology by merging two or more ontology inputs.",
+    "onto-diff": "Compare ontology versions and generate semantic diffs or reproducible SPARQL updates."
+  });
+
+  const HEADER_VIEWS = Object.freeze({
+    competency: {
+      label: "Competency Cycle",
+      groups: [
+        { title: "Stage 0: Domain Scoping", appIds: ["cq-ferret", "ontoeagle"] },
+        { title: "Stage 1: Domain Analysis", appIds: ["controlled-vocabulary-registry", "ontology-tabulator", "ontoeagle", "table-nova", "graph-analytics"] },
+        { title: "Stage 2: Semantic Modeling", appIds: ["kg-modeler", "mermaid-diagram-builder", "tom", "graph-analyst-playbook", "sparql-pattern-visualizer"] },
+        { title: "Stage 3: Alignment", appIds: ["tom", "table-nova", "docxhund", "bundler", "myna-iri-swapper", "onto-diff"] },
+        { title: "Stage 4: Integration", appIds: ["linked-data-transformer", "axiolotl", "onto-merge", "table-nova", "tom", "bundler", "myna-iri-swapper"] },
+        { title: "Stage 5: Validation", appIds: ["ontology-compliance-diagnostic", "nlp-quality-assurance", "onto-diff", "axiolotl", "graph-analytics", "visual-lynx", "sparql-pattern-visualizer", "graph-analyst-playbook"] }
+      ]
+    },
+    linear: {
+      label: "Linear Pipeline",
+      groups: [
+        { title: "Controlled Vocabulary", appIds: ["cq-ferret", "controlled-vocabulary-registry", "ontoeagle", "tom", "nlp-quality-assurance"] },
+        { title: "Metadata Standards", appIds: ["ontology-tabulator", "ontoeagle", "tom", "ontology-compliance-diagnostic", "docxhund", "table-nova"] },
+        { title: "Taxonomy", appIds: ["tom", "kg-modeler", "mermaid-diagram-builder", "ontology-tabulator", "bundler", "onto-merge", "onto-diff"] },
+        { title: "Thesaurus", appIds: ["tom", "ontoeagle", "ontology-tabulator", "myna-iri-swapper", "onto-merge", "ontology-compliance-diagnostic", "nlp-quality-assurance"] },
+        { title: "Ontology", appIds: ["tom", "kg-modeler", "ontology-tabulator", "bundler", "onto-merge", "onto-diff", "myna-iri-swapper", "linked-data-transformer", "axiolotl", "ontology-compliance-diagnostic", "nlp-quality-assurance"] },
+        { title: "Knowledge Graph", appIds: ["table-nova", "docxhund", "linked-data-transformer", "axiolotl", "visual-lynx", "graph-analytics", "graph-analyst-playbook", "sparql-pattern-visualizer", "kg-modeler", "tom", "myna-iri-swapper", "onto-merge", "onto-diff"] }
+      ]
+    },
+    cicd: {
+      label: "CI/CD",
+      groups: [
+        { title: "Plan", appIds: ["cq-ferret", "ontoeagle", "controlled-vocabulary-registry", "ontology-tabulator", "visual-lynx", "graph-analyst-playbook", "graph-analytics"] },
+        { title: "Code", appIds: ["tom", "kg-modeler", "mermaid-diagram-builder", "table-nova", "docxhund", "linked-data-transformer", "sparql-pattern-visualizer", "myna-iri-swapper"] },
+        { title: "Build", appIds: ["tom", "table-nova", "docxhund", "linked-data-transformer", "axiolotl", "bundler", "onto-merge", "myna-iri-swapper"] },
+        { title: "Test", appIds: ["axiolotl", "ontology-compliance-diagnostic", "nlp-quality-assurance", "onto-diff", "graph-analytics", "visual-lynx", "sparql-pattern-visualizer", "graph-analyst-playbook"] },
+        { title: "Release", appIds: ["bundler", "tom", "table-nova", "onto-merge", "onto-diff", "ontology-compliance-diagnostic", "linked-data-transformer"] }
+      ]
+    },
+    classic: {
+      label: "Classic (deprecated)",
+      groups: HEADER_CONFIG.classicGroups.map((group) => ({
+        title: group.title,
+        items: group.items
+      }))
+    }
+  });
+
+  const HEADER_VIEW_SETTING_KEY = "ui.headerView";
+  let selectedHeaderView = "competency";
+  let navigationSettingsPromise = null;
 
   const APP_UTILITIES = {
     ontoeagle: {
@@ -277,37 +371,135 @@ import {
   }
 
   function buildSectionsHtml(currentPageId) {
-    const groups = Array.isArray(HEADER_CONFIG.groups) ? HEADER_CONFIG.groups : [];
+    const view = HEADER_VIEWS[selectedHeaderView] || HEADER_VIEWS.competency;
+    const groups = Array.isArray(view.groups) ? view.groups : [];
     if (groups.length === 0) return "";
 
     const sections = groups.map((g) => {
       const title = escapeHtml(g.title || "");
-      const items = Array.isArray(g.items) ? g.items : [];
+      const items = Array.isArray(g.items)
+        ? g.items
+        : (g.appIds || []).map((appId) => ({ pageId: appId, ...TOOL_CATALOG[appId] })).filter((item) => item.label);
 
       const links = items.map((it) => {
         const active = currentPageId && it.pageId === currentPageId;
+        const description = TOOL_DESCRIPTIONS[it.pageId] || "Open this ReasonLynx semantic-engineering tool.";
+        const icon = HEADER_CONFIG.brand.toolLogoByPageId[it.pageId]?.src || HEADER_CONFIG.brand.defaultToolLogo.src;
+        const preview = `
+          <aside class="sitehdr-itemPreview" role="tooltip">
+            <img src="${escapeHtml(icon)}" alt="" />
+            <span><strong>${escapeHtml(it.label || "")}</strong>${escapeHtml(description)}</span>
+          </aside>
+        `;
+        if (!it.href) {
+          return `
+            <li class="sitehdr-menuItem">
+              <span class="sitehdr-link sitehdr-link--unavailable" title="${escapeHtml(it.status || "Unavailable")}">
+                ${escapeHtml(it.label || "")} <small>${escapeHtml(it.status || "unavailable")}</small>
+              </span>
+              ${preview}
+            </li>
+          `;
+        }
         return `
-          <li>
+          <li class="sitehdr-menuItem">
             <a class="sitehdr-link${active ? " is-active" : ""}"
                href="${escapeHtml(it.href || "#")}"
+               ${it.external ? 'target="_blank" rel="noopener noreferrer"' : ""}
                ${active ? 'aria-current="page"' : ""}>
-              ${escapeHtml(it.label || "")}
+              ${escapeHtml(it.label || "")}${it.external ? '<span class="sitehdr-external" aria-label="opens in a new tab">↗</span>' : ""}
             </a>
+            ${preview}
           </li>
         `;
       }).join("");
 
       return `
-        <section class="sitehdr-section" aria-label="${title}">
-          <h2 class="sitehdr-section__title">${title}</h2>
-          <ul class="sitehdr-section__list">
-            ${links}
-          </ul>
-        </section>
+        <details class="sitehdr-section">
+          <summary class="sitehdr-section__title">${title}</summary>
+          <ul class="sitehdr-section__list">${links}</ul>
+        </details>
       `;
     }).join("");
 
-    return `<nav class="sitehdr-sections" aria-label="Tool sections">${sections}</nav>`;
+    return `
+      <div class="sitehdr-navigation" data-view="${escapeHtml(selectedHeaderView)}">
+        <nav class="sitehdr-sections" aria-label="${escapeHtml(view.label)} tool sections">${sections}</nav>
+      </div>
+    `;
+  }
+
+  function globalSettingsHtml() {
+    const options = Object.entries(HEADER_VIEWS).map(([value, config]) =>
+      `<option value="${escapeHtml(value)}"${value === selectedHeaderView ? " selected" : ""}>${escapeHtml(config.label)}</option>`
+    ).join("");
+    const language = globalThis.navigator?.language || "Browser default";
+    const timezone = globalThis.Intl?.DateTimeFormat?.().resolvedOptions().timeZone || "Browser default";
+    return `
+      <details class="sitehdr-settings">
+        <summary class="sitehdr-settings__toggle" aria-label="Global settings" title="Global settings">
+          <img src="../images/settings-cog-icon.svg" alt="" aria-hidden="true" />
+        </summary>
+        <div class="sitehdr-settings__panel">
+          <h2>Settings</h2>
+          <label for="siteHeaderView">Navigation view</label>
+          <select class="sitehdr-viewSelect" id="siteHeaderView">${options}</select>
+          <dl class="sitehdr-environmentSettings">
+            <div><dt>Language</dt><dd>${escapeHtml(language)}</dd></div>
+            <div><dt>Timezone</dt><dd>${escapeHtml(timezone)}</dd></div>
+          </dl>
+        </div>
+      </details>
+    `;
+  }
+
+  /** @returns {Promise<object>} Shared settings for cross-app header preferences. */
+  function getNavigationSettings() {
+    if (!navigationSettingsPromise) {
+      navigationSettingsPromise = openProjectPortfolioDatabase().then(async (db) => {
+        const stores = createProjectPortfolioStores(db, { projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID });
+        await ensureProjectPortfolioProject(stores);
+        return stores.settings;
+      });
+    }
+    return navigationSettingsPromise;
+  }
+
+  function renderNavigation() {
+    const current = document.querySelector(".sitehdr-navigation");
+    if (!current) return;
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = buildSectionsHtml(getPageId()).trim();
+    current.replaceWith(wrapper.firstElementChild);
+    enableHoverNavigation();
+  }
+
+  /** Make pointer hover sufficient on desktop while preserving native details behavior. */
+  function enableHoverNavigation() {
+    if (!globalThis.matchMedia?.("(hover: hover) and (pointer: fine)").matches) return;
+    document.querySelectorAll(".sitehdr-section").forEach((section) => {
+      section.addEventListener("pointerenter", () => {
+        document.querySelectorAll(".sitehdr-section[open]").forEach((openSection) => {
+          if (openSection !== section) openSection.removeAttribute("open");
+        });
+        section.setAttribute("open", "");
+      });
+      section.addEventListener("pointerleave", () => section.removeAttribute("open"));
+    });
+  }
+
+  async function initializeHeaderView() {
+    try {
+      const saved = await (await getNavigationSettings()).readSettingValue(HEADER_VIEW_SETTING_KEY, "competency");
+      if (HEADER_VIEWS[saved] && saved !== selectedHeaderView) {
+        selectedHeaderView = saved;
+        renderNavigation();
+        const selector = document.getElementById("siteHeaderView");
+        if (selector) selector.value = saved;
+      }
+    } catch (_err) {
+      selectedHeaderView = "competency";
+    }
   }
 
   function renderHeader() {
@@ -339,6 +531,7 @@ import {
           ${buildSectionsHtml(pageId)}
 
           <div class="sitehdr-utility">
+          ${globalSettingsHtml()}
           <div id="light-dark-toggle">
             <button
               type="button"
@@ -412,6 +605,8 @@ import {
 
   // script loaded at end of body => DOM is ready
   renderHeader();
+  enableHoverNavigation();
+  initializeHeaderView();
   window.SiteHeaderDBStatus = { set: updateDbStatus, inspect: inspectDbStatus };
   document.addEventListener("click", (event) => {
     const button = event.target?.closest?.("[data-sitehdr-event]");
@@ -419,6 +614,18 @@ import {
     const eventName = button.getAttribute("data-sitehdr-event");
     if (!eventName) return;
     document.dispatchEvent(new CustomEvent(eventName, { detail: { source: button } }));
+  });
+  document.addEventListener("change", async (event) => {
+    if (event.target?.id !== "siteHeaderView") return;
+    const nextView = event.target.value;
+    if (!HEADER_VIEWS[nextView]) return;
+    selectedHeaderView = nextView;
+    renderNavigation();
+    try {
+      await (await getNavigationSettings()).writeSettingValue(HEADER_VIEW_SETTING_KEY, nextView);
+    } catch (_err) {
+      // The selected view remains usable for this page even if persistence fails.
+    }
   });
   document.addEventListener("sitehdr:db-status", (event) => {
     updateDbStatus(event.detail?.state, event.detail?.text);
