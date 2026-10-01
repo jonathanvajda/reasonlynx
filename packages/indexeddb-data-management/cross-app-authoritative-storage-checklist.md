@@ -156,13 +156,17 @@ The checklist uses **Done**, **Partial**, **Missing**, and **Audit** for current
 **Expected shared records:** CQ workspace/graph artifacts, competency questions, term lists, linked people/data-source/diagram/query artifacts, and authoring runs.
 
 - [x] **Done:** A capability manifest is registered.
-- [~] **Partial:** A shared JSON-LD snapshot and run are written after local CQ operations.
-- [ ] **Missing:** Stop treating `CQDatabase.CQStore` as authoritative; shared CQ artifacts must drive reads, writes, and deletes.
-- [ ] **Missing:** Rewire direct `CQStore` consumers, including vocabulary extraction/tabulation and the POSTagger graph integration.
-- [ ] **Missing:** Store term lists as typed artifacts discoverable by TOM and other consumers.
-- [ ] **Missing:** Replace the hard-coded default project and respond to project changes.
-- [ ] **Missing:** Detect/migrate CQ records, verify graph/node counts and identifiers, and confirm legacy deletion.
-- [ ] **Missing:** Test edit/delete after reload and CQ Ferret → TOM discovery.
+- [x] **Done:** The project-scoped `competency-question-set` artifact is authoritative for CQ reads, writes, and deletes.
+- [x] **Done:** Vocabulary extraction/tabulation and POSTagger graph updates use the shared artifact rather than `CQDatabase.CQStore`.
+- [x] **Done:** Extracted vocabulary is published as a portable `term-list` artifact discoverable by TOM.
+- [x] **Done:** CQ Ferret reads the shell's active project and reloads on `sitehdr:project-changed`.
+- [x] **Done:** Saved Axiolotl `sparql-query` artifacts can be looked up and appended to a CQ.
+- [x] **Done:** Directly typed CCO Person (`cco:ont00001262`) and Database (`cco:ont00000756`) instances can be looked up from materialized project quad rows.
+- [~] **Partial:** Existing `CQDatabase.CQStore` rows are detected and copied non-destructively when the selected project has no CQ workspace; source/shared counts are available and the legacy database is retained.
+- [ ] **Missing:** Add migration fingerprint/identifier verification and an explicit user-confirmed legacy-database deletion control.
+- [ ] **Missing:** Add subclass-aware lookup for more general CCO Cyber information-system subclasses after the shared graph inference/type-expansion contract is available.
+- [ ] **Missing:** Handle `sitehdr:open-artifact` for CQ sets, term lists, SPARQL queries, and compatible knowledge-base artifacts.
+- [~] **Partial:** Unit coverage exists for TOM term-list payloads, Axiolotl query payloads, and direct-type knowledge lookup; browser tests for edit/delete after reload and project switching remain.
 
 ## Graph Analyst Playbook
 

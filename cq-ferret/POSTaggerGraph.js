@@ -1775,20 +1775,9 @@ class GDCManager {
         const newGdcNodes = this.gdcService.processGraph(graphForProcessing);
         const finalGraphToSave = [...nodesToUpsert, ...newGdcNodes];
 
-        // --- Step 4: Perform the database transaction ---
-        const db = await initIndexedDB(); // Assuming initIndexedDB is globally accessible or passed in
-        const transaction = db.transaction("CQStore", "readwrite");
-        const store = transaction.objectStore("CQStore");
-
-        return new Promise((resolve) => {
-            const getAllKeysReq = store.getAllKeys();
-            getAllKeysReq.onerror = (event) => {
-                console.error("Failed to get keys for cleanup:", event.target.error);
-                resolve({ success: false, reason: 'Database cleanup error.' });
-            };
-
-            getAllKeysReq.onsuccess = () => {
-                const allKeys = getAllKeysReq.result;
+        // --- Step 4: Apply cleanup and writes through the shared project store. ---
+        try {
+                const allKeys = currentAllNodesCache.map(node => node['@id']).filter(Boolean);
                 let keysToDelete = [];
 
                 // A. Find all *currently existing* GDC nodes in the DB.
@@ -1824,21 +1813,17 @@ class GDCManager {
                 // E. Perform deletions and save the new/updated graph.
                 const uniqueKeysToDelete = [...new Set(keysToDelete)]; // Ensure no duplicate keys
                 console.log(`[GDCManager] Deleting ${uniqueKeysToDelete.length} nodes (old GDCs and/or old children).`);
-                uniqueKeysToDelete.forEach(key => store.delete(key));
-
                 console.log(`[GDCManager] Upserting ${finalGraphToSave.length} nodes (CQ, children, GDCs, sync).`);
-                finalGraphToSave.forEach(node => store.put({ ...node, id: node["@id"] }));
-            };
-
-            transaction.oncomplete = () => {
-                console.log("[GDCManager] Database update complete.");
-                resolve({ success: true, newJsonLD: nodesToUpsert }); // Return only the nodes that were upserted (CQ + children + sync)
-            };
-            transaction.onerror = (event) => {
-                console.error("Save transaction failed:", event.target.error);
-                resolve({ success: false, reason: 'Database error.' });
-            };
-        });
+                if (typeof globalThis.cqFerretReplaceNodes !== 'function') {
+                    throw new Error('CQ Ferret shared project store is unavailable.');
+                }
+                await globalThis.cqFerretReplaceNodes(finalGraphToSave, uniqueKeysToDelete);
+                console.log("[GDCManager] Shared project update complete.");
+                return { success: true, newJsonLD: nodesToUpsert };
+        } catch (error) {
+            console.error("Shared project save failed:", error);
+            return { success: false, reason: error?.message || 'Database error.' };
+        }
     }
 }
 

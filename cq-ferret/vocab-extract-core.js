@@ -1,11 +1,10 @@
 /* vocab-extract-core.js
- * Append-only: no edits to existing files.
  * Purpose:
- *  - read CQ graph from IndexedDB (CQDatabase/CQStore)
+ *  - read the CQ graph from the active shared project
  *  - extract vocabulary terms/phrases using POSTagger + Lexicon
  *  - ignore filler words; keep conjunctions only in “name-like” phrases
  *  - deduplicate
- *  - persist vocabulary nodes as JSON-LD in the same store
+ *  - persist vocabulary nodes and publish a portable term-list artifact
  *
  * Exposes: window.VOCAB_EXTRACT
  */
@@ -14,6 +13,7 @@ import { isAbsoluteIri } from '../packages/ontology-utils/src/index.js';
 import { serializeDelimitedRows } from '../packages/tabular-io/src/index.js';
 import {
   deleteCompetencyQuestionNodesByIds,
+  publishCompetencyQuestionTermList,
   readCompetencyQuestionNodes,
   storeCompetencyQuestionNodes
 } from './cq-ferret-indexeddb-store.js';
@@ -321,6 +321,7 @@ import {
     dbName = CFG.dbName,
     storeName = CFG.storeName,
     tagger = null,
+    publish = true,
   } = {}) {
     if (!tagger) throw new Error("rebuildVocabularyInDb requires a POSTagger instance.");
 
@@ -339,6 +340,9 @@ import {
 
     await deleteCompetencyQuestionNodesByIds(keysToDelete);
     await storeCompetencyQuestionNodes(vocabNodes);
+    if (publish) {
+      await publishCompetencyQuestionTermList(vocabNodes.map((node) => nodeToRow(node, dbName)));
+    }
 
     return { vocabCount: vocabNodes.length };
   }
@@ -355,7 +359,7 @@ import {
     // Auto-rebuild on load so conjunction-in-names works consistently
     if (autoRebuild) {
       const tagger = new POSTagger(window.POSTAGGER_LEXICON);
-      await rebuildVocabularyInDb({ dbName, storeName, tagger });
+      await rebuildVocabularyInDb({ dbName, storeName, tagger, publish: false });
       const refreshed = await readCompetencyQuestionNodes();
       vocabNodes = refreshed.filter((n) => looksLikeVocabularyNode(n));
     }
@@ -389,6 +393,10 @@ import {
 
     await storeCompetencyQuestionNodes([updated]);
     if (nodesById) nodesById.set(row.iri, updated);
+    const allNodes = await readCompetencyQuestionNodes();
+    await publishCompetencyQuestionTermList(
+      allNodes.filter((node) => looksLikeVocabularyNode(node)).map((node) => nodeToRow(node, dbName))
+    );
   }
 
   function exportRowsToCsv(rows) {

@@ -17,8 +17,11 @@ import {
 import { SUPPORTED_MIME_DESCRIPTORS } from '../packages/format-registry/src/index.js';
 import {
   deleteCompetencyQuestionById,
+  listKnowledgeBaseEntities,
+  listSavedSparqlQueries,
   recordCompetencyQuestionProjectSnapshot,
-  readCompetencyQuestionNodes
+  readCompetencyQuestionNodes,
+  selectCompetencyQuestionProject
 } from './cq-ferret-indexeddb-store.js';
 
 // ======================================================
@@ -26,6 +29,9 @@ import {
 // ======================================================
 let currentCQId = null;
 let allNodesCache = [];
+let knowledgePeopleCache = [];
+let knowledgeSourceCache = [];
+let savedSparqlQueriesCache = [];
 const tagger = new window.POSTagger(window.POSTAGGER_LEXICON);
 const gdcManager = new window.GDCManager(tagger, allNodesCache);
 
@@ -150,8 +156,37 @@ const hasType = (node, iri) => {
 
 async function initialLoad() {
   allNodesCache = await readFromIndexedDB();
+  await loadWorkspaceLookups();
   renderSidebarFromCache();
   document.getElementById("new-cq-button").click();
+}
+
+async function loadWorkspaceLookups() {
+  [knowledgePeopleCache, knowledgeSourceCache, savedSparqlQueriesCache] = await Promise.all([
+    listKnowledgeBaseEntities([COMMON_NAMESPACE_IRIS.cco2.person]),
+    listKnowledgeBaseEntities([COMMON_NAMESPACE_IRIS.cco2.database]),
+    listSavedSparqlQueries()
+  ]);
+  const select = document.getElementById('saved-sparql-query-select');
+  if (!select) return;
+  select.replaceChildren();
+  const empty = document.createElement('option');
+  empty.value = '';
+  empty.textContent = savedSparqlQueriesCache.length ? 'Choose a saved query…' : 'No saved queries found';
+  select.appendChild(empty);
+  for (const query of savedSparqlQueriesCache) {
+    const option = document.createElement('option');
+    option.value = query.artifactId;
+    option.textContent = query.label;
+    select.appendChild(option);
+  }
+  const sourceOptions = document.getElementById('cq-knowledge-source-options');
+  sourceOptions?.replaceChildren(...knowledgeSourceCache.map((source) => {
+    const option = document.createElement('option');
+    option.value = source.label;
+    option.dataset.iri = source.iri;
+    return option;
+  }));
 }
 
 function renderSidebarFromCache() {
@@ -343,6 +378,7 @@ function addDataRequirementItem(source = '', quality = '') {
   sourceInput.className = 'data-source-input';
   sourceInput.placeholder = 'Enter a data source name...';
   sourceInput.value = source;
+  sourceInput.setAttribute('list', 'cq-knowledge-source-options');
   const qualityLabel = document.createElement('label');
   qualityLabel.textContent = 'Data Quality Notes (If you know)';
   const qualityTextarea = document.createElement('textarea');
@@ -551,10 +587,16 @@ function addPersonItem(name = '', role = 'Creator', contact = '', notes = '', pe
     personIdInput.value = '';
     emailIdInput.value = '';
     if (searchTerm.length < 2) return;
-    const allPeople = allNodesCache.filter(n =>
+    const localPeople = allNodesCache.filter(n =>
       n["@type"] && Array.isArray(n["@type"]) && // <-- Add this check
       n["@type"].includes(COMMON_NAMESPACE_IRIS.cco2.person)
     );
+    const sharedPeople = knowledgePeopleCache.map((person) => ({
+      '@id': person.iri,
+      '@type': [COMMON_NAMESPACE_IRIS.cco2.person],
+      [COMMON_NAMESPACE_IRIS.rdfs.label]: [{ '@value': person.label }]
+    }));
+    const allPeople = [...new Map([...localPeople, ...sharedPeople].map((person) => [person['@id'], person])).values()];
     const matches = allPeople.filter(p => {
       const personName = p[COMMON_NAMESPACE_IRIS.rdfs.label]?.[0]?.['@value'] ?? '';
       return personName.toLowerCase().includes(searchTerm);
@@ -685,7 +727,7 @@ function generateJSONLD() {
     contributorLinks.push({ "@id": personId });
 
     // Create/Update Person Node (only add if not already in cache or if it's new)
-    if (!allNodesCache.find(n => n['@id'] === personId)) {
+    if (!allNodesCache.find(n => n['@id'] === personId) && !knowledgePeopleCache.some((person) => person.iri === personId)) {
       personRelatedNodes.push({
         "@id": personId,
         "@type": [COMMON_NAMESPACE_IRIS.cco2.person, COMMON_NAMESPACE_IRIS.owl.NamedIndividual],
@@ -719,7 +761,8 @@ function generateJSONLD() {
 
 
   const dataSourceNodes = dataRequirements.map((dr, index) => ({
-    "@id": `${COMMON_NAMESPACE_IRIS.cco2.database}/Database_${cqUniqueId}_${index + 1}`,
+    "@id": knowledgeSourceCache.find((source) => source.label === dr.source)?.iri
+      || `${COMMON_NAMESPACE_IRIS.cco2.database}/Database_${cqUniqueId}_${index + 1}`,
     // ... rest of data source node ...
     "@type": [COMMON_NAMESPACE_IRIS.cco2.database, COMMON_NAMESPACE_IRIS.owl.NamedIndividual],
     [COMMON_NAMESPACE_IRIS.cco2.hasTextValue]: [{ "@value": dr.source }],
@@ -1288,6 +1331,13 @@ function setupEventListeners() {
     addDatabaseQueryItem();
     debouncedAutoSave();
   });
+  document.getElementById('append-saved-sparql-query-btn')?.addEventListener('click', () => {
+    const artifactId = document.getElementById('saved-sparql-query-select')?.value;
+    const selected = savedSparqlQueriesCache.find((query) => query.artifactId === artifactId);
+    if (!selected) return;
+    addDatabaseQueryItem(selected.query, 'SPARQL');
+    debouncedAutoSave();
+  });
 
   document.getElementById('add-person-btn').addEventListener('click', () => {
     addPersonItem();
@@ -1330,8 +1380,20 @@ function setupEventListeners() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const sourceOptions = document.createElement('datalist');
+  sourceOptions.id = 'cq-knowledge-source-options';
+  document.body.appendChild(sourceOptions);
   setupEventListeners();
   initialLoad();
   initTabs();
+});
+
+document.addEventListener('sitehdr:project-changed', async (event) => {
+  await selectCompetencyQuestionProject(event.detail?.projectId);
+  allNodesCache = await readFromIndexedDB();
+  await loadWorkspaceLookups();
+  currentCQId = null;
+  renderSidebarFromCache();
+  document.getElementById('new-cq-button')?.click();
 });
 
