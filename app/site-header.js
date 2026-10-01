@@ -1,11 +1,19 @@
 // ./app/site-header.js
 import {
   DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+  DEFAULT_PROJECT_PORTFOLIO_DB_NAME,
   createProjectPortfolioStores,
   ensureProjectPortfolioProject,
   inspectIndexedDbDatabase,
-  openProjectPortfolioDatabase
+  openProjectPortfolioDatabase,
+  deleteProjectArtifactCascade,
+  deleteProjectCascade,
+  downloadProjectArchive,
+  downloadProjectArtifact
 } from '../packages/indexeddb-data-management/src/index.js';
+import { createStableRecordId } from '../packages/indexeddb-data-management/src/index.js';
+import { downloadBlob } from '../packages/browser-file-io/src/index.js';
+import { discoverCompatibleArtifacts, getAppCapabilityManifest } from './app-capabilities.js';
 import {
   applyThemePreference,
   readThemePreference,
@@ -218,8 +226,12 @@ import {
   });
 
   const HEADER_VIEW_SETTING_KEY = "ui.headerView";
+  const ACTIVE_PROJECT_SETTING_KEY = "workspace.activeProjectId";
   let selectedHeaderView = "competency";
   let navigationSettingsPromise = null;
+  let portfolioDbPromise = null;
+  let activeProjectId = DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID;
+  let projectManagerSnapshot = null;
 
   const APP_UTILITIES = {
     ontoeagle: {
@@ -275,17 +287,10 @@ import {
   }
 
   function dbStatusConfig() {
-    const body = document.body;
-    const idb = pageUtilities().idb || {};
-    const dbName = idb.name || body?.getAttribute("data-db-name")?.trim() || "";
-    const stores = (Array.isArray(idb.stores) ? idb.stores : (body?.getAttribute("data-db-stores") || "")
-      .split(",")
-      .map((value) => value.trim())
-      .filter(Boolean));
     return {
-      dbName,
-      stores,
-      label: idb.label || dbName || "Local data",
+      dbName: DEFAULT_PROJECT_PORTFOLIO_DB_NAME,
+      stores: [],
+      label: "Shared project portfolio",
     };
   }
 
@@ -377,6 +382,9 @@ import {
 
     const sections = groups.map((g) => {
       const title = escapeHtml(g.title || "");
+      const titleHtml = selectedHeaderView === 'competency'
+        ? title.replace(/^(Stage\s+\d+:)\s+/, '$1<br>')
+        : title;
       const items = Array.isArray(g.items)
         ? g.items
         : (g.appIds || []).map((appId) => ({ pageId: appId, ...TOOL_CATALOG[appId] })).filter((item) => item.label);
@@ -416,7 +424,7 @@ import {
 
       return `
         <details class="sitehdr-section">
-          <summary class="sitehdr-section__title">${title}</summary>
+          <summary class="sitehdr-section__title">${titleHtml}</summary>
           <ul class="sitehdr-section__list">${links}</ul>
         </details>
       `;
@@ -456,13 +464,142 @@ import {
   /** @returns {Promise<object>} Shared settings for cross-app header preferences. */
   function getNavigationSettings() {
     if (!navigationSettingsPromise) {
-      navigationSettingsPromise = openProjectPortfolioDatabase().then(async (db) => {
+      portfolioDbPromise ||= openProjectPortfolioDatabase();
+      navigationSettingsPromise = portfolioDbPromise.then(async (db) => {
         const stores = createProjectPortfolioStores(db, { projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID });
         await ensureProjectPortfolioProject(stores);
         return stores.settings;
       });
     }
     return navigationSettingsPromise;
+  }
+
+  function projectShellHtml() {
+    return `<section class="sitehdr-projectShell" aria-label="Project workspace" aria-live="polite"><span>Loading workspace…</span></section>`;
+  }
+
+  function projectManagerDialogHtml() {
+    return `<dialog class="sitehdr-manager" id="siteHeaderProjectManager" aria-labelledby="siteHeaderManagerTitle">
+      <div class="sitehdr-manager__surface">
+        <header class="sitehdr-manager__header">
+          <div><span class="sitehdr-manager__eyebrow">ReasonLynx workspace</span><h1 id="siteHeaderManagerTitle">Projects and artifacts</h1></div>
+          <button type="button" class="sitehdr-manager__close" data-sitehdr-action="close-manager" aria-label="Close project manager">×</button>
+        </header>
+        <div class="sitehdr-manager__body" id="siteHeaderManagerBody"><p>Loading projects…</p></div>
+      </div>
+    </dialog>`;
+  }
+
+  function artifactListHtml(artifacts, compatibleIds) {
+    if (!artifacts.length) return '<p class="sitehdr-empty">No artifacts in this project.</p>';
+    return `<ul class="sitehdr-shellList">${artifacts.map((artifact) => {
+      const compatible = compatibleIds.has(artifact.artifactId);
+      return `<li>
+        <button type="button" data-sitehdr-action="open-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}">
+          <strong>${escapeHtml(artifact.label)}</strong>
+          <span>${escapeHtml(artifact.artifactKind)}${compatible ? ' · compatible' : ''}</span>
+        </button>
+      </li>`;
+    }).join('')}</ul>`;
+  }
+
+  function runListHtml(runs, artifactIds = new Set()) {
+    if (!runs.length) return '<p class="sitehdr-empty">No recent activity.</p>';
+    return `<ul class="sitehdr-shellList">${runs.map((run) => `<li>
+      <div class="${[...(run.inputArtifactIds || []), ...(run.outputArtifactIds || [])].some((id) => !artifactIds.has(id)) ? 'sitehdr-run--stale' : ''}">
+        <strong>${escapeHtml(run.label)}</strong>
+        <span>${escapeHtml(run.runKind)} · ${escapeHtml(new Date(run.createdAt).toLocaleString())}</span>
+        ${[...(run.inputArtifactIds || []), ...(run.outputArtifactIds || [])].some((id) => !artifactIds.has(id)) ? '<em>Referenced input or output is no longer present.</em>' : ''}
+      </div>
+    </li>`).join('')}</ul>`;
+  }
+
+  function renderProjectManager() {
+    const body = document.getElementById('siteHeaderManagerBody');
+    const snapshot = projectManagerSnapshot;
+    if (!body || !snapshot) return;
+    const { projects, project, artifacts, datasets, runs, compatibleIds } = snapshot;
+    const artifactIds = new Set(artifacts.map((artifact) => artifact.artifactId));
+    const staleRuns = runs.filter((run) => [...(run.inputArtifactIds || []), ...(run.outputArtifactIds || [])].some((id) => !artifactIds.has(id)));
+    const zeroEffectRuns = runs.filter((run) => /^Stored\s+0\b/i.test(run.label));
+    const cleanupRunIds = [...new Set([...staleRuns, ...zeroEffectRuns].map((run) => run.runId))];
+    const visibleRuns = runs.filter((run) => !zeroEffectRuns.includes(run)).slice(0, 20);
+    const projectButtons = projects.map((item) => `<button type="button" class="sitehdr-managerProject${item.projectId === activeProjectId ? ' is-active' : ''}" data-sitehdr-action="select-project" data-project-id="${escapeHtml(item.projectId)}"><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.projectId)}</span></button>`).join('');
+    const knowledgeKinds = new Set(['knowledge-base', 'ontology-rdf', 'ontology-draft', 'ontology-documents', 'rdf-dataset', 'jsonld-graph']);
+    const knowledgeArtifacts = artifacts.filter((artifact) => knowledgeKinds.has(artifact.artifactKind));
+    const knowledgeRows = [
+      ...datasets.map((dataset) => `<li><strong>${escapeHtml(dataset.label)}</strong><span>Knowledge base · ${dataset.ontologyCount || 0} ontologies</span></li>`),
+      ...knowledgeArtifacts.map((artifact) => `<li><strong>${escapeHtml(artifact.label)}</strong><span>${escapeHtml(artifact.artifactKind)}</span></li>`)
+    ].join('') || '<li class="sitehdr-empty">No knowledge bases in this project.</li>';
+    const artifactRows = artifacts.map((artifact) => `<tr>
+      <td><input type="checkbox" class="sitehdr-artifactCheck" value="${escapeHtml(artifact.artifactId)}" aria-label="Select ${escapeHtml(artifact.label)}" /></td>
+      <td><button type="button" class="sitehdr-fileName" data-sitehdr-action="open-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}">${escapeHtml(artifact.label)}</button>${compatibleIds.has(artifact.artifactId) ? '<span class="sitehdr-compatibleTag">Compatible</span>' : ''}</td>
+      <td>${escapeHtml(artifact.artifactKind)}</td><td>${escapeHtml(artifact.role)}</td>
+      <td>${escapeHtml(new Date(artifact.updatedAt).toLocaleString())}</td>
+      <td><button type="button" class="sitehdr-rowAction" data-sitehdr-action="rename-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}">Rename</button></td>
+    </tr>`).join('') || '<tr><td colspan="6" class="sitehdr-empty">No artifacts in this project.</td></tr>';
+    body.innerHTML = `
+      <aside class="sitehdr-manager__projects">
+        <div class="sitehdr-manager__sidebarTitle"><h2>Projects</h2><button type="button" data-sitehdr-action="new-project">New</button></div>
+        <div class="sitehdr-manager__projectList">${projectButtons}</div>
+      </aside>
+      <main class="sitehdr-manager__content">
+        <div class="sitehdr-manager__projectHeading"><div><h2>${escapeHtml(project?.label || 'Project')}</h2><span>${artifacts.length} artifacts · ${datasets.length + knowledgeArtifacts.length} knowledge-base entries</span></div>
+          <div><button type="button" data-sitehdr-action="rename-project">Rename project</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-project"${activeProjectId === DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID ? ' disabled title="The default workspace is protected"' : ''}>Delete project</button></div>
+        </div>
+        <section class="sitehdr-manager__section"><h3>Knowledge bases</h3><ul class="sitehdr-knowledgeList">${knowledgeRows}</ul></section>
+        <section class="sitehdr-manager__section">
+          <div class="sitehdr-manager__toolbar"><h3>Artifacts</h3><div><button type="button" data-sitehdr-action="export-artifacts">Download selected</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-artifacts">Delete selected</button></div></div>
+          <div class="sitehdr-manager__tableWrap"><table><thead><tr><th><input type="checkbox" id="siteHeaderSelectAllArtifacts" aria-label="Select all artifacts" /></th><th>Name</th><th>Kind</th><th>Role</th><th>Modified</th><th></th></tr></thead><tbody>${artifactRows}</tbody></table></div>
+        </section>
+        <section class="sitehdr-manager__section">
+          <div class="sitehdr-manager__toolbar"><h3>Operation history</h3>${cleanupRunIds.length ? `<button type="button" data-sitehdr-action="clear-stale-runs">Clean ${cleanupRunIds.length} unavailable/no-effect entr${cleanupRunIds.length === 1 ? 'y' : 'ies'}</button>` : ''}</div>
+          <p class="sitehdr-historyNote">These are audit records of operations, not files. Missing inputs and outputs are retained as history until cleaned.</p>
+          ${runListHtml(visibleRuns, artifactIds)}
+        </section>
+      </main>`;
+    snapshot.cleanupRunIds = cleanupRunIds;
+  }
+
+  async function refreshProjectShell() {
+    const shell = document.querySelector('.sitehdr-projectShell');
+    if (!shell) return;
+    try {
+      portfolioDbPromise ||= openProjectPortfolioDatabase();
+      const db = await portfolioDbPromise;
+      const preferenceStore = (await getNavigationSettings());
+      const savedProjectId = await preferenceStore.readSettingValue(ACTIVE_PROJECT_SETTING_KEY, DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID);
+      const rootStores = createProjectPortfolioStores(db, { projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID });
+      await ensureProjectPortfolioProject(rootStores);
+      const projects = await rootStores.projects.listProjects();
+      activeProjectId = projects.some((project) => project.projectId === savedProjectId)
+        ? savedProjectId
+        : DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID;
+      const stores = createProjectPortfolioStores(db, { projectId: activeProjectId });
+      const [project, artifacts, datasets, runs] = await Promise.all([
+        stores.projects.getProject(activeProjectId),
+        stores.artifacts.listProjectArtifacts(activeProjectId, { includePayload: false }),
+        stores.datasets.listDatasetRecords(activeProjectId),
+        stores.runs.listRunRecords({ projectId: activeProjectId })
+      ]);
+      const manifest = getAppCapabilityManifest(getPageId());
+      const compatible = discoverCompatibleArtifacts(artifacts, manifest);
+      const compatibleIds = new Set(compatible.map((artifact) => artifact.artifactId));
+      shell.innerHTML = `
+        <button class="sitehdr-shellButton sitehdr-shellButton--manage" type="button" data-sitehdr-action="open-manager" title="Active project: ${escapeHtml(project?.label || activeProjectId)}">
+          <strong>Manage Workspace</strong>
+          <span class="sitehdr-workspaceMetric"><b>${projects.length}</b> project${projects.length === 1 ? '' : 's'}</span>
+          <span class="sitehdr-workspaceMetric"><b>${artifacts.length}</b> artifact${artifacts.length === 1 ? '' : 's'}</span>
+          <span class="sitehdr-workspaceMetric sitehdr-workspaceMetric--compatible"><b>${compatible.length}</b> compatible</span>
+        </button>
+      `;
+      projectManagerSnapshot = { projects, project, artifacts, datasets, runs, compatibleIds };
+      renderProjectManager();
+      updateDbStatus('ready', 'Portfolio ready');
+    } catch (error) {
+      shell.innerHTML = `<span class="sitehdr-shellError">Project storage unavailable: ${escapeHtml(error.message)}</span>`;
+      updateDbStatus('error', 'Portfolio unavailable');
+    }
   }
 
   function renderNavigation() {
@@ -528,6 +665,7 @@ import {
                  <h1 class="sitehdr-tool__title" style="margin-left: 2rem;">${escapeHtml(title)}</h1>
           </div>
 
+          ${projectShellHtml()}
           ${buildSectionsHtml(pageId)}
 
           <div class="sitehdr-utility">
@@ -552,6 +690,7 @@ import {
           ${appUtilityHtml()}
           </div>
         </div>
+        ${projectManagerDialogHtml()}
       </div>
     `;
   }
@@ -605,8 +744,14 @@ import {
 
   // script loaded at end of body => DOM is ready
   renderHeader();
+  window.SiteHeaderProjectShell = {
+    refresh: refreshProjectShell,
+    getActiveProjectId: () => activeProjectId,
+    getCapabilityManifest: () => getAppCapabilityManifest(getPageId())
+  };
   enableHoverNavigation();
   initializeHeaderView();
+  refreshProjectShell();
   window.SiteHeaderDBStatus = { set: updateDbStatus, inspect: inspectDbStatus };
   document.addEventListener("click", (event) => {
     const button = event.target?.closest?.("[data-sitehdr-event]");
@@ -616,6 +761,12 @@ import {
     document.dispatchEvent(new CustomEvent(eventName, { detail: { source: button } }));
   });
   document.addEventListener("change", async (event) => {
+    if (event.target?.id === 'siteHeaderSelectAllArtifacts') {
+      document.querySelectorAll('.sitehdr-artifactCheck').forEach((checkbox) => {
+        checkbox.checked = event.target.checked;
+      });
+      return;
+    }
     if (event.target?.id !== "siteHeaderView") return;
     const nextView = event.target.value;
     if (!HEADER_VIEWS[nextView]) return;
@@ -625,6 +776,139 @@ import {
       await (await getNavigationSettings()).writeSettingValue(HEADER_VIEW_SETTING_KEY, nextView);
     } catch (_err) {
       // The selected view remains usable for this page even if persistence fails.
+    }
+  });
+  document.addEventListener("click", async (event) => {
+    const action = event.target?.closest?.('[data-sitehdr-action]');
+    if (!action) return;
+    const dialog = document.getElementById('siteHeaderProjectManager');
+    if (action.dataset.sitehdrAction === 'open-manager') {
+      renderProjectManager();
+      typeof dialog?.showModal === 'function' ? dialog.showModal() : dialog?.setAttribute('open', '');
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'close-manager') {
+      typeof dialog?.close === 'function' ? dialog.close() : dialog?.removeAttribute('open');
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'select-project') {
+      activeProjectId = action.dataset.projectId;
+      await (await getNavigationSettings()).writeSettingValue(ACTIVE_PROJECT_SETTING_KEY, activeProjectId);
+      await refreshProjectShell();
+      document.dispatchEvent(new CustomEvent('sitehdr:project-changed', { detail: { projectId: activeProjectId } }));
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'new-project') {
+      const label = globalThis.prompt?.('Project name')?.trim();
+      if (!label) return;
+      try {
+        const db = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+        const stores = createProjectPortfolioStores(db, { projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID });
+        activeProjectId = createStableRecordId('project', [label, Date.now()]);
+        await stores.projects.createProject({ projectId: activeProjectId, label, tags: ['cross-app'] });
+        await (await getNavigationSettings()).writeSettingValue(ACTIVE_PROJECT_SETTING_KEY, activeProjectId);
+        await refreshProjectShell();
+        document.dispatchEvent(new CustomEvent('sitehdr:project-changed', { detail: { projectId: activeProjectId } }));
+      } catch (_err) {
+        updateDbStatus('error', 'Project creation failed');
+      }
+    }
+    if (action.dataset.sitehdrAction === 'rename-project') {
+      try {
+        const db = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+        const stores = createProjectPortfolioStores(db, { projectId: activeProjectId });
+        const current = await stores.projects.getProject(activeProjectId);
+        const label = globalThis.prompt?.('Project name', current?.label || '')?.trim();
+        if (!label || !current) return;
+        await stores.projects.updateProject(activeProjectId, { label });
+        await refreshProjectShell();
+        document.dispatchEvent(new CustomEvent('sitehdr:project-updated', { detail: { projectId: activeProjectId } }));
+      } catch (_err) {
+        updateDbStatus('error', 'Project rename failed');
+      }
+    }
+    if (action.dataset.sitehdrAction === 'delete-project') {
+      if (activeProjectId === DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID) return;
+      const project = projectManagerSnapshot?.project;
+      if (!globalThis.confirm?.(`Delete project “${project?.label || activeProjectId}” and all of its artifacts, knowledge bases, graphs, and activity records? This cannot be undone.`)) return;
+      try {
+        const db = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+        await deleteProjectCascade(createProjectPortfolioStores(db, { projectId: activeProjectId }), activeProjectId);
+        activeProjectId = DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID;
+        await (await getNavigationSettings()).writeSettingValue(ACTIVE_PROJECT_SETTING_KEY, activeProjectId);
+        await refreshProjectShell();
+        document.dispatchEvent(new CustomEvent('sitehdr:project-changed', { detail: { projectId: activeProjectId } }));
+      } catch (_err) {
+        updateDbStatus('error', 'Project deletion failed');
+      }
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'rename-artifact') {
+      const artifactId = action.dataset.artifactId;
+      try {
+        const db = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+        const stores = createProjectPortfolioStores(db, { projectId: activeProjectId });
+        const artifact = await stores.artifacts.getProjectArtifact(artifactId);
+        const label = globalThis.prompt?.('Artifact name', artifact?.label || '')?.trim();
+        if (!label || !artifact) return;
+        const { payload, ...metadata } = artifact;
+        await stores.artifacts.storeProjectArtifact({ ...metadata, label, updatedAt: new Date().toISOString() }, payload);
+        await refreshProjectShell();
+      } catch (_err) {
+        updateDbStatus('error', 'Artifact rename failed');
+      }
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'delete-artifacts') {
+      const ids = [...document.querySelectorAll('.sitehdr-artifactCheck:checked')].map((item) => item.value);
+      if (!ids.length || !globalThis.confirm?.(`Delete ${ids.length} selected artifact${ids.length === 1 ? '' : 's'}? This cannot be undone.`)) return;
+      try {
+        const db = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+        const stores = createProjectPortfolioStores(db, { projectId: activeProjectId });
+        for (const artifactId of ids) await deleteProjectArtifactCascade(stores, artifactId);
+        await refreshProjectShell();
+        document.dispatchEvent(new CustomEvent('sitehdr:artifacts-deleted', { detail: { projectId: activeProjectId, artifactIds: ids } }));
+      } catch (_err) {
+        updateDbStatus('error', 'Artifact deletion failed');
+      }
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'export-artifacts') {
+      const ids = [...document.querySelectorAll('.sitehdr-artifactCheck:checked')].map((item) => item.value);
+      if (!ids.length) return;
+      try {
+        const db = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+        const stores = createProjectPortfolioStores(db, { projectId: activeProjectId });
+        const artifacts = await Promise.all(ids.map((id) => stores.artifacts.getProjectArtifact(id)));
+        const available = artifacts.filter(Boolean);
+        if (typeof globalThis.JSZip === 'function') {
+          await downloadProjectArchive(projectManagerSnapshot.project, available, { JSZipConstructor: globalThis.JSZip, downloadBlob });
+        } else {
+          for (const artifact of available) downloadProjectArtifact(artifact, { downloadBlob });
+        }
+      } catch (_err) {
+        updateDbStatus('error', 'Artifact download failed');
+      }
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'clear-stale-runs') {
+      const runIds = projectManagerSnapshot?.cleanupRunIds || [];
+      if (!runIds.length || !globalThis.confirm?.(`Remove ${runIds.length} unavailable or no-effect operation entr${runIds.length === 1 ? 'y' : 'ies'} from this project's history?`)) return;
+      try {
+        const db = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+        const stores = createProjectPortfolioStores(db, { projectId: activeProjectId });
+        for (const runId of runIds) await stores.runs.deleteRunRecord(runId);
+        await refreshProjectShell();
+      } catch (_err) {
+        updateDbStatus('error', 'History cleanup failed');
+      }
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'open-artifact') {
+      document.dispatchEvent(new CustomEvent('sitehdr:open-artifact', {
+        detail: { projectId: activeProjectId, artifactId: action.dataset.artifactId, appId: getPageId() }
+      }));
+      if (dialog?.open) dialog.close();
     }
   });
   document.addEventListener("sitehdr:db-status", (event) => {

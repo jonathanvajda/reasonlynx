@@ -5,6 +5,7 @@
   "scripts": {
     "test:app": "node scripts/validate-app.mjs",
     "test:sw": "node scripts/validate-service-worker.mjs",
+    "test:header": "node --test app/app-capabilities.test.js packages/indexeddb-data-management/__tests__/portfolio-management.test.js",
     "test:docxhund": "node --test docxhund/__tests__/annotation-model.test.js docxhund/__tests__/document-renderer.test.js docxhund/__tests__/fidelity-preview.test.js docxhund/__tests__/knowledge-lookup.test.js docxhund/__tests__/provenance-model.test.js docxhund/__tests__/rdf-writer.test.js"
   }
 }

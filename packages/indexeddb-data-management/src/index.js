@@ -54,6 +54,11 @@ export {
 } from './project-portfolio-store.js';
 
 export {
+  deleteProjectArtifactCascade,
+  deleteProjectCascade
+} from './portfolio-management.js';
+
+export {
   PROJECT_ARCHIVE_MANIFEST_FILE,
   PROJECT_MANIFEST_KIND,
   PROJECT_MANIFEST_SCHEMA_VERSION,
