@@ -1,5 +1,7 @@
 # Remaining Apps Rollout Notes
 
+> **Status clarification (2026-09-30):** This document records an adapter/package rollout, not completion of authoritative-storage migration for every app. Shared run logging or package availability does not prove that an app stopped using its legacy store. See [Cross-App Authoritative Storage Checklist](./cross-app-authoritative-storage-checklist.md) for the code-audited completion criteria and per-app status.
+
 ## Date
 
 2026-08-02
