@@ -5,7 +5,9 @@
   "scripts": {
     "test:app": "node scripts/validate-app.mjs",
     "test:sw": "node scripts/validate-service-worker.mjs",
-    "test:header": "node --test app/app-capabilities.test.js packages/indexeddb-data-management/__tests__/portfolio-management.test.js",
+    "test:header": "node --test app/app-capabilities.test.js packages/indexeddb-data-management/__tests__/portfolio-management.test.js packages/semantic-workspace/__tests__/semantic-workspace.test.js",
+    "test:semantic-workspace": "node --test packages/semantic-workspace/__tests__/semantic-workspace.test.js",
+    "test:tom": "node --test tabular-ontology-maker/app/tom-project-storage.test.js packages/semantic-workspace/__tests__/semantic-workspace.test.js",
     "test:cq-ferret": "node --test cq-ferret/cq-ferret-indexeddb-store.test.js",
     "test:docxhund": "node --test docxhund/__tests__/annotation-model.test.js docxhund/__tests__/document-renderer.test.js docxhund/__tests__/fidelity-preview.test.js docxhund/__tests__/knowledge-lookup.test.js docxhund/__tests__/provenance-model.test.js docxhund/__tests__/rdf-writer.test.js"
   }

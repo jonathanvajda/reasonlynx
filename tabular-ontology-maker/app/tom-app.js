@@ -4,6 +4,7 @@
 import "./tom-grid-glide.js";
 import "./tom-core.js";
 import "./tom-ui.js";
+import { initializeTomSemanticWorkspaceAdapter } from './tom-semantic-workspace-adapter.js';
 
 const TOM = (window.TOM = window.TOM || {});
 
@@ -14,10 +15,12 @@ async function bootstrap() {
 
   if (TOM.UI && typeof TOM.UI.initialize === "function") {
     await TOM.UI.initialize();
+    await initializeTomSemanticWorkspaceAdapter();
     return;
   }
 
   await TOM.Core.bootstrap();
+  await initializeTomSemanticWorkspaceAdapter();
 }
 
 if (document.readyState === "loading") {

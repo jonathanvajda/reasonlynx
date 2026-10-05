@@ -1374,13 +1374,22 @@ function setupEventListeners() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const sourceOptions = document.createElement('datalist');
   sourceOptions.id = 'cq-knowledge-source-options';
   document.body.appendChild(sourceOptions);
   setupEventListeners();
-  initialLoad();
+  await initialLoad();
   initTabs();
+  const parameters = new URLSearchParams(globalThis.location.search);
+  if (parameters.get('workspaceOperation') === 'competency-question.append-sparql-query') {
+    await executeCompetencyQuestionSemanticOperation({
+      operationId: parameters.get('workspaceOperation'),
+      projectId: parameters.get('projectId'),
+      artifactId: parameters.get('artifactId')
+    });
+    globalThis.history.replaceState({}, '', `${globalThis.location.pathname}${globalThis.location.hash || ''}`);
+  }
 });
 
 document.addEventListener('sitehdr:project-changed', async (event) => {
@@ -1392,32 +1401,28 @@ document.addEventListener('sitehdr:project-changed', async (event) => {
   document.getElementById('new-cq-button')?.click();
 });
 
-document.addEventListener('sitehdr:workspace-action', (event) => {
-  if (event.detail?.appId !== 'cq-ferret') return;
-  switch (event.detail?.action?.actionId) {
-    case 'import-cq-csv':
-      document.getElementById('csv-upload-input')?.click();
-      break;
-    case 'export-cq-jsonld':
-      downloadJSONLD();
-      break;
-    case 'export-cq-csv':
-      downloadCSV();
-      break;
-  }
-});
-
-document.addEventListener('sitehdr:load-artifact', async (event) => {
-  if (event.detail?.appId !== 'cq-ferret' || event.detail?.action?.actionId !== 'append-sparql-query-to-cq') return;
-  if (!savedSparqlQueriesCache.some((query) => query.artifactId === event.detail.artifactId)) {
+/**
+ * Applies a shared semantic operation to the CQ editor.
+ *
+ * @param {{operationId:string,projectId:string,artifactId:string}} request Operation request.
+ * @returns {Promise<void>}
+ */
+async function executeCompetencyQuestionSemanticOperation(request) {
+  if (request?.operationId !== 'competency-question.append-sparql-query') return;
+  await selectCompetencyQuestionProject(request.projectId);
+  if (!savedSparqlQueriesCache.some((query) => query.artifactId === request.artifactId)) {
     savedSparqlQueriesCache = await listSavedSparqlQueries();
   }
-  const query = savedSparqlQueriesCache.find((item) => item.artifactId === event.detail.artifactId);
+  const query = savedSparqlQueriesCache.find((item) => item.artifactId === request.artifactId);
   if (!query) {
     alert('The selected SPARQL query is no longer available in this project.');
     return;
   }
   addDatabaseQueryItem(query.query, 'SPARQL');
   debouncedAutoSave();
+}
+
+document.addEventListener('sitehdr:execute-semantic-operation', async (event) => {
+  await executeCompetencyQuestionSemanticOperation(event.detail);
 });
 

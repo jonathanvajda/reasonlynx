@@ -334,7 +334,7 @@ Each modifying operation must state:
 
 ## Implications for current code
 
-The recently introduced `workspaceActions` and `artifactLoadActions` are transitional adapters. They correctly establish that visibility does not equal loading, but they remain attached to application manifests and can duplicate universal download behavior.
+The former `workspaceActions` and `artifactLoadActions` fields were transitional adapters. They established that visibility does not equal loading, but remained attached to application manifests and duplicated universal behavior. They have now been removed from the runtime manifests in favor of the shared semantic-operation and view-provider registries.
 
 They should evolve as follows:
 
@@ -346,7 +346,7 @@ They should evolve as follows:
 | `artifactLoadActions` | Semantic operation definitions independent of app identity |
 | `appId` destination | `viewId` provider chosen for an operation |
 
-Until that migration is implemented, app-manifest actions must not be multiplied across the modal. Only genuine semantic operations should appear; generic download/upload behavior belongs to the shared workspace.
+The CQ term-list → ontology-table path is the first completed reference implementation: append and replace are separate operations, the header resolves the provider, and TOM performs the storage/UI effects in a thin adapter. Generic file ingress now stores every format recognized by the shared MIME registry without guessing its semantic interpretation. Additional derived-representation projections remain shared-workspace follow-up work.
 
 ## Evidence gaps requiring targeted inventory additions
 
@@ -384,4 +384,3 @@ These are capability-family additions. They should use the same inventory fields
 - Universal download lists representations, not producing applications.
 - Universal upload can store an uninterpreted source when the user declines all semantic interpretations.
 - A producer-specific private UI snapshot is never required to consume the artifact’s principal semantic content.
-

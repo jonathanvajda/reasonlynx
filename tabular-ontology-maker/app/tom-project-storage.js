@@ -35,8 +35,28 @@ const TOM_RDF_ARTIFACT_KIND = 'ontology-rdf';
 const TOM_LEGACY_SETTINGS_KEY = 'ontologySettings';
 const TOM_SETTINGS_KEY = ONTOLOGY_METADATA_PROFILE_SETTING_KEY;
 const JSON_LD_FORMAT_KEY = 'jsonLd';
+const ACTIVE_PROJECT_SETTING_KEY = 'workspace.activeProjectId';
 
 let portfolioPromise = null;
+let activeTomProjectId = DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID;
+
+/**
+ * Selects the shared project used by subsequent TOM persistence operations.
+ *
+ * @param {string} projectId Canonical project identifier.
+ * @returns {void}
+ */
+export function selectTomProject(projectId) {
+  const selectedProjectId = String(projectId || '').trim() || DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID;
+  if (selectedProjectId === activeTomProjectId) return;
+  activeTomProjectId = selectedProjectId;
+  portfolioPromise = null;
+}
+
+/** @returns {string} Active shared project identifier. */
+export function getSelectedTomProjectId() {
+  return activeTomProjectId;
+}
 
 /**
  * Clears the cached project store connection for deterministic tests.
@@ -45,6 +65,7 @@ let portfolioPromise = null;
  */
 export function resetTomProjectStorageForTests() {
   portfolioPromise = null;
+  activeTomProjectId = DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID;
 }
 
 /**
@@ -56,11 +77,18 @@ export async function openTomProjectStores() {
   if (!portfolioPromise) {
     portfolioPromise = openProjectPortfolioDatabase()
       .then(async (db) => {
-        const stores = createProjectPortfolioStores(db, {
+        const rootStores = createProjectPortfolioStores(db, {
           projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID
         });
+        activeTomProjectId = await rootStores.settings.readSettingValue(
+          ACTIVE_PROJECT_SETTING_KEY,
+          activeTomProjectId
+        );
+        const stores = createProjectPortfolioStores(db, {
+          projectId: activeTomProjectId
+        });
         await ensureProjectPortfolioProject(stores, {
-          projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+          projectId: activeTomProjectId,
           label: TOM_PROJECT_LABEL,
           tags: ['cross-app', TOM_APP_ID]
         });
@@ -104,7 +132,7 @@ export async function writeTomOntologySettings(settings, { migratedFromLegacy = 
   const stores = await openTomProjectStores();
   const metadataRecord = normalizeOntologyMetadataRecord(settings);
   await stores.settings.storeSettingRecord({
-    scope: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+    scope: activeTomProjectId,
     key: TOM_SETTINGS_KEY,
     value: convertTomSettingsToJsonLd(metadataRecord),
     appId: TOM_APP_ID,
@@ -161,7 +189,7 @@ export async function storeTomAuthoringSession({
     source: createTomSourceMetadata()
   });
   const run = await storeProjectRunData(stores, {
-    projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+    projectId: activeTomProjectId,
     runKind: 'tom-save-session',
     label: 'TOM save session',
     createdAt: timestamp,
@@ -199,7 +227,7 @@ export function storeTomWorkspaceSnapshot(stores, workspaceSnapshot, {
 } = {}) {
   const formatDetails = resolveJsonLdFormatDetails();
   return storeProjectArtifactData(stores, {
-    projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+    projectId: activeTomProjectId,
     artifactKind: TOM_WORKSPACE_ARTIFACT_KIND,
     role: 'staged',
     label: 'TOM workspace snapshot',
@@ -236,7 +264,7 @@ export function storeTomGeneratedRdfArtifact(stores, rdfRecord, {
   const formatDetails = resolveRdfFormatDetails(rdfRecord?.format);
   const payloadFormat = rdfRecord?.format || formatDetails.format;
   return storeProjectArtifactData(stores, {
-    projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+    projectId: activeTomProjectId,
     artifactKind: TOM_RDF_ARTIFACT_KIND,
     role: 'generated',
     label: `TOM generated ontology.${formatDetails.extension}`,
@@ -289,10 +317,10 @@ export async function readLatestTomSavedSession() {
 async function readLatestSharedTomSession() {
   const stores = await openTomProjectStores();
   const [workspaceArtifacts, rdfArtifacts] = await Promise.all([
-    stores.artifacts.listProjectArtifacts(DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID, {
+    stores.artifacts.listProjectArtifacts(activeTomProjectId, {
       artifactKind: TOM_WORKSPACE_ARTIFACT_KIND
     }),
-    stores.artifacts.listProjectArtifacts(DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID, {
+    stores.artifacts.listProjectArtifacts(activeTomProjectId, {
       artifactKind: TOM_RDF_ARTIFACT_KIND
     })
   ]);
@@ -352,7 +380,7 @@ export async function migrateLegacyTomSessionToProjectStorage(legacySession) {
     })
     : null;
   await storeProjectRunData(stores, {
-    projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+    projectId: activeTomProjectId,
     runKind: 'migration',
     label: 'Migrate TOM legacy session',
     createdAt: timestamp,

@@ -58,6 +58,7 @@ import {
   hasTomSavedSession,
   readLatestTomSavedSession,
   readTomOntologySettings,
+  selectTomProject,
   storeTomAuthoringSession,
   writeTomOntologySettings
 } from './tom-project-storage.js';
@@ -1095,6 +1096,35 @@ function readCurrentTableRows() {
     fallbackRows.push(row);
   }
   return fallbackRows;
+}
+
+/**
+ * Reads a detached copy of the active ontology table rows.
+ *
+ * @returns {string[][]} Current table rows.
+ */
+function readOntologyTableRows() {
+  return readCurrentTableRows().map((row) => [...row]);
+}
+
+/**
+ * Replaces TOM's ontology table with already-normalized canonical rows.
+ * Semantic projection and merge decisions belong to pure workspace adapters.
+ *
+ * @param {object[]} rows Canonical ontology-table rows.
+ * @returns {number} Number of rows applied.
+ */
+function replaceOntologyTableRows(rows) {
+  if (!gridInstance) throw new Error('The ontology table is not ready.');
+  if (getActiveViewKey() !== VIEW_KEYS.ONTOLOGY) applyViewSchema(VIEW_KEYS.ONTOLOGY);
+  const normalizedRows = CoreUtils.normalizeTomTableRows(rows, {
+    headers: BASE_COLUMN_HEADERS,
+    fields: ['iri', 'label', 'elementType', 'definition', 'isA', 'isCuratedInOntology'],
+    expectedColumnCount: BASE_COLS
+  });
+  gridInstance.replaceRows(normalizedRows, 'LoadData');
+  updateOntologyPreview();
+  return normalizedRows.length;
 }
 
 function isValidViewKey(viewKey) {
@@ -3995,6 +4025,9 @@ async function bootstrapApp() {
 TOM.Core = {
   bootstrap: bootstrapApp,
   getGridInstance: () => gridInstance,
+  readOntologyTableRows,
+  replaceOntologyTableRows,
+  selectProject: selectTomProject,
   getCustomPredicates: () => getCustomPredicateIris(),
   getPredicateRegistry: () => getPredicateRegistry().map((record) => ({ ...record })),
   getActiveView: () => getActiveViewKey(),

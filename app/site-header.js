@@ -12,8 +12,22 @@ import {
   downloadProjectArtifact
 } from '../packages/indexeddb-data-management/src/index.js';
 import { createStableRecordId } from '../packages/indexeddb-data-management/src/index.js';
-import { downloadBlob } from '../packages/browser-file-io/src/index.js';
-import { discoverCompatibleArtifacts, getAppCapabilityManifest, getArtifactLoadActions, listWorkspaceActions } from './app-capabilities.js';
+import { downloadBlob, readFileAsArrayBuffer, readFileAsText } from '../packages/browser-file-io/src/index.js';
+import {
+  getFilenameExtension,
+  getSupportedMimeTypeForFilename,
+  listSupportedMimeDescriptors
+} from '../packages/format-registry/src/index.js';
+import { discoverCompatibleArtifacts, getAppCapabilityManifest } from './app-capabilities.js';
+import {
+  createSemanticOperationUrl,
+  getSemanticOperation,
+  getSemanticViewProvider,
+  getSemanticViewProviderForPage,
+  createSourceArtifactMetadata,
+  isBinaryMimeDescriptor,
+  listSemanticOperationsForArtifact
+} from '../packages/semantic-workspace/src/index.js';
 import {
   applyThemePreference,
   readThemePreference,
@@ -490,6 +504,55 @@ import {
     </dialog>`;
   }
 
+  const workspaceFileAccept = [...new Set(listSupportedMimeDescriptors()
+    .flatMap((descriptor) => descriptor.extensions.map((extension) => `.${extension}`)))].join(',');
+
+  /**
+   * Stores recognized files as portable source artifacts without interpreting
+   * their semantic role for a particular application.
+   *
+   * @param {File[]} files Browser files selected by the user.
+   * @returns {Promise<object[]>} Stored artifact metadata.
+   */
+  async function addFilesToActiveWorkspace(files) {
+    const database = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+    const stores = createProjectPortfolioStores(database, { projectId: activeProjectId });
+    const storedArtifacts = [];
+    const unsupportedNames = [];
+    for (const [index, file] of files.entries()) {
+      const descriptorResult = getSupportedMimeTypeForFilename(file.name);
+      if (!descriptorResult.ok) {
+        unsupportedNames.push(file.name);
+        continue;
+      }
+      const descriptor = descriptorResult.value;
+      const artifactId = createStableRecordId('artifact', [activeProjectId, file.name, file.lastModified, Date.now(), index]);
+      const metadata = createSourceArtifactMetadata(file, descriptor, {
+        projectId: activeProjectId,
+        artifactId,
+        extension: getFilenameExtension(file.name)
+      });
+      const payload = isBinaryMimeDescriptor(descriptor)
+        ? await readFileAsArrayBuffer(file)
+        : await readFileAsText(file);
+      storedArtifacts.push(await stores.artifacts.storeProjectArtifact(metadata, payload));
+    }
+    if (storedArtifacts.length) {
+      await stores.runs.storeRunRecord({
+        projectId: activeProjectId,
+        runKind: 'file-ingress',
+        label: `Added ${storedArtifacts.length} workspace file${storedArtifacts.length === 1 ? '' : 's'}`,
+        inputArtifactIds: [],
+        outputArtifactIds: storedArtifacts.map((artifact) => artifact.artifactId),
+        payload: { unsupportedNames }
+      });
+    }
+    if (unsupportedNames.length) {
+      globalThis.alert?.(`Unsupported file type: ${unsupportedNames.join(', ')}`);
+    }
+    return storedArtifacts;
+  }
+
   function artifactListHtml(artifacts, compatibleIds) {
     if (!artifacts.length) return '<p class="sitehdr-empty">No artifacts in this project.</p>';
     return `<ul class="sitehdr-shellList">${artifacts.map((artifact) => {
@@ -519,12 +582,6 @@ import {
     const snapshot = projectManagerSnapshot;
     if (!body || !snapshot) return;
     const { projects, project, artifacts, datasets, runs, compatibleIds } = snapshot;
-    const currentAppManifest = getAppCapabilityManifest(getPageId());
-    const workspaceActions = listWorkspaceActions(currentAppManifest);
-    const workspaceActionRows = workspaceActions.map((action) => `<li class="sitehdr-workspaceAction">
-      <div><strong>${escapeHtml(action.label)}</strong><span>${escapeHtml(action.description)}</span></div>
-      <button type="button" data-sitehdr-action="run-workspace-action" data-workspace-action-id="${escapeHtml(action.actionId)}">${action.direction === 'import' ? 'Choose file' : 'Download'}</button>
-    </li>`).join('');
     const artifactIds = new Set(artifacts.map((artifact) => artifact.artifactId));
     const staleRuns = runs.filter((run) => [...(run.inputArtifactIds || []), ...(run.outputArtifactIds || [])].some((id) => !artifactIds.has(id)));
     const zeroEffectRuns = runs.filter((run) => /^Stored\s+0\b/i.test(run.label));
@@ -537,11 +594,13 @@ import {
       ...datasets.map((dataset) => `<li><strong>${escapeHtml(dataset.label)}</strong><span>Knowledge base · ${dataset.ontologyCount || 0} ontologies</span></li>`),
       ...knowledgeArtifacts.map((artifact) => `<li><strong>${escapeHtml(artifact.label)}</strong><span>${escapeHtml(artifact.artifactKind)}</span></li>`)
     ].join('') || '<li class="sitehdr-empty">No knowledge bases in this project.</li>';
+    const currentViewProvider = getSemanticViewProviderForPage(getPageId());
     const artifactRows = artifacts.map((artifact) => {
-      const loadActions = getArtifactLoadActions(artifact, currentAppManifest);
-      const actionHtml = loadActions.length
-        ? loadActions.map((loadAction) => `<button type="button" class="sitehdr-rowAction" data-sitehdr-action="load-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}" data-load-action-id="${escapeHtml(loadAction.actionId)}">${escapeHtml(loadAction.label)}</button>`).join('')
-        : (compatibleIds.has(artifact.artifactId) ? '<span class="sitehdr-noLoader">Visible; load action not implemented</span>' : '');
+      const actionHtml = listSemanticOperationsForArtifact(artifact, {
+        destinationViewId: currentViewProvider?.viewId || '__no-semantic-view__'
+      }).map((operation) => {
+        return `<button type="button" class="sitehdr-rowAction" title="${escapeHtml(operation.description)}" data-sitehdr-action="execute-semantic-operation" data-artifact-id="${escapeHtml(artifact.artifactId)}" data-operation-id="${escapeHtml(operation.operationId)}">${escapeHtml(operation.label)}</button>`;
+      }).join('');
       return `<tr>
       <td><input type="checkbox" class="sitehdr-artifactCheck" value="${escapeHtml(artifact.artifactId)}" aria-label="Select ${escapeHtml(artifact.label)}" /></td>
       <td><button type="button" class="sitehdr-fileName" data-sitehdr-action="open-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}">${escapeHtml(artifact.label)}</button>${compatibleIds.has(artifact.artifactId) ? '<span class="sitehdr-compatibleTag">Compatible</span>' : ''}</td>
@@ -559,10 +618,9 @@ import {
         <div class="sitehdr-manager__projectHeading"><div><h2>${escapeHtml(project?.label || 'Project')}</h2><span>${artifacts.length} artifacts · ${datasets.length + knowledgeArtifacts.length} knowledge-base entries</span></div>
           <div><button type="button" data-sitehdr-action="rename-project">Rename project</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-project"${activeProjectId === DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID ? ' disabled title="The default workspace is protected"' : ''}>Delete project</button></div>
         </div>
-        ${workspaceActionRows ? `<section class="sitehdr-manager__section"><h3>Use ${escapeHtml(currentAppManifest.appId)} with this workspace</h3><p class="sitehdr-historyNote">These actions state how imported data will enter the current app. Workspace files are not loaded automatically.</p><ul class="sitehdr-knowledgeList">${workspaceActionRows}</ul></section>` : ''}
         <section class="sitehdr-manager__section"><h3>Knowledge bases</h3><ul class="sitehdr-knowledgeList">${knowledgeRows}</ul></section>
         <section class="sitehdr-manager__section">
-          <div class="sitehdr-manager__toolbar"><h3>Artifacts</h3><div><button type="button" data-sitehdr-action="export-artifacts">Download selected</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-artifacts">Delete selected</button></div></div>
+          <div class="sitehdr-manager__toolbar"><h3>Artifacts</h3><div><button type="button" data-sitehdr-action="add-files">Add files</button><button type="button" data-sitehdr-action="export-artifacts">Download selected</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-artifacts">Delete selected</button><input type="file" id="siteHeaderWorkspaceFileInput" accept="${escapeHtml(workspaceFileAccept)}" multiple hidden /></div></div>
           <div class="sitehdr-manager__tableWrap"><table><thead><tr><th><input type="checkbox" id="siteHeaderSelectAllArtifacts" aria-label="Select all artifacts" /></th><th>Name</th><th>Kind</th><th>Role</th><th>Modified</th><th></th></tr></thead><tbody>${artifactRows}</tbody></table></div>
         </section>
         <section class="sitehdr-manager__section">
@@ -774,6 +832,16 @@ import {
     document.dispatchEvent(new CustomEvent(eventName, { detail: { source: button } }));
   });
   document.addEventListener("change", async (event) => {
+    if (event.target?.id === 'siteHeaderWorkspaceFileInput') {
+      try {
+        await addFilesToActiveWorkspace([...event.target.files]);
+        event.target.value = '';
+        await refreshProjectShell();
+      } catch (_err) {
+        updateDbStatus('error', 'Workspace file import failed');
+      }
+      return;
+    }
     if (event.target?.id === 'siteHeaderSelectAllArtifacts') {
       document.querySelectorAll('.sitehdr-artifactCheck').forEach((checkbox) => {
         checkbox.checked = event.target.checked;
@@ -872,6 +940,10 @@ import {
       }
       return;
     }
+    if (action.dataset.sitehdrAction === 'add-files') {
+      document.getElementById('siteHeaderWorkspaceFileInput')?.click();
+      return;
+    }
     if (action.dataset.sitehdrAction === 'delete-artifacts') {
       const ids = [...document.querySelectorAll('.sitehdr-artifactCheck:checked')].map((item) => item.value);
       if (!ids.length || !globalThis.confirm?.(`Delete ${ids.length} selected artifact${ids.length === 1 ? '' : 's'}? This cannot be undone.`)) return;
@@ -924,27 +996,19 @@ import {
       if (dialog?.open) dialog.close();
       return;
     }
-    if (action.dataset.sitehdrAction === 'load-artifact') {
-      const manifest = getAppCapabilityManifest(getPageId());
+    if (action.dataset.sitehdrAction === 'execute-semantic-operation') {
       const artifact = projectManagerSnapshot?.artifacts?.find((item) => item.artifactId === action.dataset.artifactId);
-      const loadAction = getArtifactLoadActions(artifact, manifest)
-        .find((item) => item.actionId === action.dataset.loadActionId);
-      if (!artifact || !loadAction) return;
-      document.dispatchEvent(new CustomEvent('sitehdr:load-artifact', {
-        detail: { projectId: activeProjectId, appId: manifest.appId, artifactId: artifact.artifactId, action: loadAction }
-      }));
+      const semanticOperation = getSemanticOperation(action.dataset.operationId);
+      const provider = getSemanticViewProvider(semanticOperation?.destinationViewId);
+      if (!artifact || !semanticOperation || !provider) return;
+      const request = { projectId: activeProjectId, artifactId: artifact.artifactId, operationId: semanticOperation.operationId };
+      if (provider.pageId === getPageId()) {
+        document.dispatchEvent(new CustomEvent('sitehdr:execute-semantic-operation', { detail: request }));
+      } else {
+        globalThis.location.href = createSemanticOperationUrl(provider, request);
+      }
       if (dialog?.open) dialog.close();
       return;
-    }
-    if (action.dataset.sitehdrAction === 'run-workspace-action') {
-      const manifest = getAppCapabilityManifest(getPageId());
-      const workspaceAction = listWorkspaceActions(manifest)
-        .find((item) => item.actionId === action.dataset.workspaceActionId);
-      if (!workspaceAction) return;
-      document.dispatchEvent(new CustomEvent('sitehdr:workspace-action', {
-        detail: { projectId: activeProjectId, appId: manifest.appId, action: workspaceAction }
-      }));
-      if (dialog?.open) dialog.close();
     }
   });
   document.addEventListener("sitehdr:db-status", (event) => {

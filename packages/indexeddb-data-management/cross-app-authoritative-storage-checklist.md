@@ -93,7 +93,7 @@ The target capability contract therefore has three independent registries:
 - operations: semantic verbs with accepted inputs, outputs, parameters, and append/replace/merge/reference behavior;
 - view providers: interfaces capable of presenting operations without owning their data.
 
-The current `workspaceActions` and `artifactLoadActions` manifest fields are transitional adapters. Generic upload and download must converge on universal workspace actions; semantic load/transform actions must move to the operation registry. The shared **Manage Workspace** interface owns project selection, durable artifact visibility, universal file ingress/egress, rename/delete/download, and operation discovery. A selected view remains responsible for presenting operation-specific controls.
+The former `workspaceActions` and `artifactLoadActions` manifest fields have been removed. Semantic load/transform actions now resolve through the shared operation and view-provider registries. Generic upload and derived-representation download still need to converge on universal workspace services. The shared **Manage Workspace** interface owns project selection, durable artifact visibility, universal file ingress/egress, rename/delete/download, and operation discovery. A selected view remains responsible for presenting operation-specific controls.
 
 Rules:
 
@@ -228,7 +228,7 @@ The checklist uses **Done**, **Partial**, **Missing**, and **Audit** for current
 - [~] **Partial:** `TabularOntologyDB` remains available as a legacy source; migration verification and confirmed cleanup are unfinished.
 - [ ] **Missing:** Replace the hard-coded default project with the shell’s active project.
 - [ ] **Missing:** Discover/open CQ term lists, ontology tables, and source ontology artifacts.
-- [ ] **Pinned bridge:** Declare and implement separate “Append terms to current table” and “Replace table from term list” actions for CQ Ferret `term-list` artifacts. Visibility alone does not satisfy this item.
+- [x] **Done:** While the user is in TOM, the shared workspace offers separate “Append terms to current table” and “Replace current table with terms” operations for `term-list` artifacts. CQ Ferret publishes the portable source artifact but does not push it into TOM. TOM's adapter applies and persists the selected mode in the active shared project.
 - [ ] **Missing:** React to project changes and remove any competing project-selection state.
 - [ ] **Missing:** Report legacy/shared record counts, verify migrated payloads, and offer confirmed legacy deletion.
 - [ ] **Missing:** Test CQ Ferret → TOM and Table Nova ontology → TOM round trips.

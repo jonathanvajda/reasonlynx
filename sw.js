@@ -4,7 +4,7 @@
    - graph.jsonld: stale-while-revalidate
 */
 
-const SW_VERSION = 'reasonlynx-monorepo-v12';
+const SW_VERSION = 'reasonlynx-monorepo-v13';
 const CACHE_SHELL = `ontoeagle-shell-${SW_VERSION}`;
 const CACHE_DATA = `ontoeagle-data-${SW_VERSION}`;
 
@@ -34,6 +34,7 @@ const SHELL_ASSETS = [
   './tabular-ontology-maker/app/tom-core-utils.js',
   './tabular-ontology-maker/app/tom-axiom-builder.js',
   './tabular-ontology-maker/app/tom-app.js',
+  './tabular-ontology-maker/app/tom-semantic-workspace-adapter.js',
   './tabular-ontology-maker/app/build-info.js',
   './tabular-ontology-maker/',
   './about/',
@@ -82,6 +83,11 @@ const SHELL_ASSETS = [
   './packages/format-registry/src/mime-registry.js',
   './packages/format-registry/src/rdf-content-detection.js',
   './packages/format-registry/src/rdf-parser-formats.js',
+  './packages/semantic-workspace/src/index.js',
+  './packages/semantic-workspace/src/representation-registry.js',
+  './packages/semantic-workspace/src/semantic-operation-registry.js',
+  './packages/semantic-workspace/src/term-list-ontology-table.js',
+  './packages/semantic-workspace/src/view-provider-registry.js',
   './packages/indexeddb-data-management/src/file-system-access.js',
   './packages/indexeddb-data-management/src/graph-operations.js',
   './packages/indexeddb-data-management/src/id-generation.js',
