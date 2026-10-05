@@ -4,12 +4,13 @@
    - graph.jsonld: stale-while-revalidate
 */
 
-const SW_VERSION = 'reasonlynx-monorepo-v18';
+const SW_VERSION = 'reasonlynx-monorepo-v25';
 const CACHE_SHELL = `ontoeagle-shell-${SW_VERSION}`;
 const CACHE_DATA = `ontoeagle-data-${SW_VERSION}`;
 
 // Keep this list tight and explicit.
 const SHELL_ASSETS = [
+  './images/ReasonLynx_greenscale.png',
   './vendor/jszip-esm.js',
   './vendor/jszip.min.js',
   './vendor/xlsx.full.min.js',

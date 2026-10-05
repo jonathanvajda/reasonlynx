@@ -13,17 +13,17 @@
   background: var(--ont-panel-bg, #fff);
 }
 
-/* One banner row */
+/* Compact desktop shell: identity, navigation, and utilities share one row. */
 .sitehdr-bar {
   align-items: center;
   display: grid;
-  grid-template-columns: auto 350px minmax(0, 1fr) auto;
-  grid-template-rows: auto auto;
+  grid-template-columns: auto minmax(220px, 300px) minmax(0, 1fr) auto;
+  grid-template-rows: auto;
   width: 98%;
   margin: 0 auto;
-  padding: 14px 18px;
-  gap: 14px;
-  flex-wrap: nowrap;   /* keep menu to the right on wide screens */
+  padding: 8px 14px;
+  column-gap: 12px;
+  row-gap: 0;
 
   background-color: var(--ont-panel-bg, #fff);
 }
@@ -31,26 +31,32 @@
 /* Left: main logo */
 .sitehdr-brand {
   grid-column: 1;
-  grid-row: 1 / 3;
-  padding-bottom: 3rem;
+  grid-row: 1;
   flex: 0 0 auto;
+  padding-right: 12px;
+  border-right: 1px solid var(--ont-border, rgba(0,0,0,0.14));
   text-decoration: none;
   color: inherit;
+  align-self: center;
 }
 
 .sitehdr-brand__main {
-  height: 100px;   /* adjust to taste */
+  display: block;
+  width: 60px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 10px;
 }
 
 /* Next: tool logo */
 .sitehdr-tool {
   grid-column: 2;
-  grid-row: 1 / 3;
+  grid-row: 1;
   flex: 0 0 auto;
-  width: 350px;
+  width: auto;
   display: inline-flex;
-
-  align-items: flex-start;
+  gap: 12px;
+  align-items: center;
   justify-content: flex-start;
 
   background: var(--ont-panel-bg, #fff);
@@ -59,20 +65,26 @@
 
 .sitehdr-tool__img {
   display: inline-flex;
-  height: 100px;   /* match main logo height */
-  width: auto;
+  flex: 0 0 auto;
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
 }
 
 .sitehdr-tool__title {
+  flex: 0 1 auto;
   align-content: center;
-  height: 120px;   /* match main logo height */
+  height: auto;
   width: auto;
-  max-width: 120px;
+  max-width: 18ch;
+  margin: 0;
 
-  font-size: 2.75rem;
+  font-size: clamp(1.7rem, 1.2vw, 2.15rem);
+  line-height: 1.12;
   letter-spacing: 0.05rem;
   font-weight: 650;
-  padding-right: 3.75rem;
+  padding-right: 0;
+  text-align: right;
 
   color: var(--ont-text, #111);
 }
@@ -80,7 +92,7 @@
 /* Compact, switchable navigation */
 .sitehdr-navigation {
   grid-column: 3;
-  grid-row: 2;
+  grid-row: 1;
   flex: 1 1 auto;
   min-width: 0;
   display: grid;
@@ -105,8 +117,15 @@
   display: flex;
   align-items: center;
   gap: 7px;
+  width: 100%;
+  margin: 0;
   min-width: 0;
   overflow: visible;
+}
+
+.sitehdr-navigation[data-view="competency"] .sitehdr-sections {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .sitehdr-section {
@@ -158,6 +177,12 @@
 .sitehdr-navigation[data-stage-count="4"] .sitehdr-section:nth-child(4) { --sitehdr-stage-color: #506b8a; }
 
 .sitehdr-section__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
   list-style: none;
   margin: 0;
   min-height: 42px;
@@ -175,7 +200,7 @@
 }
 
 .sitehdr-navigation[data-view="competency"] .sitehdr-section__title {
-  min-width: 142px;
+  min-width: 0;
   text-align: left;
 }
 
@@ -187,6 +212,29 @@
   border-color: color-mix(in srgb, var(--sitehdr-stage-color) 52%, var(--ont-border, #ccc));
   background: color-mix(in srgb, var(--sitehdr-stage-color) 25%, var(--ont-panel-bg, #fff));
   transform: translateY(-1px);
+}
+
+/* Dark surfaces need a larger share of each stage hue to remain distinguishable. */
+:root[data-theme="dark"] .sitehdr-section__title {
+  border-color: color-mix(in srgb, var(--sitehdr-stage-color) 82%, #b8c2cf);
+  background: color-mix(in srgb, var(--sitehdr-stage-color) 58%, var(--ont-panel-bg, #111827));
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.32),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+:root[data-theme="dark"] .sitehdr-section__title::after {
+  color: color-mix(in srgb, var(--sitehdr-stage-color) 55%, #ffffff);
+}
+
+:root[data-theme="dark"] .sitehdr-section__title:hover,
+:root[data-theme="dark"] .sitehdr-section__title:focus-visible,
+:root[data-theme="dark"] .sitehdr-section[open] > .sitehdr-section__title {
+  border-color: color-mix(in srgb, var(--sitehdr-stage-color) 68%, #ffffff);
+  background: color-mix(in srgb, var(--sitehdr-stage-color) 72%, var(--ont-panel-bg, #111827));
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.38),
+    0 0 0 1px color-mix(in srgb, var(--sitehdr-stage-color) 28%, transparent);
 }
 
 /* Linear Pipeline reads as one continuous directional process. */
@@ -278,31 +326,33 @@
   top: -0.45rem;
   left: calc(100% + 0.45rem);
   display: none;
-  grid-template-columns: 4.5rem minmax(13rem, 18rem);
+  grid-template-columns: 64px minmax(0, 1fr);
   align-items: start;
-  gap: 0.8rem;
-  width: max-content;
-  max-width: min(25rem, 70vw);
-  padding: 0.9rem;
+  gap: 14px;
+  width: min(390px, 70vw);
+  max-width: none;
+  padding: 14px;
   border: 1px solid color-mix(in srgb, var(--ont-accent, #2563eb) 45%, var(--ont-border, #ccc));
   border-radius: var(--ont-radius, 6px);
   background: var(--ont-panel-bg, #fff);
   color: var(--ont-text, #111);
   box-shadow: 0 1rem 2.2rem rgba(0,0,0,0.22);
-  line-height: 1.4;
+  font-size: 15px;
+  line-height: 1.45;
   pointer-events: none;
 }
 
 .sitehdr-itemPreview img {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
 }
 
 .sitehdr-itemPreview strong {
   display: block;
-  margin-bottom: 0.3rem;
-  font-size: 1.05rem;
+  margin-bottom: 4px;
+  font-size: 16px;
+  line-height: 1.3;
 }
 
 .sitehdr-menuItem:hover > .sitehdr-itemPreview,
@@ -315,12 +365,14 @@
 
 .sitehdr-utility {
   grid-column: 4;
-  grid-row: 1 / 3;
+  grid-row: 1;
   position: relative;
-  display: grid;
-  gap: 0.55rem;
-  justify-items: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
   margin-left: auto;
+  min-width: 0;
 }
 
 .sitehdr-db {
@@ -339,9 +391,10 @@
 }
 
 .sitehdr-appTools {
-  display: grid;
-  justify-items: end;
-  gap: 0.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .sitehdr-appToolActions {
@@ -354,8 +407,8 @@
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--ont-border, rgba(0,0,0,0.2));
   border-radius: var(--ont-radius, 6px);
   background: var(--ont-code-bg, #f7f7f7);
@@ -473,7 +526,18 @@
 /* Healthy status lives in Settings; only actionable/transient states stay outside. */
 .sitehdr-db--external[data-db-status="idle"],
 .sitehdr-db--external[data-db-status="ready"] { display: none; }
+.sitehdr-db--external[data-db-status="initializing"],
+.sitehdr-db--external[data-db-status="reading"],
+.sitehdr-db--external[data-db-status="writing"] {
+  min-height: 40px;
+  padding: 7px 10px;
+  border: 1px solid color-mix(in srgb, #eab308 42%, var(--ont-border, #ccc));
+  border-radius: var(--ont-radius, 6px);
+  background: color-mix(in srgb, #eab308 7%, var(--ont-panel-bg, #fff));
+  box-sizing: border-box;
+}
 .sitehdr-db--external[data-db-status="error"] {
+  min-height: 40px;
   padding: 0.4rem 0.55rem;
   border: 1px solid color-mix(in srgb, #ef4444 48%, var(--ont-border, #ccc));
   border-radius: var(--ont-radius, 6px);
@@ -484,8 +548,6 @@
 
 .sitehdr-projectShell {
   position: relative;
-  grid-column: 3;
-  grid-row: 1;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -538,9 +600,9 @@
 .sitehdr-shellButton--manage {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-height: 44px;
-  padding: 8px 12px;
+  padding: 8px 10px;
   font-weight: 650;
   white-space: nowrap;
   background: color-mix(in srgb, var(--ont-accent, #2563eb) 8%, var(--ont-panel-bg, #fff));
@@ -550,24 +612,36 @@
   font-size: 15px;
 }
 
-.sitehdr-workspaceMetric {
+.sitehdr-workspaceBadge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding-left: 10px;
-  border-left: 1px solid var(--ont-border, rgba(0,0,0,0.18));
+  justify-content: center;
+  gap: 3px;
+  min-width: 31px;
+  min-height: 24px;
+  padding: 2px 7px;
+  border: 1px solid var(--ont-border, rgba(0,0,0,0.18));
+  border-radius: 999px;
+  background: var(--ont-panel-bg, #fff);
   color: var(--ont-muted, #666);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 650;
+  box-sizing: border-box;
 }
 
-.sitehdr-workspaceMetric b {
+.sitehdr-workspaceBadge b {
   color: var(--ont-text, #111);
-  font-size: 14px;
+  font-size: 13px;
 }
 
-.sitehdr-workspaceMetric--compatible b {
+.sitehdr-workspaceBadge.has-compatible {
+  border-color: color-mix(in srgb, #16803a 30%, var(--ont-border, #ccc));
+  background: color-mix(in srgb, #22c55e 12%, var(--ont-panel-bg, #fff));
   color: #16803a;
+}
+
+.sitehdr-workspaceBadge.has-compatible b {
+  color: #126b31;
 }
 
 .sitehdr-shellPopover { position: relative; }
@@ -728,6 +802,9 @@
 }
 .sitehdr-manager__close span {
   display: block;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1;
   transform: translateY(-1px);
 }
 .sitehdr-manager__projectList { display: grid; gap: 0.35rem; margin-top: 0.75rem; }
@@ -883,6 +960,10 @@
 
 .sitehdr-settings__toggle::-webkit-details-marker { display: none; }
 .sitehdr-settings__toggle img { display: block; width: 1.3rem; height: 1.3rem; }
+:root[data-theme="dark"] .sitehdr-settings__toggle img {
+  filter: invert(1);
+  opacity: 0.9;
+}
 .sitehdr-settings__toggle:hover,
 .sitehdr-settings__toggle:focus-visible,
 .sitehdr-settings[open] > .sitehdr-settings__toggle {
@@ -1064,18 +1145,33 @@
   border: 0;
 }
 
+@media (max-width: 1500px) {
+  .sitehdr-section__title {
+    min-height: 52px;
+    padding: 8px 10px;
+    font-size: 13px;
+    white-space: normal;
+  }
+}
+
 /* Small screens: allow wrap so sections drop under logos */
-@media (max-width: 900px) {
+@media (max-width: 1050px) {
   .sitehdr-bar {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto auto;
     row-gap: 0.75rem;
   }
 
   .sitehdr-brand { grid-column: 1; grid-row: 1; }
   .sitehdr-tool { grid-column: 2; grid-row: 1; width: auto; }
-  .sitehdr-utility { grid-column: 3; grid-row: 1; }
-  .sitehdr-projectShell { grid-column: 1 / -1; grid-row: 2; flex-wrap: wrap; }
+  .sitehdr-utility {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-left: 0;
+  }
+  .sitehdr-projectShell { flex-wrap: wrap; }
   .sitehdr-navigation { grid-column: 1 / -1; grid-row: 3; }
   .sitehdr-projectSelect { flex: 1 1 14rem; width: auto; }
   .sitehdr-manager__body { grid-template-columns: 1fr; }
@@ -1090,6 +1186,11 @@
     flex: 1 1 100%;
     display: grid;
     align-items: stretch;
+    width: 100%;
+  }
+
+  .sitehdr-navigation[data-view="competency"] .sitehdr-sections {
+    grid-template-columns: 1fr;
   }
 
   .sitehdr-navigation { flex: 1 1 100%; }
@@ -1114,12 +1215,43 @@
 
   .sitehdr-itemPreview { display: none !important; }
 
-  .sitehdr-utility {
-    justify-items: start;
-    margin-left: 0;
+  .sitehdr-appTools {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .sitehdr-bar {
+    width: 100%;
+    padding: 12px;
   }
 
-  .sitehdr-appTools {
-    justify-items: start;
+  .sitehdr-brand__main {
+    width: 58px;
+    height: 74px;
+  }
+
+  .sitehdr-tool__img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .sitehdr-tool__title {
+    max-width: 12rem;
+    font-size: 1.8rem;
+  }
+
+  .sitehdr-projectShell,
+  .sitehdr-shellButton--manage {
+    width: 100%;
+  }
+
+  .sitehdr-shellButton--manage {
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .sitehdr-settings {
+    margin-left: auto;
   }
 }

@@ -41,7 +41,7 @@ import {
   // --- Your config (as you provided) ---
   const HEADER_CONFIG = {
     brand: {
-      mainLogo: { href: "../", src: "../images/block-logo.png", alt: "ReasonLynx placeholder logo" },
+      mainLogo: { href: "../", src: "../images/ReasonLynx_greenscale.png", alt: "ReasonLynx" },
       toolLogoByPageId: {
         "ontoeagle": { src: "../images/Eagle-VI_1753264913.svg", alt: "OntoEagle Semantic Lookup" },
         "ontology-viewer": { src: "../images/Eagle-VI_1753264913.svg", alt: "Ontology Viewer" },
@@ -441,7 +441,7 @@ import {
 
       return `
         <details class="sitehdr-section">
-          <summary class="sitehdr-section__title">${titleHtml}</summary>
+          <summary class="sitehdr-section__title"><span>${titleHtml}</span></summary>
           <ul class="sitehdr-section__list">${links}</ul>
         </details>
       `;
@@ -733,12 +733,16 @@ import {
       const manifest = getAppCapabilityManifest(getPageId());
       const compatible = discoverCompatibleArtifacts(artifacts, manifest);
       const compatibleIds = new Set(compatible.map((artifact) => artifact.artifactId));
+      const workspaceSummary = `${projects.length} project${projects.length === 1 ? '' : 's'}, ${artifacts.length} artifact${artifacts.length === 1 ? '' : 's'}, ${compatible.length} compatible with this app`;
       shell.innerHTML = `
-        <button class="sitehdr-shellButton sitehdr-shellButton--manage" type="button" data-sitehdr-action="open-manager" title="Active project: ${escapeHtml(project?.label || activeProjectId)}">
-          <strong>Manage Workspace</strong>
-          <span class="sitehdr-workspaceMetric"><b>${projects.length}</b> project${projects.length === 1 ? '' : 's'}</span>
-          <span class="sitehdr-workspaceMetric"><b>${artifacts.length}</b> artifact${artifacts.length === 1 ? '' : 's'}</span>
-          <span class="sitehdr-workspaceMetric sitehdr-workspaceMetric--compatible"><b>${compatible.length}</b> compatible</span>
+        <button class="sitehdr-shellButton sitehdr-shellButton--manage" type="button" data-sitehdr-action="open-manager"
+                title="Active project: ${escapeHtml(project?.label || activeProjectId)}. ${escapeHtml(workspaceSummary)}"
+                aria-label="Manage workspace. ${escapeHtml(workspaceSummary)}">
+          <strong>Workspace</strong>
+          <span class="sitehdr-workspaceBadge${compatible.length > 0 ? ' has-compatible' : ''}"
+                title="${compatible.length} compatible artifact${compatible.length === 1 ? '' : 's'} for this app" aria-hidden="true">
+            <span aria-hidden="true">&#10003;</span><b>${compatible.length}</b>
+          </span>
         </button>
       `;
       projectManagerSnapshot = { projects, project, artifacts, datasets, runs, compatibleIds };
@@ -807,18 +811,18 @@ import {
           </a>
 
           <div class="sitehdr-tool">
+            <h1 class="sitehdr-tool__title">${escapeHtml(title)}</h1>
             <img class="sitehdr-tool__img"
                  src="${escapeHtml(toolLogo.src)}"
                  alt="${escapeHtml(toolLogo.alt)}" />
-                 <h1 class="sitehdr-tool__title" style="margin-left: 2rem;">${escapeHtml(title)}</h1>
           </div>
 
-          ${projectShellHtml()}
           ${buildSectionsHtml(pageId)}
 
           <div class="sitehdr-utility">
-          ${globalSettingsHtml()}
+          ${projectShellHtml()}
           ${appUtilityHtml()}
+          ${globalSettingsHtml()}
           </div>
         </div>
         ${projectManagerDialogHtml()}
