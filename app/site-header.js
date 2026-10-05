@@ -13,7 +13,7 @@ import {
 } from '../packages/indexeddb-data-management/src/index.js';
 import { createStableRecordId } from '../packages/indexeddb-data-management/src/index.js';
 import { downloadBlob } from '../packages/browser-file-io/src/index.js';
-import { discoverCompatibleArtifacts, getAppCapabilityManifest } from './app-capabilities.js';
+import { discoverCompatibleArtifacts, getAppCapabilityManifest, getArtifactLoadActions, listWorkspaceActions } from './app-capabilities.js';
 import {
   applyThemePreference,
   readThemePreference,
@@ -519,6 +519,12 @@ import {
     const snapshot = projectManagerSnapshot;
     if (!body || !snapshot) return;
     const { projects, project, artifacts, datasets, runs, compatibleIds } = snapshot;
+    const currentAppManifest = getAppCapabilityManifest(getPageId());
+    const workspaceActions = listWorkspaceActions(currentAppManifest);
+    const workspaceActionRows = workspaceActions.map((action) => `<li class="sitehdr-workspaceAction">
+      <div><strong>${escapeHtml(action.label)}</strong><span>${escapeHtml(action.description)}</span></div>
+      <button type="button" data-sitehdr-action="run-workspace-action" data-workspace-action-id="${escapeHtml(action.actionId)}">${action.direction === 'import' ? 'Choose file' : 'Download'}</button>
+    </li>`).join('');
     const artifactIds = new Set(artifacts.map((artifact) => artifact.artifactId));
     const staleRuns = runs.filter((run) => [...(run.inputArtifactIds || []), ...(run.outputArtifactIds || [])].some((id) => !artifactIds.has(id)));
     const zeroEffectRuns = runs.filter((run) => /^Stored\s+0\b/i.test(run.label));
@@ -531,13 +537,19 @@ import {
       ...datasets.map((dataset) => `<li><strong>${escapeHtml(dataset.label)}</strong><span>Knowledge base · ${dataset.ontologyCount || 0} ontologies</span></li>`),
       ...knowledgeArtifacts.map((artifact) => `<li><strong>${escapeHtml(artifact.label)}</strong><span>${escapeHtml(artifact.artifactKind)}</span></li>`)
     ].join('') || '<li class="sitehdr-empty">No knowledge bases in this project.</li>';
-    const artifactRows = artifacts.map((artifact) => `<tr>
+    const artifactRows = artifacts.map((artifact) => {
+      const loadActions = getArtifactLoadActions(artifact, currentAppManifest);
+      const actionHtml = loadActions.length
+        ? loadActions.map((loadAction) => `<button type="button" class="sitehdr-rowAction" data-sitehdr-action="load-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}" data-load-action-id="${escapeHtml(loadAction.actionId)}">${escapeHtml(loadAction.label)}</button>`).join('')
+        : (compatibleIds.has(artifact.artifactId) ? '<span class="sitehdr-noLoader">Visible; load action not implemented</span>' : '');
+      return `<tr>
       <td><input type="checkbox" class="sitehdr-artifactCheck" value="${escapeHtml(artifact.artifactId)}" aria-label="Select ${escapeHtml(artifact.label)}" /></td>
       <td><button type="button" class="sitehdr-fileName" data-sitehdr-action="open-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}">${escapeHtml(artifact.label)}</button>${compatibleIds.has(artifact.artifactId) ? '<span class="sitehdr-compatibleTag">Compatible</span>' : ''}</td>
       <td>${escapeHtml(artifact.artifactKind)}</td><td>${escapeHtml(artifact.role)}</td>
       <td>${escapeHtml(new Date(artifact.updatedAt).toLocaleString())}</td>
-      <td><button type="button" class="sitehdr-rowAction" data-sitehdr-action="rename-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}">Rename</button></td>
-    </tr>`).join('') || '<tr><td colspan="6" class="sitehdr-empty">No artifacts in this project.</td></tr>';
+      <td>${actionHtml}<button type="button" class="sitehdr-rowAction" data-sitehdr-action="rename-artifact" data-artifact-id="${escapeHtml(artifact.artifactId)}">Rename</button></td>
+    </tr>`;
+    }).join('') || '<tr><td colspan="6" class="sitehdr-empty">No artifacts in this project.</td></tr>';
     body.innerHTML = `
       <aside class="sitehdr-manager__projects">
         <div class="sitehdr-manager__sidebarTitle"><h2>Projects</h2><button type="button" data-sitehdr-action="new-project">New</button></div>
@@ -547,6 +559,7 @@ import {
         <div class="sitehdr-manager__projectHeading"><div><h2>${escapeHtml(project?.label || 'Project')}</h2><span>${artifacts.length} artifacts · ${datasets.length + knowledgeArtifacts.length} knowledge-base entries</span></div>
           <div><button type="button" data-sitehdr-action="rename-project">Rename project</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-project"${activeProjectId === DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID ? ' disabled title="The default workspace is protected"' : ''}>Delete project</button></div>
         </div>
+        ${workspaceActionRows ? `<section class="sitehdr-manager__section"><h3>Use ${escapeHtml(currentAppManifest.appId)} with this workspace</h3><p class="sitehdr-historyNote">These actions state how imported data will enter the current app. Workspace files are not loaded automatically.</p><ul class="sitehdr-knowledgeList">${workspaceActionRows}</ul></section>` : ''}
         <section class="sitehdr-manager__section"><h3>Knowledge bases</h3><ul class="sitehdr-knowledgeList">${knowledgeRows}</ul></section>
         <section class="sitehdr-manager__section">
           <div class="sitehdr-manager__toolbar"><h3>Artifacts</h3><div><button type="button" data-sitehdr-action="export-artifacts">Download selected</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-artifacts">Delete selected</button></div></div>
@@ -907,6 +920,29 @@ import {
     if (action.dataset.sitehdrAction === 'open-artifact') {
       document.dispatchEvent(new CustomEvent('sitehdr:open-artifact', {
         detail: { projectId: activeProjectId, artifactId: action.dataset.artifactId, appId: getPageId() }
+      }));
+      if (dialog?.open) dialog.close();
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'load-artifact') {
+      const manifest = getAppCapabilityManifest(getPageId());
+      const artifact = projectManagerSnapshot?.artifacts?.find((item) => item.artifactId === action.dataset.artifactId);
+      const loadAction = getArtifactLoadActions(artifact, manifest)
+        .find((item) => item.actionId === action.dataset.loadActionId);
+      if (!artifact || !loadAction) return;
+      document.dispatchEvent(new CustomEvent('sitehdr:load-artifact', {
+        detail: { projectId: activeProjectId, appId: manifest.appId, artifactId: artifact.artifactId, action: loadAction }
+      }));
+      if (dialog?.open) dialog.close();
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'run-workspace-action') {
+      const manifest = getAppCapabilityManifest(getPageId());
+      const workspaceAction = listWorkspaceActions(manifest)
+        .find((item) => item.actionId === action.dataset.workspaceActionId);
+      if (!workspaceAction) return;
+      document.dispatchEvent(new CustomEvent('sitehdr:workspace-action', {
+        detail: { projectId: activeProjectId, appId: manifest.appId, action: workspaceAction }
       }));
       if (dialog?.open) dialog.close();
     }

@@ -1347,11 +1347,6 @@ function setupEventListeners() {
   saveButtons.forEach(id => {
     document.getElementById(id).addEventListener('click', saveJSONLD);
   });
-  document.getElementById("download-jsonld-button").addEventListener("click", downloadJSONLD);
-  document.getElementById("download-csv-button").addEventListener("click", downloadCSV);
-  document.getElementById("upload-csv-button").addEventListener("click", () => {
-    document.getElementById('csv-upload-input').click();
-  });
   document.getElementById("csv-upload-input").addEventListener("change", handleCSVUpload);
 
   document.getElementById("new-cq-button").addEventListener("click", () => {
@@ -1395,5 +1390,34 @@ document.addEventListener('sitehdr:project-changed', async (event) => {
   currentCQId = null;
   renderSidebarFromCache();
   document.getElementById('new-cq-button')?.click();
+});
+
+document.addEventListener('sitehdr:workspace-action', (event) => {
+  if (event.detail?.appId !== 'cq-ferret') return;
+  switch (event.detail?.action?.actionId) {
+    case 'import-cq-csv':
+      document.getElementById('csv-upload-input')?.click();
+      break;
+    case 'export-cq-jsonld':
+      downloadJSONLD();
+      break;
+    case 'export-cq-csv':
+      downloadCSV();
+      break;
+  }
+});
+
+document.addEventListener('sitehdr:load-artifact', async (event) => {
+  if (event.detail?.appId !== 'cq-ferret' || event.detail?.action?.actionId !== 'append-sparql-query-to-cq') return;
+  if (!savedSparqlQueriesCache.some((query) => query.artifactId === event.detail.artifactId)) {
+    savedSparqlQueriesCache = await listSavedSparqlQueries();
+  }
+  const query = savedSparqlQueriesCache.find((item) => item.artifactId === event.detail.artifactId);
+  if (!query) {
+    alert('The selected SPARQL query is no longer available in this project.');
+    return;
+  }
+  addDatabaseQueryItem(query.query, 'SPARQL');
+  debouncedAutoSave();
 });
 

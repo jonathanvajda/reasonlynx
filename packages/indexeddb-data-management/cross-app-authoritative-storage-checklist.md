@@ -81,6 +81,27 @@ An app is interoperable only if it satisfies all five core conditions **and**:
 
 This is why “uses the shared package” or “writes a shared run” is not, by itself, a completion criterion.
 
+## Visibility, loading, and management responsibilities
+
+Artifact visibility is not a load instruction. An `accepts: ['term-list']` declaration means only that an app has a potentially compatible destination. It does not answer whether the user wants to append, replace, merge, compare, reference, or merely preview the artifact.
+
+The shared capability contract therefore has two distinct action layers:
+
+- `workspaceActions`: importing a local file into the current app/workspace or exporting app data, with an explicit mode and resulting/source artifact kind;
+- `artifactLoadActions`: applying an existing project artifact to a named destination inside the current app, with an explicit `append`, `replace`, `merge`, `reference`, or `open` mode.
+
+The shared **Manage Workspace** interface owns project selection, durable artifact visibility, file ingress/egress, rename/delete/download, and presentation of declared actions. The app remains responsible for interpreting content and applying a selected action to its named app destination. Apps should not retain parallel file-management buttons once their equivalent workspace actions are implemented and verified.
+
+Rules:
+
+- [ ] Never make an artifact row actionable merely because its kind appears in `accepts`.
+- [ ] Show the intended verb and destination, such as “Append terms to ontology table,” not a generic “Open.”
+- [ ] If multiple valid destinations or modes exist, require the user to choose one.
+- [ ] Dispatch the artifact ID and declared action; the receiving app resolves the payload from shared storage.
+- [ ] Preserve the source artifact. Loading changes app state or creates a derived artifact; it does not silently consume/delete the source.
+- [ ] Keep old app-local import/export controls until their workspace actions pass browser tests, then remove the duplicates.
+- [ ] Treat “compatible but no load action implemented” as incomplete integration and say so in the UI.
+
 ## Completion criteria for every app
 
 An app is complete only when all applicable conditions below are checked for that app.
@@ -161,6 +182,8 @@ The checklist uses **Done**, **Partial**, **Missing**, and **Audit** for current
 - [x] **Done:** Extracted vocabulary is published as a portable `term-list` artifact discoverable by TOM.
 - [x] **Done:** CQ Ferret reads the shell's active project and reloads on `sitehdr:project-changed`.
 - [x] **Done:** Saved Axiolotl `sparql-query` artifacts can be looked up and appended to a CQ.
+- [x] **Done:** CQ CSV import and JSON-LD/CSV export are declared workspace actions in Manage Workspace; the duplicate sidebar buttons have been removed.
+- [x] **Done:** Existing SPARQL query artifacts declare the explicit destination action “Append to associated queries.”
 - [x] **Done:** Directly typed CCO Person (`cco:ont00001262`) and Database (`cco:ont00000756`) instances can be looked up from materialized project quad rows.
 - [~] **Partial:** Existing `CQDatabase.CQStore` rows are detected and copied non-destructively when the selected project has no CQ workspace; source/shared counts are available and the legacy database is retained.
 - [ ] **Missing:** Add migration fingerprint/identifier verification and an explicit user-confirmed legacy-database deletion control.
@@ -201,6 +224,7 @@ The checklist uses **Done**, **Partial**, **Missing**, and **Audit** for current
 - [~] **Partial:** `TabularOntologyDB` remains available as a legacy source; migration verification and confirmed cleanup are unfinished.
 - [ ] **Missing:** Replace the hard-coded default project with the shell’s active project.
 - [ ] **Missing:** Discover/open CQ term lists, ontology tables, and source ontology artifacts.
+- [ ] **Pinned bridge:** Declare and implement separate “Append terms to current table” and “Replace table from term list” actions for CQ Ferret `term-list` artifacts. Visibility alone does not satisfy this item.
 - [ ] **Missing:** React to project changes and remove any competing project-selection state.
 - [ ] **Missing:** Report legacy/shared record counts, verify migrated payloads, and offer confirmed legacy deletion.
 - [ ] **Missing:** Test CQ Ferret → TOM and Table Nova ontology → TOM round trips.

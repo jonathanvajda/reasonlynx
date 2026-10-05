@@ -658,6 +658,10 @@
 .sitehdr-knowledgeList span { display: block; }
 .sitehdr-knowledgeList strong { font-size: 14px; }
 .sitehdr-knowledgeList span { margin-top: 3px; color: var(--ont-muted, #666); font-size: 12px; }
+.sitehdr-knowledgeList .sitehdr-workspaceAction { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.sitehdr-workspaceAction > div { min-width: 0; }
+.sitehdr-workspaceAction > button { flex: 0 0 auto; min-height: 2.4rem; padding-inline: 0.9rem; }
+.sitehdr-noLoader { display: block; max-width: 13rem; margin-bottom: 0.35rem; color: var(--ont-muted, #666); font-size: 0.75rem; line-height: 1.25; }
 .sitehdr-manager__tableWrap { margin-top: 0.55rem; overflow: auto; border: 1px solid var(--ont-border, rgba(0,0,0,0.15)); border-radius: var(--ont-radius, 6px); }
 .sitehdr-manager table { width: 100%; margin: 0; border-collapse: collapse; font-size: 13px; }
 .sitehdr-manager th,

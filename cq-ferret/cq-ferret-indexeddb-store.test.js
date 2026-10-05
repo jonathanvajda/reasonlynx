@@ -5,7 +5,8 @@ import { COMMON_NAMESPACE_IRIS } from '../packages/namespace-registry/src/index.
 import {
   createTermListPayload,
   extractSparqlQueryText,
-  findTypedEntities
+  findTypedEntities,
+  hasLegacyCqStore
 } from './cq-ferret-indexeddb-store.js';
 
 test('creates a portable term-list payload for TOM', () => {
@@ -47,4 +48,11 @@ test('finds directly typed CCO persons and their labels in shared quad rows', ()
   assert.deepEqual(findTypedEntities(rows, [COMMON_NAMESPACE_IRIS.cco2.person]), [
     { iri: 'urn:person:1', label: 'Ada Lovelace' }
   ]);
+});
+
+test('recognizes the canonical legacy database inspection shape', () => {
+  assert.equal(hasLegacyCqStore({ exists: true, stores: ['CQStore'] }), true);
+  assert.equal(hasLegacyCqStore({ exists: true, stores: [] }), false);
+  assert.equal(hasLegacyCqStore({ exists: false, stores: ['CQStore'] }), false);
+  assert.equal(hasLegacyCqStore({ exists: true }), false);
 });

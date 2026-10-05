@@ -133,7 +133,7 @@ export async function initCompetencyQuestionStore() {
   let legacyRows = [];
   const legacy = await inspectLegacyIndexedDbDatabase(CQ_DB_NAME);
   const isLegacyMigrationTarget = activeProjectId === DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID;
-  if (isLegacyMigrationTarget && legacy.exists && legacy.objectStoreNames.includes(CQ_STORE)) {
+  if (isLegacyMigrationTarget && hasLegacyCqStore(legacy)) {
     legacyRows = await readLegacyObjectStoreRows(CQ_DB_NAME, CQ_STORE);
   }
   const nodes = legacyRows.map(normalizeNode).filter(Boolean);
@@ -314,7 +314,7 @@ export function findTypedEntities(rows, typeIris) {
 /** @returns {Promise<object>} Non-destructive legacy/shared record counts. */
 export async function inspectCompetencyQuestionMigration() {
   const legacy = await inspectLegacyIndexedDbDatabase(CQ_DB_NAME);
-  const legacyRows = legacy.exists && legacy.objectStoreNames.includes(CQ_STORE)
+  const legacyRows = hasLegacyCqStore(legacy)
     ? await readLegacyObjectStoreRows(CQ_DB_NAME, CQ_STORE)
     : [];
   return {
@@ -325,6 +325,16 @@ export async function inspectCompetencyQuestionMigration() {
     sharedCount: (await readCompetencyQuestionNodes()).length,
     deletionRequiresConfirmation: true
   };
+}
+
+/**
+ * Tests the canonical IndexedDB inspection result for CQ Ferret's legacy store.
+ *
+ * @param {{exists?: boolean, stores?: string[]}|null} inspection Inspection result.
+ * @returns {boolean} Whether the legacy CQ store exists.
+ */
+export function hasLegacyCqStore(inspection) {
+  return inspection?.exists === true && Array.isArray(inspection.stores) && inspection.stores.includes(CQ_STORE);
 }
 
 if (typeof document !== 'undefined') {
