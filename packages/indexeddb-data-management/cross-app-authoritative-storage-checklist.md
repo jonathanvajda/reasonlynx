@@ -3,6 +3,8 @@
 **Audit date:** 2026-09-30  
 **Target database:** `OntologyWorkbenchProjects`
 
+The cross-app storage requirements in this checklist are complemented by the [Semantic Workspace Capability Synthesis](../semantic-workspace-capability-synthesis.md), which treats applications as view compositions over shared representations and operations rather than as hard integration endpoints.
+
 This checklist distinguishes three things that earlier rollout notes sometimes grouped together:
 
 1. loading the shared storage package;
@@ -83,23 +85,24 @@ This is why “uses the shared package” or “writes a shared run” is not, b
 
 ## Visibility, loading, and management responsibilities
 
-Artifact visibility is not a load instruction. An `accepts: ['term-list']` declaration means only that an app has a potentially compatible destination. It does not answer whether the user wants to append, replace, merge, compare, reference, or merely preview the artifact.
+Artifact visibility is not a load instruction. An `accepts: ['term-list']` declaration means only that a view may be able to present an operation over that semantic kind. It does not answer whether the user wants to append, replace, merge, compare, reference, or merely preview the artifact.
 
-The shared capability contract therefore has two distinct action layers:
+The target capability contract therefore has three independent registries:
 
-- `workspaceActions`: importing a local file into the current app/workspace or exporting app data, with an explicit mode and resulting/source artifact kind;
-- `artifactLoadActions`: applying an existing project artifact to a named destination inside the current app, with an explicit `append`, `replace`, `merge`, `reference`, or `open` mode.
+- representations: MIME types, extensions, parsers, serializers, and portable semantic boundaries;
+- operations: semantic verbs with accepted inputs, outputs, parameters, and append/replace/merge/reference behavior;
+- view providers: interfaces capable of presenting operations without owning their data.
 
-The shared **Manage Workspace** interface owns project selection, durable artifact visibility, file ingress/egress, rename/delete/download, and presentation of declared actions. The app remains responsible for interpreting content and applying a selected action to its named app destination. Apps should not retain parallel file-management buttons once their equivalent workspace actions are implemented and verified.
+The current `workspaceActions` and `artifactLoadActions` manifest fields are transitional adapters. Generic upload and download must converge on universal workspace actions; semantic load/transform actions must move to the operation registry. The shared **Manage Workspace** interface owns project selection, durable artifact visibility, universal file ingress/egress, rename/delete/download, and operation discovery. A selected view remains responsible for presenting operation-specific controls.
 
 Rules:
 
 - [ ] Never make an artifact row actionable merely because its kind appears in `accepts`.
-- [ ] Show the intended verb and destination, such as “Append terms to ontology table,” not a generic “Open.”
+- [ ] Show the intended semantic verb, such as “Append terms to ontology table,” not a generic “Open” or “Send to app.”
 - [ ] If multiple valid destinations or modes exist, require the user to choose one.
-- [ ] Dispatch the artifact ID and declared action; the receiving app resolves the payload from shared storage.
+- [ ] Dispatch the artifact IDs and operation declaration; the selected view provider resolves the payload from shared storage.
 - [ ] Preserve the source artifact. Loading changes app state or creates a derived artifact; it does not silently consume/delete the source.
-- [ ] Keep old app-local import/export controls until their workspace actions pass browser tests, then remove the duplicates.
+- [ ] Replace generic app-local import/export controls with universal workspace ingress and representation download after browser tests pass.
 - [ ] Treat “compatible but no load action implemented” as incomplete integration and say so in the UI.
 
 ## Completion criteria for every app
@@ -182,7 +185,8 @@ The checklist uses **Done**, **Partial**, **Missing**, and **Audit** for current
 - [x] **Done:** Extracted vocabulary is published as a portable `term-list` artifact discoverable by TOM.
 - [x] **Done:** CQ Ferret reads the shell's active project and reloads on `sitehdr:project-changed`.
 - [x] **Done:** Saved Axiolotl `sparql-query` artifacts can be looked up and appended to a CQ.
-- [x] **Done:** CQ CSV import and JSON-LD/CSV export are declared workspace actions in Manage Workspace; the duplicate sidebar buttons have been removed.
+- [~] **Partial:** CQ CSV import and JSON-LD/CSV export currently work through transitional manifest actions and the duplicate sidebar buttons are gone.
+- [ ] **Missing:** Move CQ CSV interpretation into universal file ingress and expose JSON-LD/CSV through the selected artifact's representation-download menu, without CQ-specific download cards.
 - [x] **Done:** Existing SPARQL query artifacts declare the explicit destination action “Append to associated queries.”
 - [x] **Done:** Directly typed CCO Person (`cco:ont00001262`) and Database (`cco:ont00000756`) instances can be looked up from materialized project quad rows.
 - [~] **Partial:** Existing `CQDatabase.CQStore` rows are detected and copied non-destructively when the selected project has no CQ workspace; source/shared counts are available and the legacy database is retained.
