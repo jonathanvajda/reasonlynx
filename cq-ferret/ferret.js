@@ -1280,21 +1280,41 @@ function activateTab(panelId) {
   });
 }
 
+/**
+ * Returns a CQ Ferret tab identifier when the URL hash names a tab panel.
+ *
+ * @param {string} hash URL hash, including the leading number sign.
+ * @returns {string|null} Valid panel identifier, or null.
+ */
+function getTabPanelIdFromHash(hash) {
+  const panelId = String(hash || '').replace(/^#/, '');
+  return panelId && document.getElementById(panelId)?.classList.contains('tab-panel')
+    ? panelId
+    : null;
+}
+
 // Initialize tab buttons
 function initTabs() {
   const btns = document.querySelectorAll('.tab-btn');
   if (!btns.length) return;
 
   btns.forEach(btn => {
-    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+    btn.addEventListener('click', () => {
+      const panelId = btn.dataset.tab;
+      activateTab(panelId);
+      globalThis.history.replaceState({}, '', `#${panelId}`);
+    });
   });
 
   // Default: first tab or hash
-  const initial = location.hash && document.getElementById(location.hash.slice(1))
-    ? location.hash.slice(1)
-    : btns[0].dataset.tab;
+  const initial = getTabPanelIdFromHash(globalThis.location.hash) || btns[0].dataset.tab;
 
   activateTab(initial);
+
+  globalThis.addEventListener('hashchange', () => {
+    const panelId = getTabPanelIdFromHash(globalThis.location.hash);
+    if (panelId) activateTab(panelId);
+  });
 }
 
 // Tab switching

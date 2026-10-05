@@ -16,6 +16,16 @@ import {
   renderOntologyTable
 } from './ui-helpers.js';
 
+/**
+ * Switches between the centered empty state and the processed-results layout.
+ *
+ * @param {boolean} hasResults Whether at least one ontology was processed.
+ * @returns {void}
+ */
+function setProcessedState(hasResults) {
+  document.body?.classList.toggle('ontology-tabulator-has-results', hasResults);
+}
+
 function handleFilesSelected(files) {
   const fnName = 'handleFilesSelected';
   logEvent(fnName, 'start', { fileCount: files.length });
@@ -54,6 +64,7 @@ function handleFilesSelected(files) {
       }
 
       renderFileList(fileInfos);
+      setProcessedState(fileInfos.length > 0);
     } catch (err) {
       logError(fnName, err);
       alert('Error processing ontology files. See console for details.');
@@ -87,6 +98,7 @@ function setupFileInput() {
 
 function initApp() {
   logEvent('initApp', 'start');
+  setProcessedState(false);
   setupFileInput();
 }
 

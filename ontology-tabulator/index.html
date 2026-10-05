@@ -116,9 +116,15 @@
 
   <header id="siteHeader" class="sitehdr-root table-nova-header" role="banner" aria-label="Site header"></header>
 
-  <div class="ontology-tabulator-header-actions">
+  <section class="ontology-tabulator-header-actions" aria-labelledby="ontologyTabulatorWelcomeTitle">
+    <div class="ontology-tabulator-ingress">
+      <div class="ontology-tabulator-ingress-intro">
+        <h1 id="ontologyTabulatorWelcomeTitle">Ontology Tabulator</h1>
+        <p>Flatten one or more ontologies into tables for inspection and comparison.</p>
+      </div>
       <label class="ontology-tabulator-file-label">
-        <span>Drop or select ontology files</span>
+        <strong>Drop ontology files here</strong>
+        <span>or choose files</span>
         <input
           id="ontologyFileInput"
           class="ontology-tabulator-file-input"
@@ -128,6 +134,7 @@
         />
       </label>
     </div>
+  </section>
 
   <main class="ontology-tabulator-main">
     <section class="ontology-tabulator-filelist-section">

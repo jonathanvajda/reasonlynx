@@ -49,7 +49,7 @@ import {
         "cq-ferret": { src: "../images/cq-ferret.svg", alt: "CQ Ferret" },
         "bundler": { src: "../images/default-logo.png", alt: "Slim Bundle Builder" },
         "bp-weaver": { src: "../images/bp-weaver.svg", alt: "BP Weaver" },
-        "controlled-vocabulary-registry": { src: "../images/controlled-vocabulary-registry.svg", alt: "Controlled Vocabulary Registry" },
+        "controlled-vocabulary-registry": { src: "../images/cq-ferret.svg", alt: "CQ Ferret Term List" },
         "tom": { src: "../images/tom.svg", alt: "Tabular Ontology Maker" },
         "table-nova": { src: "../images/table-nova-logo.svg", alt: "Table Nova" },
         "axiolotl": { src: "../axiolotl/images/axiolotl.svg", alt: "Axiolotl SPARQL & Inference" },
@@ -169,7 +169,7 @@ import {
     "ontology-compliance-diagnostic": { label: "Ontology Compliance Diagnostic", href: "../ontology-compliance-diagnostic/" },
     "nlp-quality-assurance": { label: "NLP Quality Assurance", href: "../ontology-compliance-diagnostic/nlp-quality-assurance.html" },
     "myna-iri-swapper": { label: "Myna IRI Swapper", href: "../iri-swapper/" },
-    "controlled-vocabulary-registry": { label: "Controlled Vocabulary", status: "planned" },
+    "controlled-vocabulary-registry": { label: "Term List", href: "../cq-ferret/#tab-term-form" },
     "onto-merge": { label: "OntoMerge", status: "external route pending" },
     "onto-diff": { label: "OntoDiff", status: "planned" }
   });
@@ -193,7 +193,7 @@ import {
     "ontology-compliance-diagnostic": "Inspect ontologies and generate bulk curation-status recommendations.",
     "nlp-quality-assurance": "Check ontology annotations for spelling, grammar, and definition structure.",
     "myna-iri-swapper": "Apply controlled IRI replacements to RDF datasets and SPARQL queries.",
-    "controlled-vocabulary-registry": "Curate governed terms, labels, identifiers, and vocabulary metadata.",
+    "controlled-vocabulary-registry": "Review the terms extracted from CQ Ferret's competency-question graph.",
     "onto-merge": "Create an ontology by merging two or more ontology inputs.",
     "onto-diff": "Compare ontology versions and generate semantic diffs or reproducible SPARQL updates."
   });

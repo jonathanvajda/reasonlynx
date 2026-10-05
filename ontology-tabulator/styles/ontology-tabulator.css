@@ -49,9 +49,34 @@
 
 .ontology-tabulator-header-actions {
   display: flex;
-  gap: 0.5rem;
   align-items: center;
-  margin: 1rem 1rem;
+  justify-content: center;
+  min-height: min(52vh, 520px);
+  margin: 0;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.ontology-tabulator-ingress {
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+  width: min(680px, 92vw);
+  text-align: center;
+}
+
+.ontology-tabulator-ingress-intro h1 {
+  margin: 0;
+  font-size: clamp(2.6rem, 4vw, 4.2rem);
+  line-height: 1.1;
+}
+
+.ontology-tabulator-ingress-intro p {
+  max-width: 52ch;
+  margin: 0.75rem auto 0;
+  color: var(--ont-muted);
+  font-size: 1.6rem;
+  line-height: 1.5;
 }
 
 /* -----------------------------
@@ -80,13 +105,18 @@
 }
 
 .ontology-tabulator-file-label {
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
+  width: 100%;
+  min-height: 150px;
+  box-sizing: border-box;
 
-  border: 1px dashed var(--ont-border);
-  padding: 0.35rem 0.6rem;
-  border-radius: var(--otr-radius-sm);
+  border: 2px dashed var(--ont-border);
+  padding: 1.5rem 2rem;
+  border-radius: var(--otr-radius-md);
 
   font-size: 1.5rem;
   cursor: pointer;
@@ -95,12 +125,53 @@
   color: var(--ont-text);
 }
 
+.ontology-tabulator-file-label strong {
+  font-size: 2rem;
+}
+
+.ontology-tabulator-file-label span {
+  color: var(--ont-muted);
+}
+
 .ontology-tabulator-file-label:hover {
   border-color: color-mix(in srgb, var(--ont-border) 70%, var(--ont-text));
 }
 
 .ontology-tabulator-file-input {
   display: none;
+}
+
+.ontology-tabulator-root:not(.ontology-tabulator-has-results) .ontology-tabulator-main {
+  display: none;
+}
+
+.ontology-tabulator-root.ontology-tabulator-has-results .ontology-tabulator-header-actions {
+  justify-content: flex-start;
+  min-height: 0;
+  padding: 1rem;
+}
+
+.ontology-tabulator-root.ontology-tabulator-has-results .ontology-tabulator-ingress {
+  display: block;
+  width: auto;
+  text-align: left;
+}
+
+.ontology-tabulator-root.ontology-tabulator-has-results .ontology-tabulator-ingress-intro {
+  display: none;
+}
+
+.ontology-tabulator-root.ontology-tabulator-has-results .ontology-tabulator-file-label {
+  display: inline-flex;
+  flex-direction: row;
+  width: auto;
+  min-height: 0;
+  padding: 0.55rem 0.8rem;
+  border-width: 1px;
+}
+
+.ontology-tabulator-root.ontology-tabulator-has-results .ontology-tabulator-file-label strong {
+  font-size: 1.5rem;
 }
 
 /* -----------------------------
