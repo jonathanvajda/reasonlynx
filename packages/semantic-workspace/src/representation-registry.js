@@ -58,3 +58,33 @@ export function isBinaryMimeDescriptor(descriptor) {
     || descriptor?.category === 'archive'
     || descriptor?.category === 'binary';
 }
+
+/**
+ * Resolves an explicit or automatic table-oriented file interpretation.
+ *
+ * @param {'auto'|'spreadsheet'|'ontology'} requestedInterpretation User choice.
+ * @param {string} representationCategory Shared MIME category.
+ * @returns {'spreadsheet'|'ontology'|''} Resolved interpretation or empty when unsupported.
+ */
+export function resolveTableFileInterpretation(requestedInterpretation, representationCategory) {
+  if (requestedInterpretation === 'spreadsheet' || requestedInterpretation === 'ontology') {
+    return requestedInterpretation;
+  }
+  if (representationCategory === 'rdf') return 'ontology';
+  if (representationCategory === 'tabular') return 'spreadsheet';
+  return '';
+}
+
+/**
+ * Expands one append/replace choice across a batch. Replacement applies to the
+ * first file and subsequent files append to the newly replaced collection.
+ *
+ * @param {number} fileCount Number of files in the batch.
+ * @param {'append'|'replace'} requestedMode User choice.
+ * @returns {Array<'append'|'replace'>} Per-file modes.
+ */
+export function createSequentialFileLoadModes(fileCount, requestedMode) {
+  return Array.from({ length: Math.max(0, Number(fileCount) || 0) }, (_, index) => (
+    requestedMode === 'replace' && index === 0 ? 'replace' : 'append'
+  ));
+}

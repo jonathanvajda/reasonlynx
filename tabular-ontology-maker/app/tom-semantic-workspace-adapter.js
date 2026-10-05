@@ -6,8 +6,10 @@ import {
 } from '../../packages/indexeddb-data-management/src/index.js';
 import {
   combineOntologyTableRows,
+  createSequentialFileLoadModes,
   createOntologyTableRowsFromTermList,
-  getSemanticOperation
+  getSemanticOperation,
+  resolveTableFileInterpretation
 } from '../../packages/semantic-workspace/src/index.js';
 
 /**
@@ -62,6 +64,36 @@ export async function initializeTomSemanticWorkspaceAdapter() {
   document.addEventListener('sitehdr:project-changed', async (event) => {
     window.TOM.Core.selectProject(event.detail?.projectId);
     await window.TOM.Core.reloadSavedSession();
+  });
+  document.addEventListener('sitehdr:load-workspace-files', async (event) => {
+    const request = event.detail || {};
+    try {
+      const database = await openProjectPortfolioDatabase();
+      const stores = createProjectPortfolioStores(database, { projectId: request.projectId });
+      window.TOM.Core.selectProject(request.projectId);
+      const fileLoadModes = createSequentialFileLoadModes((request.artifactIds || []).length, request.mode);
+      for (const [index, artifactId] of (request.artifactIds || []).entries()) {
+        const artifact = await stores.artifacts.getProjectArtifact(artifactId);
+        if (!artifact) throw new Error(`Workspace artifact is unavailable: ${artifactId}`);
+        const category = artifact.summary?.representationCategory || '';
+        const interpretation = resolveTableFileInterpretation(request.interpretation, category);
+        if (!interpretation) {
+          throw new Error(`${artifact.label} is not a recognized spreadsheet or ontology representation.`);
+        }
+        const sourceFile = new File([artifact.payload], artifact.source?.fileName || artifact.label, {
+          type: artifact.mediaType,
+          lastModified: Number(artifact.summary?.fileLastModified || Date.now())
+        });
+        await window.TOM.Core.importFileIntoOntologyTable(sourceFile, {
+          interpretation,
+          mode: fileLoadModes[index],
+          firstRowIsHeader: request.firstRowIsHeader
+        });
+      }
+      await window.TOM.Core.storeTomWorkspaceProjectState();
+    } catch (error) {
+      window.TOM.Core.showToast(error.message, 'error');
+    }
   });
   const request = readPendingSemanticWorkspaceOperation();
   if (!request) return;

@@ -4,13 +4,16 @@ import { COMMON_NAMESPACE_IRIS } from '../../namespace-registry/src/index.js';
 import {
   combineOntologyTableRows,
   createOntologyTableRowsFromTermList,
+  createOperationHistoryEntry,
   createSourceArtifactMetadata,
+  createSequentialFileLoadModes,
   createSemanticOperationUrl,
   getSemanticOperation,
   getSemanticViewProvider,
   getSemanticViewProviderForPage,
   getSourceArtifactKindForMimeDescriptor,
   isBinaryMimeDescriptor,
+  resolveTableFileInterpretation,
   listSemanticOperationsForArtifact
 } from '../src/index.js';
 
@@ -20,6 +23,19 @@ test('term-list operations expose explicit append and replace destinations', () 
     'ontology-table.replace-with-terms'
   ]);
   assert.equal(getSemanticOperation('ontology-table.append-terms').destinationViewId, 'ontology-table-editor');
+});
+
+test('operation history resolves artifacts and exposes only useful scalar facts', () => {
+  assert.deepEqual(createOperationHistoryEntry({
+    runId: 'run:1', runKind: 'term-extraction', label: 'Published terms', createdAt: '2026-10-05T00:00:00.000Z',
+    inputArtifactIds: ['artifact:source'], outputArtifactIds: ['artifact:missing'],
+    payload: { termCount: 6, nested: { hidden: true } }
+  }, [{ artifactId: 'artifact:source', label: 'Questions.jsonld' }]), {
+    runId: 'run:1', title: 'Published terms', kindLabel: 'Term Extraction', createdAt: '2026-10-05T00:00:00.000Z',
+    inputs: [{ artifactId: 'artifact:source', label: 'Questions.jsonld', available: true }],
+    outputs: [{ artifactId: 'artifact:missing', label: 'artifact:missing', available: false }],
+    facts: [{ label: 'Term Count', value: '6' }], hasUnavailableArtifacts: true
+  });
 });
 
 test('operation discovery can be scoped to the consuming view', () => {
@@ -52,6 +68,15 @@ test('file representations become portable source artifacts without app ownershi
     source: { origin: 'file-upload', fileName: 'terms.csv' }, provenance: { derivedFrom: [] },
     summary: { representationId: 'csv', representationCategory: 'tabular', byteLength: 42, fileLastModified: 100 }
   });
+});
+
+test('table file choices resolve automatically and replace a batch only once', () => {
+  assert.equal(resolveTableFileInterpretation('auto', 'rdf'), 'ontology');
+  assert.equal(resolveTableFileInterpretation('auto', 'tabular'), 'spreadsheet');
+  assert.equal(resolveTableFileInterpretation('spreadsheet', 'rdf'), 'spreadsheet');
+  assert.equal(resolveTableFileInterpretation('auto', 'document'), '');
+  assert.deepEqual(createSequentialFileLoadModes(3, 'replace'), ['replace', 'append', 'append']);
+  assert.deepEqual(createSequentialFileLoadModes(2, 'append'), ['append', 'append']);
 });
 
 test('term-list projection reuses registered OWL IRIs and TOM columns', () => {

@@ -21,6 +21,7 @@ import {
 import { discoverCompatibleArtifacts, getAppCapabilityManifest } from './app-capabilities.js';
 import {
   createSemanticOperationUrl,
+  createOperationHistoryEntry,
   getSemanticOperation,
   getSemanticViewProvider,
   getSemanticViewProviderForPage,
@@ -246,6 +247,7 @@ import {
   let portfolioDbPromise = null;
   let activeProjectId = DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID;
   let projectManagerSnapshot = null;
+  let pendingWorkspaceFiles = [];
 
   const APP_UTILITIES = {
     ontoeagle: {
@@ -348,13 +350,14 @@ import {
     });
   }
 
-  function dbStatusHtml() {
+  function dbStatusHtml(scope = 'external') {
     const config = dbStatusConfig();
     if (!config.dbName) return "";
+    const liveRegion = scope === 'external' ? ' aria-live="assertive" aria-atomic="true"' : '';
 
     return `
-      <div class="sitehdr-db" data-db-status="idle" title="${escapeHtml(config.label)}">
-        <div class="sitehdr-db__status" aria-live="polite" aria-atomic="true">
+      <div class="sitehdr-db sitehdr-db--${escapeHtml(scope)}" data-db-status="idle" title="${escapeHtml(config.label)}">
+        <div class="sitehdr-db__status"${liveRegion}>
           <span class="sitehdr-db__bulb" aria-hidden="true"></span>
           <span class="sitehdr-db__text">DB idle</span>
         </div>
@@ -374,7 +377,7 @@ import {
     const tools = Array.isArray(utilities.tools)
       ? utilities.tools.map((item) => renderUtilityAction(item, "sitehdr-utilBtn--tool")).join("")
       : "";
-    const db = dbStatusHtml();
+    const db = dbStatusHtml('external');
     if (!settings && !data && !tools && !db) return "";
 
     return `
@@ -445,7 +448,7 @@ import {
     }).join("");
 
     return `
-      <div class="sitehdr-navigation" data-view="${escapeHtml(selectedHeaderView)}">
+      <div class="sitehdr-navigation" data-view="${escapeHtml(selectedHeaderView)}" data-stage-count="${view.groups.length}">
         <nav class="sitehdr-sections" aria-label="${escapeHtml(view.label)} tool sections">${sections}</nav>
       </div>
     `;
@@ -464,6 +467,21 @@ import {
         </summary>
         <div class="sitehdr-settings__panel">
           <h2>Settings</h2>
+          <section class="sitehdr-settingsRow sitehdr-settingsRow--theme" aria-labelledby="siteHeaderAppearanceLabel">
+            <div><strong id="siteHeaderAppearanceLabel">Appearance</strong><span>Switch between light and dark mode.</span></div>
+            <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme" aria-pressed="false" title="Toggle theme">
+              <span class="theme-toggle__track" aria-hidden="true">
+                <span class="theme-toggle__icon theme-toggle__icon--sun">&#9728;&#65039;</span>
+                <span class="theme-toggle__icon theme-toggle__icon--moon">&#127769;</span>
+                <span class="theme-toggle__thumb"></span>
+              </span>
+              <span class="theme-toggle__sr">Toggle theme</span>
+            </button>
+          </section>
+          <section class="sitehdr-settingsRow sitehdr-settingsRow--storage" aria-labelledby="siteHeaderStorageLabel">
+            <div><strong id="siteHeaderStorageLabel">Workspace storage</strong><span>Shared project and artifact datastore.</span></div>
+            ${dbStatusHtml('settings')}
+          </section>
           <label for="siteHeaderView">Navigation view</label>
           <select class="sitehdr-viewSelect" id="siteHeaderView">${options}</select>
           <dl class="sitehdr-environmentSettings">
@@ -497,7 +515,7 @@ import {
       <div class="sitehdr-manager__surface">
         <header class="sitehdr-manager__header">
           <div><span class="sitehdr-manager__eyebrow">ReasonLynx workspace</span><h1 id="siteHeaderManagerTitle">Projects and artifacts</h1></div>
-          <button type="button" class="sitehdr-manager__close" data-sitehdr-action="close-manager" aria-label="Close project manager">×</button>
+          <button type="button" class="sitehdr-manager__close" data-sitehdr-action="close-manager" aria-label="Close project manager"><span aria-hidden="true">×</span></button>
         </header>
         <div class="sitehdr-manager__body" id="siteHeaderManagerBody"><p>Loading projects…</p></div>
       </div>
@@ -553,6 +571,44 @@ import {
     return storedArtifacts;
   }
 
+  /** @returns {string} Expanded project file-ingress controls. */
+  function workspaceFileIngressHtml() {
+    const isTomView = getPageId() === 'tom';
+    const selectedFiles = pendingWorkspaceFiles.length
+      ? `<ul class="sitehdr-fileQueue">${pendingWorkspaceFiles.map((file, index) => {
+        const descriptor = getSupportedMimeTypeForFilename(file.name);
+        const formatLabel = descriptor.ok ? descriptor.value.label : 'Unsupported format';
+        return `<li><span><strong>${escapeHtml(file.name)}</strong><small>${escapeHtml(formatLabel)} · ${escapeHtml(Math.max(1, Math.ceil(file.size / 1024)))} KB</small></span><button type="button" data-sitehdr-action="remove-pending-file" data-file-index="${index}" aria-label="Remove ${escapeHtml(file.name)}">Remove</button></li>`;
+      }).join('')}</ul>`
+      : '<p class="sitehdr-fileQueueEmpty">No files selected.</p>';
+    const viewControls = isTomView ? `<div class="sitehdr-fileOptions">
+      <fieldset><legend>After adding</legend>
+        <label><input type="radio" name="sitehdr-file-destination" value="store" checked /> Store in workspace only</label>
+        <label><input type="radio" name="sitehdr-file-destination" value="current-table" /> Load into the current TOM table</label>
+      </fieldset>
+      <fieldset data-sitehdr-load-options disabled><legend>Interpret as</legend>
+        <label><input type="radio" name="sitehdr-file-interpretation" value="auto" checked /> Detect each file automatically</label>
+        <label><input type="radio" name="sitehdr-file-interpretation" value="spreadsheet" /> Spreadsheet</label>
+        <label><input type="radio" name="sitehdr-file-interpretation" value="ontology" /> Ontology</label>
+      </fieldset>
+      <fieldset data-sitehdr-load-options disabled><legend>Current table behavior</legend>
+        <label><input type="radio" name="sitehdr-file-mode" value="append" checked /> Append</label>
+        <label><input type="radio" name="sitehdr-file-mode" value="replace" /> Replace</label>
+        <label class="sitehdr-fileCheckbox"><input type="checkbox" id="siteHeaderFirstRowHeader" checked /> First spreadsheet row contains headings</label>
+      </fieldset>
+    </div>` : '<p class="sitehdr-historyNote">Files are stored without application-specific interpretation. Open a compatible view to load or transform them.</p>';
+    return `<section class="sitehdr-manager__section sitehdr-fileIngress" aria-labelledby="siteHeaderAddFilesTitle">
+      <div class="sitehdr-fileIngress__heading"><div><h3 id="siteHeaderAddFilesTitle">Add files</h3><p>Bring source material into this project, then choose how the current view should use it.</p></div></div>
+      <div class="sitehdr-fileDrop" data-sitehdr-file-drop data-sitehdr-action="choose-files" tabindex="0" role="button" aria-label="Drop files here or choose files">
+        <strong>Drop files here</strong><span>or</span><button type="button" data-sitehdr-action="choose-files">Choose files</button>
+        <input type="file" id="siteHeaderWorkspaceFileInput" accept="${escapeHtml(workspaceFileAccept)}" multiple hidden />
+      </div>
+      ${selectedFiles}
+      ${viewControls}
+      <div class="sitehdr-fileIngress__actions"><button type="button" data-sitehdr-action="clear-pending-files"${pendingWorkspaceFiles.length ? '' : ' disabled'}>Clear</button><button type="button" class="sitehdr-primaryAction" data-sitehdr-action="store-pending-files"${pendingWorkspaceFiles.length ? '' : ' disabled'}>${pendingWorkspaceFiles.length ? `Add ${pendingWorkspaceFiles.length} file${pendingWorkspaceFiles.length === 1 ? '' : 's'}` : 'Add files'}</button></div>
+    </section>`;
+  }
+
   function artifactListHtml(artifacts, compatibleIds) {
     if (!artifacts.length) return '<p class="sitehdr-empty">No artifacts in this project.</p>';
     return `<ul class="sitehdr-shellList">${artifacts.map((artifact) => {
@@ -566,15 +622,32 @@ import {
     }).join('')}</ul>`;
   }
 
-  function runListHtml(runs, artifactIds = new Set()) {
+  /** @param {object[]} references @param {string} label @returns {string} */
+  function operationArtifactReferencesHtml(references, label) {
+    if (!references.length) return '';
+    return `<div class="sitehdr-runArtifacts"><b>${escapeHtml(label)}</b>${references.map((reference) => (
+      reference.available
+        ? `<button type="button" data-sitehdr-action="open-artifact" data-artifact-id="${escapeHtml(reference.artifactId)}">${escapeHtml(reference.label)}</button>`
+        : `<span class="is-unavailable" title="This artifact is no longer in the project">${escapeHtml(reference.label)} · unavailable</span>`
+    )).join('')}</div>`;
+  }
+
+  /** @param {object[]} runs @param {object[]} artifacts @returns {string} */
+  function runListHtml(runs, artifacts = []) {
     if (!runs.length) return '<p class="sitehdr-empty">No recent activity.</p>';
-    return `<ul class="sitehdr-shellList">${runs.map((run) => `<li>
-      <div class="${[...(run.inputArtifactIds || []), ...(run.outputArtifactIds || [])].some((id) => !artifactIds.has(id)) ? 'sitehdr-run--stale' : ''}">
-        <strong>${escapeHtml(run.label)}</strong>
-        <span>${escapeHtml(run.runKind)} · ${escapeHtml(new Date(run.createdAt).toLocaleString())}</span>
-        ${[...(run.inputArtifactIds || []), ...(run.outputArtifactIds || [])].some((id) => !artifactIds.has(id)) ? '<em>Referenced input or output is no longer present.</em>' : ''}
-      </div>
-    </li>`).join('')}</ul>`;
+    return `<ul class="sitehdr-runList">${runs.map((run) => {
+      const entry = createOperationHistoryEntry(run, artifacts);
+      const facts = entry.facts.length
+        ? `<dl>${entry.facts.map((fact) => `<div><dt>${escapeHtml(fact.label)}</dt><dd>${escapeHtml(fact.value)}</dd></div>`).join('')}</dl>`
+        : '';
+      return `<li class="${entry.hasUnavailableArtifacts ? 'sitehdr-run--stale' : ''}">
+        <div class="sitehdr-runHeading"><strong>${escapeHtml(entry.title)}</strong><time datetime="${escapeHtml(entry.createdAt)}">${escapeHtml(new Date(entry.createdAt).toLocaleString())}</time></div>
+        <span class="sitehdr-runKind">${escapeHtml(entry.kindLabel)}</span>
+        ${operationArtifactReferencesHtml(entry.inputs, 'Used')}
+        ${operationArtifactReferencesHtml(entry.outputs, 'Produced')}
+        ${facts}
+      </li>`;
+    }).join('')}</ul>`;
   }
 
   function renderProjectManager() {
@@ -618,16 +691,20 @@ import {
         <div class="sitehdr-manager__projectHeading"><div><h2>${escapeHtml(project?.label || 'Project')}</h2><span>${artifacts.length} artifacts · ${datasets.length + knowledgeArtifacts.length} knowledge-base entries</span></div>
           <div><button type="button" data-sitehdr-action="rename-project">Rename project</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-project"${activeProjectId === DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID ? ' disabled title="The default workspace is protected"' : ''}>Delete project</button></div>
         </div>
+        ${workspaceFileIngressHtml()}
         <section class="sitehdr-manager__section"><h3>Knowledge bases</h3><ul class="sitehdr-knowledgeList">${knowledgeRows}</ul></section>
         <section class="sitehdr-manager__section">
-          <div class="sitehdr-manager__toolbar"><h3>Artifacts</h3><div><button type="button" data-sitehdr-action="add-files">Add files</button><button type="button" data-sitehdr-action="export-artifacts">Download selected</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-artifacts">Delete selected</button><input type="file" id="siteHeaderWorkspaceFileInput" accept="${escapeHtml(workspaceFileAccept)}" multiple hidden /></div></div>
+          <div class="sitehdr-manager__toolbar"><h3>Artifacts</h3><div><button type="button" data-sitehdr-action="export-artifacts">Download selected</button><button type="button" class="sitehdr-danger" data-sitehdr-action="delete-artifacts">Delete selected</button></div></div>
           <div class="sitehdr-manager__tableWrap"><table><thead><tr><th><input type="checkbox" id="siteHeaderSelectAllArtifacts" aria-label="Select all artifacts" /></th><th>Name</th><th>Kind</th><th>Role</th><th>Modified</th><th></th></tr></thead><tbody>${artifactRows}</tbody></table></div>
         </section>
-        <section class="sitehdr-manager__section">
-          <div class="sitehdr-manager__toolbar"><h3>Operation history</h3>${cleanupRunIds.length ? `<button type="button" data-sitehdr-action="clear-stale-runs">Clean ${cleanupRunIds.length} unavailable/no-effect entr${cleanupRunIds.length === 1 ? 'y' : 'ies'}</button>` : ''}</div>
-          <p class="sitehdr-historyNote">These are audit records of operations, not files. Missing inputs and outputs are retained as history until cleaned.</p>
-          ${runListHtml(visibleRuns, artifactIds)}
-        </section>
+        <details class="sitehdr-manager__section sitehdr-history">
+          <summary><span><strong>Operation history</strong><small>${runs.length} recorded operation${runs.length === 1 ? '' : 's'}${runs.length ? ` · latest ${escapeHtml(new Date(runs[0].createdAt).toLocaleString())}` : ''}</small></span></summary>
+          <div class="sitehdr-history__content">
+            <div class="sitehdr-manager__toolbar"><p class="sitehdr-historyNote">Audit records explain what used or produced project artifacts. They are not files.</p><div>${cleanupRunIds.length ? `<button type="button" data-sitehdr-action="clear-stale-runs">Clean ${cleanupRunIds.length} unavailable/no-effect</button>` : ''}<button type="button" class="sitehdr-danger" data-sitehdr-action="clear-all-runs"${runs.length ? '' : ' disabled'}>Clear all history</button></div></div>
+            ${runs.length > visibleRuns.length ? `<p class="sitehdr-historyNote">Showing the latest ${visibleRuns.length} of ${runs.length} operations.</p>` : ''}
+            ${runListHtml(visibleRuns, artifacts)}
+          </div>
+        </details>
       </main>`;
     snapshot.cleanupRunIds = cleanupRunIds;
   }
@@ -741,23 +818,6 @@ import {
 
           <div class="sitehdr-utility">
           ${globalSettingsHtml()}
-          <div id="light-dark-toggle">
-            <button
-              type="button"
-              class="theme-toggle"
-              id="themeToggle"
-              aria-label="Toggle theme"
-              aria-pressed="false"
-              title="Toggle theme"
-            >
-            <span class="theme-toggle__track" aria-hidden="true">
-              <span class="theme-toggle__icon theme-toggle__icon--sun">☀️</span>
-              <span class="theme-toggle__icon theme-toggle__icon--moon">🌙</span>
-              <span class="theme-toggle__thumb"></span>
-            </span>
-            <span class="theme-toggle__sr">Toggle theme</span>
-          </button>
-          </div>
           ${appUtilityHtml()}
           </div>
         </div>
@@ -767,11 +827,10 @@ import {
   }
 
   function updateDbStatus(state = "idle", text = "") {
-    const widget = document.querySelector(".sitehdr-db");
-    if (!widget) return;
+    const widgets = document.querySelectorAll(".sitehdr-db");
+    if (!widgets.length) return;
 
     const config = dbStatusConfig();
-    const label = widget.querySelector(".sitehdr-db__text");
     const normalized = ["idle", "initializing", "reading", "writing", "ready", "error"].includes(state)
       ? state
       : "idle";
@@ -784,9 +843,12 @@ import {
       error: "DB error",
     }[normalized];
 
-    widget.setAttribute("data-db-status", normalized);
-    widget.title = `${config.dbName}${config.stores.length ? ` (${config.stores.join(", ")})` : ""}`;
-    if (label) label.textContent = text || fallbackText;
+    widgets.forEach((widget) => {
+      const label = widget.querySelector(".sitehdr-db__text");
+      widget.setAttribute("data-db-status", normalized);
+      widget.title = `${config.dbName}${config.stores.length ? ` (${config.stores.join(", ")})` : ""}`;
+      if (label) label.textContent = text || fallbackText;
+    });
   }
 
   async function inspectDbStatus() {
@@ -824,6 +886,10 @@ import {
   initializeHeaderView();
   refreshProjectShell();
   window.SiteHeaderDBStatus = { set: updateDbStatus, inspect: inspectDbStatus };
+  document.addEventListener('pointerdown', (event) => {
+    const settings = document.querySelector('.sitehdr-settings[open]');
+    if (settings && !settings.contains(event.target)) settings.open = false;
+  });
   document.addEventListener("click", (event) => {
     const button = event.target?.closest?.("[data-sitehdr-event]");
     if (!button) return;
@@ -832,14 +898,16 @@ import {
     document.dispatchEvent(new CustomEvent(eventName, { detail: { source: button } }));
   });
   document.addEventListener("change", async (event) => {
+    if (event.target?.name === 'sitehdr-file-destination') {
+      const isLoadingIntoView = event.target.value === 'current-table';
+      document.querySelectorAll('[data-sitehdr-load-options]').forEach((fieldset) => {
+        fieldset.disabled = !isLoadingIntoView;
+      });
+      return;
+    }
     if (event.target?.id === 'siteHeaderWorkspaceFileInput') {
-      try {
-        await addFilesToActiveWorkspace([...event.target.files]);
-        event.target.value = '';
-        await refreshProjectShell();
-      } catch (_err) {
-        updateDbStatus('error', 'Workspace file import failed');
-      }
+      pendingWorkspaceFiles = [...event.target.files];
+      renderProjectManager();
       return;
     }
     if (event.target?.id === 'siteHeaderSelectAllArtifacts') {
@@ -859,6 +927,29 @@ import {
       // The selected view remains usable for this page even if persistence fails.
     }
   });
+  document.addEventListener('dragover', (event) => {
+    if (!event.target?.closest?.('[data-sitehdr-file-drop]')) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+    event.target.closest('[data-sitehdr-file-drop]').classList.add('is-dragover');
+  });
+  document.addEventListener('dragleave', (event) => {
+    const dropArea = event.target?.closest?.('[data-sitehdr-file-drop]');
+    if (dropArea && !dropArea.contains(event.relatedTarget)) dropArea.classList.remove('is-dragover');
+  });
+  document.addEventListener('drop', (event) => {
+    const dropArea = event.target?.closest?.('[data-sitehdr-file-drop]');
+    if (!dropArea) return;
+    event.preventDefault();
+    dropArea.classList.remove('is-dragover');
+    pendingWorkspaceFiles = [...(event.dataTransfer?.files || [])];
+    renderProjectManager();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (!event.target?.matches?.('[data-sitehdr-file-drop]') || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    document.getElementById('siteHeaderWorkspaceFileInput')?.click();
+  });
   document.addEventListener("click", async (event) => {
     const action = event.target?.closest?.('[data-sitehdr-action]');
     if (!action) return;
@@ -873,6 +964,7 @@ import {
       return;
     }
     if (action.dataset.sitehdrAction === 'select-project') {
+      pendingWorkspaceFiles = [];
       activeProjectId = action.dataset.projectId;
       await (await getNavigationSettings()).writeSettingValue(ACTIVE_PROJECT_SETTING_KEY, activeProjectId);
       await refreshProjectShell();
@@ -940,8 +1032,44 @@ import {
       }
       return;
     }
-    if (action.dataset.sitehdrAction === 'add-files') {
+    if (action.dataset.sitehdrAction === 'choose-files') {
       document.getElementById('siteHeaderWorkspaceFileInput')?.click();
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'remove-pending-file') {
+      pendingWorkspaceFiles = pendingWorkspaceFiles.filter((_, index) => index !== Number(action.dataset.fileIndex));
+      renderProjectManager();
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'clear-pending-files') {
+      pendingWorkspaceFiles = [];
+      renderProjectManager();
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'store-pending-files') {
+      if (!pendingWorkspaceFiles.length) return;
+      try {
+        const destination = document.querySelector('input[name="sitehdr-file-destination"]:checked')?.value || 'store';
+        const interpretation = document.querySelector('input[name="sitehdr-file-interpretation"]:checked')?.value || 'auto';
+        const mode = document.querySelector('input[name="sitehdr-file-mode"]:checked')?.value || 'append';
+        const firstRowIsHeader = document.getElementById('siteHeaderFirstRowHeader')?.checked !== false;
+        const storedArtifacts = await addFilesToActiveWorkspace(pendingWorkspaceFiles);
+        pendingWorkspaceFiles = [];
+        if (destination === 'current-table' && getPageId() === 'tom' && storedArtifacts.length) {
+          document.dispatchEvent(new CustomEvent('sitehdr:load-workspace-files', {
+            detail: {
+              projectId: activeProjectId,
+              artifactIds: storedArtifacts.map((artifact) => artifact.artifactId),
+              interpretation,
+              mode,
+              firstRowIsHeader
+            }
+          }));
+        }
+        await refreshProjectShell();
+      } catch (_err) {
+        updateDbStatus('error', 'Workspace file import failed');
+      }
       return;
     }
     if (action.dataset.sitehdrAction === 'delete-artifacts') {
@@ -986,6 +1114,19 @@ import {
         await refreshProjectShell();
       } catch (_err) {
         updateDbStatus('error', 'History cleanup failed');
+      }
+      return;
+    }
+    if (action.dataset.sitehdrAction === 'clear-all-runs') {
+      const runIds = (projectManagerSnapshot?.runs || []).map((run) => run.runId);
+      if (!runIds.length || !globalThis.confirm?.(`Clear all ${runIds.length} operation history entr${runIds.length === 1 ? 'y' : 'ies'} for this project? Artifacts will not be deleted.`)) return;
+      try {
+        const db = await (portfolioDbPromise ||= openProjectPortfolioDatabase());
+        const stores = createProjectPortfolioStores(db, { projectId: activeProjectId });
+        for (const runId of runIds) await stores.runs.deleteRunRecord(runId);
+        await refreshProjectShell();
+      } catch (_err) {
+        updateDbStatus('error', 'History clearing failed');
       }
       return;
     }

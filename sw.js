@@ -4,7 +4,7 @@
    - graph.jsonld: stale-while-revalidate
 */
 
-const SW_VERSION = 'reasonlynx-monorepo-v13';
+const SW_VERSION = 'reasonlynx-monorepo-v18';
 const CACHE_SHELL = `ontoeagle-shell-${SW_VERSION}`;
 const CACHE_DATA = `ontoeagle-data-${SW_VERSION}`;
 
@@ -84,6 +84,7 @@ const SHELL_ASSETS = [
   './packages/format-registry/src/rdf-content-detection.js',
   './packages/format-registry/src/rdf-parser-formats.js',
   './packages/semantic-workspace/src/index.js',
+  './packages/semantic-workspace/src/operation-history.js',
   './packages/semantic-workspace/src/representation-registry.js',
   './packages/semantic-workspace/src/semantic-operation-registry.js',
   './packages/semantic-workspace/src/term-list-ontology-table.js',

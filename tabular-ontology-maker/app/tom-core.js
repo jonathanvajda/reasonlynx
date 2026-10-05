@@ -2968,13 +2968,13 @@ async function handleInsertDataSave() {
     if (!["append", "replace"].includes(insertMode)) {
       console.warn("Invalid insert mode:", insertMode);
       showToast("Invalid insert mode selected", "error");
-      return;
+      return false;
     }
 
     if (!currentImportFile) {
       console.warn("No file selected");
       showToast("Please select a file before saving", "error");
-      return;
+      return false;
     }
 
     // Header row checkbox (checked = true)
@@ -2993,7 +2993,7 @@ async function handleInsertDataSave() {
     if (!result.valid) {
       console.warn("Validation failed", result.errors);
       alert("Import failed:\n" + result.errors.join("\n"));  // Still important to stop the user
-      return;
+      return false;
     }
 
     // Merge clean data
@@ -3019,10 +3019,12 @@ async function handleInsertDataSave() {
     document.getElementById("insert-data-modal").style.display = "none";
     currentImportFile = null;
     resetFileInput();
+    return true;
 
   } catch (error) {
     console.error("Import error:", error);
     showToast("Error processing import - see console", "error");
+    return false;
   }
 }
 
@@ -3182,13 +3184,13 @@ async function handleInsertOntologySave() {
     if (!["append", "replace"].includes(insertMode)) {
       console.warn("Invalid insert mode:", insertMode);
       showToast("Invalid insert mode selected", "error");
-      return;
+      return false;
     }
 
     if (!currentImportFile) {
       console.warn("No file selected");
       showToast("Please select a file before saving", "error");
-      return;
+      return false;
     }
 
     // NOTE: The "hasHeader" checkbox is irrelevant for ontology data, so we skip it.
@@ -3213,7 +3215,7 @@ async function handleInsertOntologySave() {
       console.warn("Validation failed", result.errors);
       // Use a modal or toast instead of alert() if possible
       showToast("Import failed:\n" + result.errors.join("\n"), "error");
-      return;
+      return false;
     }
     
     if (result.cleanedRows.length === 0) {
@@ -3222,7 +3224,7 @@ async function handleInsertOntologySave() {
         document.getElementById("insert-data-modal").style.display = "none";
         currentImportFile = null;
         resetFileInput();
-        return;
+        return false;
     }
 
     // Merge clean data (this logic remains identical)
@@ -3248,10 +3250,12 @@ async function handleInsertOntologySave() {
     document.getElementById("insert-data-modal").style.display = "none";
     currentImportFile = null;
     resetFileInput();
+    return true;
 
   } catch (error) {
     console.error("Import error:", error);
     showToast(`Error processing import: ${error.message}`, "error");
+    return false;
   }
 }
 
@@ -3267,18 +3271,20 @@ async function handlePrimarySave() {
   try {
     if (importType === 'spreadsheet') {
       // Calls your existing function for CSV/XLSX
-      await handleInsertDataSave(); 
+      return await handleInsertDataSave();
     } else if (importType === 'ontology') {
       // Calls the new function for TTL, RDF, etc.
-      await handleInsertOntologySave(); 
+      return await handleInsertOntologySave();
     } else {
       showToast("Please select a file type (Spreadsheet or Ontology)", "error");
+      return false;
     }
   } catch (error) {
     // This provides a top-level catch in case the individual
     // handlers fail in a way their own try/catch doesn't handle.
     console.error("Primary save handler error:", error);
     showToast("A critical error occurred during save.", "error");
+    return false;
   }
 }
 
@@ -3509,6 +3515,33 @@ function showToast(message, type = "success", duration = 3000) {
     containerId: 'toast-container'
   });
   if (!result.ok) console.error("Toast error:", result.error);
+}
+
+/**
+ * Loads a browser file through TOM's established spreadsheet or RDF importer.
+ * This is the UI-bound entry point used by the shared workspace adapter.
+ *
+ * @param {File} file Source file reconstructed from a workspace artifact.
+ * @param {{interpretation:'spreadsheet'|'ontology',mode:'append'|'replace',firstRowIsHeader?:boolean}} options Import choices.
+ * @returns {Promise<void>}
+ */
+async function importFileIntoOntologyTable(file, options) {
+  if (!file) throw new Error('A source file is required.');
+  if (!['spreadsheet', 'ontology'].includes(options?.interpretation)) {
+    throw new Error('Choose spreadsheet or ontology interpretation.');
+  }
+  if (!['append', 'replace'].includes(options?.mode)) {
+    throw new Error('Choose append or replace behavior.');
+  }
+  currentImportFile = file;
+  const typeControl = document.querySelector(`input[name="file-type"][value="${options.interpretation}"]`);
+  const modeControl = document.querySelector(`input[name="insert-mode"][value="${options.mode}"]`);
+  if (typeControl) typeControl.checked = true;
+  if (modeControl) modeControl.checked = true;
+  const headerControl = document.getElementById('first-row-header');
+  if (headerControl) headerControl.checked = options.firstRowIsHeader !== false;
+  const imported = await handlePrimarySave();
+  if (!imported) throw new Error(`${file.name} could not be loaded into the current table.`);
 }
 
 // Attach event listener to the "Save to Database" button
@@ -4047,6 +4080,7 @@ TOM.Core = {
   storeTomWorkspaceProjectState,
   reloadSavedSession,
   handlePrimarySave,
+  importFileIntoOntologyTable,
   handleExport,
   addRowsToTable,
   removeRowsFromBottom,

@@ -7,7 +7,8 @@
 | SWO-003 | Project term lists into ontology-table rows | Shared | `term-list-ontology-table.js` and tests |
 | SWO-004 | Append or replace ontology-table rows | Shared | Pure combination tests and TOM adapter |
 | SWO-005 | Append stored SPARQL query text to a CQ | Shared pilot | CQ Ferret adapter and shared operation declaration |
-| SWO-006 | Classify recognized file representations as portable source artifacts | Shared | MIME-registry adapter, workspace file ingress, and tests |
+| SWO-006 | Classify recognized file representations as portable source artifacts | Shared | MIME-registry adapter, drag/drop workspace ingress, and tests |
+| SWO-007 | Load workspace files into a consuming table view | Shared pilot | TOM interpretation and append/replace adapter |
 
 Browser navigation, IndexedDB reads/writes, grid replacement, and notifications
 are deliberately adapter responsibilities and are not part of the pure core.
