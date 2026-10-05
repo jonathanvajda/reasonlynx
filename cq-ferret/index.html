@@ -129,8 +129,8 @@
             <div class="tabs" role="tablist">
                 <button class="tab-btn" role="tab" data-tab="tab-cq-form" aria-controls="tab-cq-form">Competency
                     Questions</button>
-                <button class="tab-btn" role="tab" data-tab="tab-term-form" aria-controls="tab-term-form">Term
-                    List</button>
+                <button class="tab-btn" role="tab" data-tab="tab-term-form" aria-controls="tab-term-form">Controlled
+                    Vocabulary</button>
             </div>
             <div class="cq-list" id="cq-list">
             </div>
@@ -213,7 +213,8 @@
                 </div>
 
                 <div class="section">
-                    <h3>What data sources are relevant to finding the answer?</h3>
+                    <h3>Data Sources</h3>
+                    <p class="section-subtitle">What data sources are relevant to finding the answer?</p>
 
                     <div id="data-requirements-list">
                         <div class="data-requirement-item"><button class="delete-item-btn"
@@ -266,7 +267,7 @@ WHERE {?subj ?pred ?obj}"></textarea><button class="delete-item-btn" type="butto
                 <button id="save-button-bottom" class="save-btn">Save</button>
             </div>
             <div id="tab-term-form" class="tab-panel" role="tabpanel">
-                <h1>Extracted Vocabulary</h1>
+                <h1>Controlled Vocabulary</h1>
 
                 <div class="bar">
                     <button id="btnRebuild" type="button">Rebuild from CQ graph</button>

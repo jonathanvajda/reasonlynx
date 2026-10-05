@@ -49,6 +49,13 @@
       margin-top: 0;
     }
 
+    .section-subtitle {
+      margin: -0.25rem 0 1.25rem;
+      color: var(--ont-muted);
+      font-size: 1.5rem;
+      line-height: 1.45;
+    }
+
     label {
       display: block;
       margin: 0.5rem 0 0.2rem;
@@ -71,8 +78,19 @@
 
     .columns {
       display: flex;
+      float: none;
+      width: 100%;
       margin-left: 0%;
       gap: 2rem;
+      box-sizing: border-box;
+    }
+
+    .columns > .column {
+      float: none;
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto;
+      margin-left: 0;
     }
 
 
