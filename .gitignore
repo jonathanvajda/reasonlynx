@@ -9,3 +9,5 @@ onto-eagle/styles/
 onto-eagle/sw.js
 admin/coverage/
 .tmp-tom-lookup-test/
+node_modules/
+coverage/

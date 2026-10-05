@@ -1,4 +1,4 @@
-name: Deploy static content to Pages
+name: Test, build, and deploy static content
 
 on:
   push:
@@ -15,7 +15,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  BUILD_ARTIFACT_NAME: reasonlynx-site-${{ github.run_attempt }}
   PAGES_ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
+  SITE_OUTPUT_DIR: _site
   TOM_LOOKUP_OUTPUT_DIR: tabular-ontology-maker/json
   TOM_LOOKUP_SOURCE_DIR: src/ontologies
   TOM_LOOKUP_SOURCE_PATH: ""
@@ -26,45 +28,8 @@ env:
   NAMECHEAP_DEPLOY_PATH: /home/reasqjfn/public_html
 
 jobs:
-  test-apps:
-    name: Test ${{ matrix.app }}
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        app:
-          - reasonlynx
-          - onto-eagle
-          - ontology-viewer
-          - cq-ferret
-          - bundler
-          - tabular-ontology-maker
-          - axiolotl
-          - graph-analyst-playbook
-          - graph-analytics
-          - visual-lynx
-          - linked-data-transformer
-          - ontology-compliance-diagnostic
-          - iri-swapper
-          - sparql-pattern-visualizer
-          - ontology-tabulator
-          - table-nova
-          - docxhund
-          - about
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-
-      - name: Validate app
-        run: node scripts/validate-app.mjs "${{ matrix.app }}"
-
-  test-service-worker:
-    name: Test service worker manifest
+  test:
+    name: Test and validate
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -74,18 +39,23 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+
+      - name: Install test dependencies
+        run: npm ci
+
+      - name: Validate all application entry points
+        run: npm run test:app
 
       - name: Validate service worker asset list
-        run: node scripts/validate-service-worker.mjs
+        run: npm run test:sw
 
-  deploy:
-    name: Build and deploy
-    needs:
-      - test-apps
-      - test-service-worker
-    environment:
-      name: github-pages
-      url: https://reasonlynx.com/
+      - name: Run unit tests
+        run: npm test
+
+  build:
+    name: Build deployment artifact
+    needs: test
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -160,6 +130,48 @@ jobs:
           }
           EOF
 
+      - name: Stage deployable site
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${SITE_OUTPUT_DIR}"
+          rsync -a \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.gitignore' \
+            --exclude '.tmp-tom-lookup-test/' \
+            --exclude '.well-known/' \
+            --exclude 'cgi-bin/' \
+            --exclude 'node_modules/' \
+            --exclude 'coverage/' \
+            --exclude 'admin/coverage/' \
+            --exclude 'package-lock.json' \
+            --exclude "${SITE_OUTPUT_DIR}/" \
+            ./ "${SITE_OUTPUT_DIR}/"
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ env.BUILD_ARTIFACT_NAME }}
+          path: ${{ env.SITE_OUTPUT_DIR }}
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 1
+
+  deploy:
+    name: Deploy tested artifact
+    needs: build
+    environment:
+      name: github-pages
+      url: https://reasonlynx.com/
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download deployment artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ env.BUILD_ARTIFACT_NAME }}
+          path: site-dist
+
       - name: Deploy to Namecheap over SSH
         shell: bash
         env:
@@ -196,25 +208,18 @@ jobs:
 
           rsync -az --delete \
             -e "ssh ${SSH_OPTS}" \
-            --exclude '.git/' \
-            --exclude '.github/' \
-            --exclude '.tmp-tom-lookup-test/' \
             --exclude '.well-known/' \
             --exclude 'cgi-bin/' \
-            --exclude 'node_modules/' \
-            --exclude 'coverage/' \
-            --exclude 'admin/coverage/' \
-            --exclude 'package-lock.json' \
-            ./ "${NAMECHEAP_SSH_USER}@${NAMECHEAP_SSH_HOST}:${NAMECHEAP_DEPLOY_PATH}/"
+            site-dist/ "${NAMECHEAP_SSH_USER}@${NAMECHEAP_SSH_HOST}:${NAMECHEAP_DEPLOY_PATH}/"
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
-      - name: Upload artifact
+      - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
           name: ${{ env.PAGES_ARTIFACT_NAME }}
-          path: '.'
+          path: site-dist
 
       - name: Deploy to GitHub Pages
         id: deployment
