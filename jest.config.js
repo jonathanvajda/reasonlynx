@@ -3,6 +3,7 @@ const config = {
   testEnvironment: 'node',
   testMatch: [
     '<rootDir>/axiolotl/app/*.test.js',
+    '<rootDir>/onto-merge/__tests__/*.test.js',
     '<rootDir>/packages/**/__tests__/*.test.js'
   ],
   testPathIgnorePatterns: [

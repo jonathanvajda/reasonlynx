@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OntoMerge | ReasonLynx</title>
+  <meta name="description" content="Static browser tool for creating merged ontology files from multiple RDF/OWL ontology sources." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="icon" type="image/png" href="../images/default-logo.png" />
+  <link rel="stylesheet" href="../styles/normalize.css" />
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+  <link rel="stylesheet" href="../styles/app-base.css" />
+  <link rel="stylesheet" href="../styles/site-header.css" />
+  <link rel="stylesheet" href="./styles/onto-merge.css" />
+  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/format-registry/src/index.js" />
+  <link rel="modulepreload" href="../packages/namespace-registry/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-graph-operations/src/index.js" />
+</head>
+<body data-page-id="onto-merge">
+  <header id="siteHeader"></header>
+  <main class="om-shell">
+    <header class="om-topbar">
+      <div>
+        <p class="om-kicker">Onto Merge</p>
+        <h1>Ontology merge workspace</h1>
+      </div>
+      <div class="om-status" id="status" role="status" aria-live="polite"></div>
+    </header>
+
+    <section class="om-panel om-grid om-grid-inputs" aria-label="Merge inputs">
+      <div class="om-block">
+        <label for="ontologyFiles">Ontology files</label>
+        <input id="ontologyFiles" type="file" multiple />
+        <div class="om-actions">
+          <button class="button-primary" id="loadOntologies" type="button">Load files</button>
+          <button id="selectAllRoots" type="button">All roots</button>
+        </div>
+      </div>
+
+      <div class="om-block">
+        <label for="headerOntologyIri">Merged ontology IRI</label>
+        <input id="headerOntologyIri" class="u-full-width" type="text" placeholder="https://example.org/merged-ontology" />
+        <label for="headerTemplate">Header template</label>
+        <select id="headerTemplate" class="u-full-width">
+          <option value="curation">Curation metadata</option>
+          <option value="obo">OBO-style metadata</option>
+          <option value="minimal">Minimal</option>
+        </select>
+      </div>
+
+      <div class="om-block">
+        <label for="outputFormat">Output serialization</label>
+        <select id="outputFormat" class="u-full-width">
+          <option value="text/turtle">Turtle</option>
+          <option value="application/n-triples">N-Triples</option>
+          <option value="application/n-quads">N-Quads</option>
+          <option value="application/ld+json">JSON-LD</option>
+          <option value="application/rdf+xml">RDF/XML</option>
+        </select>
+        <div class="om-actions">
+          <button class="button-primary" id="buildMerge" type="button">Build merge</button>
+          <button id="downloadMerge" type="button" disabled>Download</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="om-workspace" aria-label="Merge workspace">
+      <div class="om-panel">
+        <div class="om-section-head">
+          <h2>Root ontologies</h2>
+          <span>Checked files seed the merge.</span>
+        </div>
+        <div id="sourceList" class="om-list">
+          <p class="om-empty">No ontologies loaded.</p>
+        </div>
+      </div>
+
+      <div class="om-panel">
+        <div class="om-section-head">
+          <h2>Imports</h2>
+          <span>Merge, retain, or drop each direct import.</span>
+        </div>
+        <div id="importList" class="om-list">
+          <p class="om-empty">Imports appear after files are loaded.</p>
+        </div>
+      </div>
+
+      <div class="om-panel om-editor-panel">
+        <div class="om-section-head">
+          <h2>Editable header</h2>
+          <span>Turtle prefixes, ontology declaration, imports, and annotations.</span>
+        </div>
+        <textarea id="headerText" class="om-code" spellcheck="false"></textarea>
+      </div>
+
+      <div class="om-panel om-editor-panel">
+        <div class="om-section-head">
+          <h2>Merged output</h2>
+          <span>Generated locally in the browser.</span>
+        </div>
+        <textarea id="outputText" class="om-code" spellcheck="false" readonly></textarea>
+      </div>
+    </section>
+  </main>
+
+  <footer class="om-footer">
+    Files are parsed and merged locally. Nothing is uploaded by this static page.
+  </footer>
+
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script src="../vendor/rdflib.min.js"></script>
+  <script type="module" src="../app/site-header.js"></script>
+  <script type="module" src="./app/main.js"></script>
+</body>
+</html>

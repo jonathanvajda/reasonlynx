@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OntoDiff | ReasonLynx</title>
+  <meta name="description" content="Compare ontology versions and export semantic diff reports or SPARQL updates." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="icon" type="image/png" href="../images/default-logo.png" />
+  <link rel="stylesheet" href="../styles/normalize.css">
+  <link rel="stylesheet" href="../styles/skeleton.css">
+  <link rel="stylesheet" href="../styles/app-base.css">
+  <link rel="stylesheet" href="../styles/site-header.css">
+  <link rel="stylesheet" href="../styles/tabulator.min.css">
+  <link rel="stylesheet" href="./styles/onto-diff.css">
+</head>
+<body data-page-id="onto-diff">
+  <header id="siteHeader"></header>
+  <header class="app-header">
+    <div><span class="eyebrow">RDF utility</span><h1>Ontology Diff</h1></div>
+    <p>Compare ontology triples locally. Your files never leave this browser.</p>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="load-title">
+      <div><h2 id="load-title">Choose two ontology files</h2><p>Supported: Turtle, N-Triples, JSON-LD, and RDF/XML. Named graphs and quad formats are intentionally rejected.</p></div>
+      <button id="swap-files" type="button" disabled>Swap LEFT ↔ RIGHT</button>
+    </section>
+    <section class="file-grid" aria-label="Ontology inputs">
+      <article class="drop-zone" data-side="left" tabindex="0">
+        <div class="side-label">LEFT · ORIGINAL</div><div class="drop-icon" aria-hidden="true">↓</div>
+        <h3>Drop the original here</h3><p>or select a local ontology file</p>
+        <button class="select-file" type="button">Select LEFT file</button>
+        <input id="left-file" type="file" hidden>
+        <div class="file-meta" id="left-meta">No file selected</div>
+      </article>
+      <article class="drop-zone" data-side="right" tabindex="0">
+        <div class="side-label">RIGHT · REVISION</div><div class="drop-icon" aria-hidden="true">↓</div>
+        <h3>Drop the revision here</h3><p>or select a local ontology file</p>
+        <button class="select-file" type="button">Select RIGHT file</button>
+        <input id="right-file" type="file" hidden>
+        <div class="file-meta" id="right-meta">No file selected</div>
+      </article>
+    </section>
+    <div id="message" class="message" role="status" aria-live="polite">Select both files to generate a semantic triple diff.</div>
+
+    <section id="report" class="report" hidden>
+      <div class="report-heading"><div><span class="eyebrow">Comparison ready</span><h2>Diff summary</h2></div><div class="export-actions">
+        <button type="button" data-export="html">HTML</button><button type="button" data-export="yaml">YAML</button><button type="button" data-export="csv">CSV</button><button class="button-primary" type="button" data-export="sparql">SPARQL delta</button>
+      </div></div>
+      <div class="summary-grid">
+        <button class="metric removed" data-status="removed"><span id="removed-count">0</span><small>Triples removed</small></button>
+        <button class="metric added" data-status="added"><span id="added-count">0</span><small>Triples added</small></button>
+        <button class="metric modified" data-status="modified"><span id="modified-count">0</span><small>Triples modified</small></button>
+        <div class="metric total"><span id="total-count">0</span><small>Triples in revision</small></div>
+      </div>
+      <div class="view-tabs" role="tablist">
+        <button class="active" role="tab" data-view="combined">Combined diff</button><button role="tab" data-view="left">All LEFT triples</button><button role="tab" data-view="right">All RIGHT triples</button>
+        <button id="clear-filter" type="button">Clear filters</button>
+      </div>
+      <div id="diff-table" aria-label="Ontology triples"></div>
+      <p class="method-note"><strong>Comparison policy:</strong> the combined view contains changes only; complete inventories remain available in the LEFT and RIGHT tabs. Raw blank-node triples are suppressed, while common OWL restrictions are projected into readable semantic paths. Unambiguous object or predicate changes are paired. A subject rename requires one unique match of its complete description with at least two triples.</p>
+    </section>
+  </main>
+  <script src="../vendor/n3.min.js"></script><script src="../vendor/jsonld.min.js"></script><script src="../vendor/rdflib.min.js"></script><script src="../vendor/tabulator.min.js"></script><script src="../vendor/papaparse.min.js"></script><script src="../vendor/sparqljs.umd.js"></script>
+  <script type="module" src="../app/site-header.js"></script>
+  <script type="module" src="./app/main.js"></script>
+</body>
+</html>

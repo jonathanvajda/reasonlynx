@@ -22,3 +22,19 @@ test('artifact discovery manifests do not encode application load actions', () =
   assert.equal('artifactLoadActions' in cqManifest, false);
   assert.equal('workspaceActions' in cqManifest, false);
 });
+
+test('OntoMerge and OntoDiff discover ontology artifacts', () => {
+  const artifacts = [
+    { artifactId: 'ontology', artifactKind: 'ontology-rdf' },
+    { artifactId: 'terms', artifactKind: 'term-list' }
+  ];
+
+  assert.deepEqual(
+    discoverCompatibleArtifacts(artifacts, getAppCapabilityManifest('onto-merge')).map((item) => item.artifactId),
+    ['ontology']
+  );
+  assert.deepEqual(
+    discoverCompatibleArtifacts(artifacts, getAppCapabilityManifest('onto-diff')).map((item) => item.artifactId),
+    ['ontology']
+  );
+});

@@ -63,6 +63,8 @@ import {
         "ontology-compliance-diagnostic": { src: "../ontology-compliance-diagnostic/favicon.svg", alt: "Ontology Compliance Diagnostic" },
         "nlp-quality-assurance": { src: "../ontology-compliance-diagnostic/favicon.svg", alt: "NLP Quality Assurance" },
         "ontology-measures": { src: "../ontology-compliance-diagnostic/favicon.svg", alt: "Ontology Measures" },
+        "onto-merge": { src: "../images/default-logo.png", alt: "OntoMerge" },
+        "onto-diff": { src: "../images/default-logo.png", alt: "OntoDiff" },
         "about-page": { src: "../images/block-logo.png", alt: "ReasonLynx" },
       },
       defaultToolLogo: { src: "../images/default-logo.png", alt: "Semantic Tools" },
@@ -89,6 +91,8 @@ import {
         "visual-lynx": { title: "Visual Lynx" },
         "linked-data-transformer": { title: "Linked-Data Transformer" },
         "docxhund": { title: "DocxHund" },
+        "onto-merge": { title: "OntoMerge" },
+        "onto-diff": { title: "OntoDiff" },
         "about-page": { title: "ReasonLynx" },
         }
     },
@@ -136,6 +140,8 @@ import {
           { label: "Axiolotl SPARQL & Inference", href: "../axiolotl/", pageId: "axiolotl" },
           { label: "SPARQL Pattern Visualizer", href: "../sparql-pattern-visualizer/", pageId: "sparql-pattern-visualizer" },
           { label: "Slim Bundle Builder", href: "../bundler/", pageId: "bundler" },
+          { label: "OntoMerge", href: "../onto-merge/", pageId: "onto-merge" },
+          { label: "OntoDiff", href: "../onto-diff/", pageId: "onto-diff" },
         ],
       },
       {
@@ -170,8 +176,8 @@ import {
     "nlp-quality-assurance": { label: "NLP Quality Assurance", href: "../ontology-compliance-diagnostic/nlp-quality-assurance.html" },
     "myna-iri-swapper": { label: "Myna IRI Swapper", href: "../iri-swapper/" },
     "controlled-vocabulary-registry": { label: "Controlled Vocabulary", href: "../cq-ferret/#tab-term-form" },
-    "onto-merge": { label: "OntoMerge", status: "external route pending" },
-    "onto-diff": { label: "OntoDiff", status: "planned" }
+    "onto-merge": { label: "OntoMerge", href: "../onto-merge/" },
+    "onto-diff": { label: "OntoDiff", href: "../onto-diff/" }
   });
 
   const TOOL_DESCRIPTIONS = Object.freeze({

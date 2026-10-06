@@ -179,6 +179,16 @@
       box-shadow: 0 24px 54px rgba(0, 0, 0, 0.12);
     }
 
+    .landing-page__app-card {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .landing-page__app-card:focus-visible {
+      outline: 3px solid var(--ont-accent);
+      outline-offset: 3px;
+    }
+
     .landing-page__feature-card:nth-child(2) {
       transition-delay: 90ms;
     }
@@ -595,6 +605,26 @@
               <p class="landing-page__feature-text">Prototype document-oriented workflows alongside the semantic app suite.</p>
             </div>
           </div>
+
+          <a class="landing-page__feature-card landing-page__app-card js-reveal-card is-visible" href="./onto-merge/">
+            <div class="landing-page__feature-media">
+              <img src="images/default-logo.png" alt="OntoMerge logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">OntoMerge</h3>
+              <p class="landing-page__feature-text">Merge ontology sources while controlling which imports are combined, retained, or omitted.</p>
+            </div>
+          </a>
+
+          <a class="landing-page__feature-card landing-page__app-card js-reveal-card is-visible" href="./onto-diff/">
+            <div class="landing-page__feature-media">
+              <img src="images/default-logo.png" alt="OntoDiff logo">
+            </div>
+            <div class="landing-page__feature-body">
+              <h3 class="landing-page__feature-title">OntoDiff</h3>
+              <p class="landing-page__feature-text">Compare ontology versions and export reports or a reproducible SPARQL update.</p>
+            </div>
+          </a>
         </div>
       </div>
     </section>

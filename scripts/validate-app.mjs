@@ -19,6 +19,8 @@ const APP_ROUTES = {
   'ontology-tabulator': 'ontology-tabulator/index.html',
   'table-nova': 'table-nova/index.html',
   docxhund: 'docxhund/index.html',
+  'onto-merge': 'onto-merge/index.html',
+  'onto-diff': 'onto-diff/index.html',
   about: 'about/index.html'
 };
 

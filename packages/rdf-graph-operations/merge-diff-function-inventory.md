@@ -27,9 +27,11 @@ namespace registry; it does not introduce local namespace aliases.
 | 4 | Package ready: runtime-neutral, predictable validation/errors, and adapter separation. |
 | 5 | Canonical: adopted by every intended consumer and local duplicates removed. |
 
-Level 5 is not available to newly extracted functions. Copying a function into
-`packages/` does not make it canonical; Onto-Merge must adopt the package and
-delete its local implementation before that rating is warranted.
+Level 5 requires adoption, not merely extraction into `packages/`. The
+ReasonLynx-integrated OntoMerge app now consumes the package and has deleted
+its local planning implementations. The separate `onto-merge` source
+repository still contains its original copies, so canonical status waits on
+updating or retiring that standalone deployment.
 
 ## Onto-Merge candidates
 
@@ -91,8 +93,10 @@ They are runtime-neutral, deterministic for a given input order, use explicit
 inputs and returned values, contain no browser/storage side effects, use full
 IRIs through the namespace registry, and have focused package tests.
 
-Their current rating is Level 4, not Level 5, because Onto-Merge has not yet
-been rewired to consume the ReasonLynx package and delete the local functions.
+Their current rating remains Level 4. The integrated ReasonLynx OntoMerge app
+now consumes this API and retains adapter-level regression tests, but the
+separate source repository has not yet been redirected to the canonical
+package.
 
 ## Recommended priorities for the maturity gaps
 
@@ -112,8 +116,11 @@ been rewired to consume the ReasonLynx package and delete the local functions.
 
 ## Adoption required for Level 5
 
-- Rewire Onto-Merge to import the two promoted functions from the shared SDK.
-- Delete `createOntologySource`, `createImportDecisionRows`, and their private
-  duplicate planning helpers from Onto-Merge.
-- Keep adapter tests in Onto-Merge and package behavior tests in ReasonLynx.
-- Verify both standalone Onto-Merge and the integrated ReasonLynx build.
+- Completed in ReasonLynx: the integrated OntoMerge app imports the two
+  promoted functions and no longer contains the duplicate planning helpers.
+- Completed in ReasonLynx: adapter tests remain alongside package behavior
+  tests, and the integrated app entrypoint is validated.
+- Remaining: update the separate `D:/GitHub/onto-merge` deployment to consume
+  the canonical package, or formally retire it in favor of the ReasonLynx app.
+- Remaining: verify that standalone deployment after choosing one of those
+  distribution paths.

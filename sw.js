@@ -4,7 +4,7 @@
    - graph.jsonld: stale-while-revalidate
 */
 
-const SW_VERSION = 'reasonlynx-monorepo-v29';
+const SW_VERSION = 'reasonlynx-monorepo-v30';
 const CACHE_SHELL = `ontoeagle-shell-${SW_VERSION}`;
 const CACHE_DATA = `ontoeagle-data-${SW_VERSION}`;
 
@@ -44,6 +44,14 @@ const SHELL_ASSETS = [
   './cq-ferret/',
   './onto-eagle/',
   './ontology-viewer/',
+  './onto-merge/',
+  './onto-merge/app/main.js',
+  './onto-merge/app/merge-ontology.js',
+  './onto-merge/styles/onto-merge.css',
+  './onto-diff/',
+  './onto-diff/app/main.js',
+  './onto-diff/app/diff-engine.js',
+  './onto-diff/styles/onto-diff.css',
   './styles/app-base.css',
   './styles/bundler.css',
   './styles/ontology-pages.css',
