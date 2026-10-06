@@ -1,0 +1,13 @@
+{
+  "name": "@reasonlynx/rdf-graph-operations",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --runInBand __tests__/rdf-graph-operations.test.js"
+  }
+}

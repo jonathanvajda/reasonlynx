@@ -4,7 +4,7 @@
    - graph.jsonld: stale-while-revalidate
 */
 
-const SW_VERSION = 'reasonlynx-monorepo-v28';
+const SW_VERSION = 'reasonlynx-monorepo-v29';
 const CACHE_SHELL = `ontoeagle-shell-${SW_VERSION}`;
 const CACHE_DATA = `ontoeagle-data-${SW_VERSION}`;
 
@@ -142,6 +142,8 @@ const SHELL_ASSETS = [
   './packages/rdf-io/src/rdflib-adapter.js',
   './packages/rdf-io/src/runtime.js',
   './packages/rdf-io/src/serialize-rdf.js',
+  './packages/rdf-graph-operations/src/index.js',
+  './packages/rdf-graph-operations/src/ontology-import-plan.js',
   './packages/report-export/src/export-descriptor.js',
   './packages/report-export/src/html-document.js',
   './packages/report-export/src/index.js',
