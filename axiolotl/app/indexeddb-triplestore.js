@@ -338,11 +338,17 @@ async function storeTriplesInNamedGraph(triples) {
   return storeTriplesInNamedGraphInternal(triples);
 }
 
-async function storeTriplesInNamedGraphInternal(triples, { migratedFromLegacy = false, dispatchEvent = true } = {}) {
-  const rows = (Array.isArray(triples) ? triples : []).map((triple) => normalizeAxiolotlTripleRow(triple, { migratedFromLegacy }));
+async function storeTriplesInNamedGraphInternal(triples, {
+  artifactId = null,
+  migratedFromLegacy = false,
+  dispatchEvent = true
+} = {}) {
+  const rows = (Array.isArray(triples) ? triples : []).map((triple) =>
+    normalizeAxiolotlTripleRow(triple, { artifactId, migratedFromLegacy })
+  );
   const stores = await openAxiolotlProjectStores();
   await stores.quadRows.upsertQuadRows(rows);
-  await storeGraphRecordsForRows(stores, rows, migratedFromLegacy);
+  await storeGraphRecordsForRows(stores, rows, { artifactId, migratedFromLegacy });
   if (dispatchEvent) dispatchStorageEvent('triples-changed', {
     db: 'OntologyWorkbenchProjects',
     store: 'quadRows',
@@ -350,11 +356,102 @@ async function storeTriplesInNamedGraphInternal(triples, { migratedFromLegacy = 
   });
 }
 
+/**
+ * Registers an ontology source file as a shared Workspace artifact and
+ * materializes its parsed statements into Axiolotl's shared quad cache.
+ *
+ * @param {object} input
+ * @param {string} input.fileName
+ * @param {string} input.mimeType
+ * @param {string} input.text
+ * @param {number} [input.lastModified]
+ * @param {number} [input.size]
+ * @param {object[]} input.statements
+ * @param {string[]} [input.ontologyIris]
+ * @param {string[]} [input.imports]
+ * @returns {Promise<object>} Stored artifact metadata.
+ */
+async function storeOntologyFileInWorkspace({
+  fileName,
+  mimeType,
+  text,
+  lastModified = 0,
+  size = 0,
+  statements = [],
+  ontologyIris = [],
+  imports = []
+}) {
+  const stores = await openAxiolotlProjectStores();
+  const artifactId = createStableRecordId('artifact:axiolotl-ontology', [
+    DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+    fileName,
+    lastModified,
+    size
+  ]);
+  const extension = String(fileName || '').includes('.')
+    ? String(fileName).split('.').pop().toLowerCase()
+    : '';
+  const metadata = {
+    artifactId,
+    projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+    artifactKind: 'ontology-rdf',
+    role: 'loaded',
+    label: fileName || 'Ontology RDF',
+    mediaType: mimeType || '',
+    extension,
+    source: {
+      [COMMON_NAMESPACE_IRIS.okea.appId]: AXIOLOTL_APP_ID,
+      fileName: fileName || '',
+      lastModified,
+      size
+    },
+    summary: {
+      tripleCount: statements.length,
+      ontologyIris: [...ontologyIris],
+      imports: [...imports]
+    }
+  };
+
+  const artifact = await stores.artifacts.storeProjectArtifact(metadata, text);
+  try {
+    await storeTriplesInNamedGraphInternal(statements, { artifactId });
+    await stores.runs.storeRunRecord({
+      projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
+      runKind: 'ontology-import',
+      label: `Loaded ${artifact.label}`,
+      inputArtifactIds: [artifactId],
+      outputArtifactIds: [],
+      payload: {
+        appId: AXIOLOTL_APP_ID,
+        tripleCount: statements.length,
+        ontologyIris: [...ontologyIris],
+        imports: [...imports]
+      }
+    });
+  } catch (error) {
+    await stores.artifacts.deleteProjectArtifact(artifactId).catch(() => false);
+    throw error;
+  }
+
+  dispatchStorageEvent('artifacts-changed', {
+    db: 'OntologyWorkbenchProjects',
+    store: 'artifacts',
+    type: 'put',
+    artifactId
+  });
+  return artifact;
+}
+
 async function getAllTriples() {
   await migrateLegacyAxiolotlDataIfNeeded();
   const stores = await openAxiolotlProjectStores();
   return (await stores.quadRows.listQuadRows({ projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID }))
     .map(quadRowToLegacyTripleRow);
+}
+
+async function getWorkspaceArtifactById(artifactId) {
+  const stores = await openAxiolotlProjectStores();
+  return stores.artifacts.getProjectArtifact(artifactId);
 }
 
 async function getAllGraphNames() {
@@ -520,7 +617,7 @@ function resolveSparqlQueryFormatDetails() {
   return result.value;
 }
 
-function normalizeAxiolotlTripleRow(triple, { migratedFromLegacy = false } = {}) {
+function normalizeAxiolotlTripleRow(triple, { artifactId = null, migratedFromLegacy = false } = {}) {
   const graph = normalizeIriToken(
     typeof triple?.graph === 'string'
       ? triple.graph
@@ -531,6 +628,7 @@ function normalizeAxiolotlTripleRow(triple, { migratedFromLegacy = false } = {})
   return normalizeQuadRow({
     projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
     graphId,
+    artifactId,
     subject: typeof triple?.subject === 'string' ? triple.subject : (triple?.subject?.value ?? triple?.s),
     subjectType: triple?.subjectType ?? triple?.subject?.termType ?? triple?.sType ?? 'NamedNode',
     predicate: typeof triple?.predicate === 'string' ? triple.predicate : (triple?.predicate?.value ?? triple?.p),
@@ -546,6 +644,7 @@ function normalizeAxiolotlTripleRow(triple, { migratedFromLegacy = false } = {})
 
 function quadRowToLegacyTripleRow(row) {
   return {
+    artifactId: row.artifactId || null,
     subject: row.subject,
     subjectType: row.subjectType,
     predicate: row.predicate,
@@ -558,22 +657,23 @@ function quadRowToLegacyTripleRow(row) {
   };
 }
 
-async function storeGraphRecordsForRows(stores, rows, migratedFromLegacy = false) {
+async function storeGraphRecordsForRows(stores, rows, { artifactId = null, migratedFromLegacy = false } = {}) {
   const byGraph = new Map();
   for (const row of rows) {
     const graph = row.graph || '';
     byGraph.set(graph, (byGraph.get(graph) || 0) + 1);
   }
   await Promise.all([...byGraph.entries()].map(([graph, count]) =>
-    stores.graphs.storeGraphRecord(createGraphRecord(graph, count, migratedFromLegacy))
+    stores.graphs.storeGraphRecord(createGraphRecord(graph, count, { artifactId, migratedFromLegacy }))
   ));
 }
 
-function createGraphRecord(graph, quadCount = 0, migratedFromLegacy = false) {
+function createGraphRecord(graph, quadCount = 0, { artifactId = null, migratedFromLegacy = false } = {}) {
   return {
     graphId: createGraphId(graph),
     projectId: DEFAULT_PROJECT_PORTFOLIO_PROJECT_ID,
     graphIri: graph || null,
+    artifactId,
     role: 'loaded',
     label: graph || DEFAULT_GRAPH_LABEL,
     source: { [COMMON_NAMESPACE_IRIS.okea.appId]: AXIOLOTL_APP_ID },
@@ -617,8 +717,10 @@ export {
   importSavedQueriesFromCsv,
   clearSavedQueries,
   initTripleStore,
+  storeOntologyFileInWorkspace,
   storeTriplesInNamedGraph,
   getAllTriples,
+  getWorkspaceArtifactById,
   getAllGraphNames,
   countAllTriples,
   countNamedGraphs,

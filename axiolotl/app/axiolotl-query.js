@@ -34,7 +34,7 @@ import {
   importSavedQueriesFromCsv,
   saveSavedQuery,
   saveSetting,
-  storeTriplesInNamedGraph
+  storeOntologyFileInWorkspace
 } from './indexeddb-triplestore.js';
 import { COMMON_NAMESPACE_IRIS } from '../../packages/namespace-registry/src/index.js';
 import {
@@ -508,6 +508,7 @@ async function stageOntologyFiles(files, suppliesImport = '') {
         id: `staged-ontology-${stagedOntologySequence++}`,
         file,
         graph,
+        text,
         mimeType,
         assignedGraphIri: '',
         suppliesImport,
@@ -653,8 +654,17 @@ async function loadStagedOntologies() {
         ));
         statements = target.statements;
       }
-      await storeTriplesInNamedGraph(statements);
-      loadedFiles.push({ name: item.file.name, tripleCount: statements.length });
+      const artifact = await storeOntologyFileInWorkspace({
+        fileName: item.file.name,
+        mimeType: item.mimeType,
+        text: item.text,
+        lastModified: item.file.lastModified,
+        size: item.file.size,
+        statements,
+        ontologyIris: item.ontologyIris,
+        imports: item.imports
+      });
+      loadedFiles.push({ name: item.file.name, tripleCount: statements.length, artifactId: artifact.artifactId });
     } catch (error) {
       errors.push(`${item.file.name}: ${error.message || error}`);
     }

@@ -10,9 +10,11 @@ import {
   getAllSavedQueries,
   getAllTriples,
   getSetting,
+  getWorkspaceArtifactById,
   resetAxiolotlProjectStorageForTests,
   saveSavedQuery,
   saveSetting,
+  storeOntologyFileInWorkspace,
   storeTriplesInNamedGraph
 } from './indexeddb-triplestore.js';
 
@@ -243,6 +245,45 @@ describe('Axiolotl shared project triplestore', () => {
       graph: 'urn:graph:test'
     }])).resolves.toBe(1);
     await expect(countAllTriples()).resolves.toBe(1);
+  });
+
+  test('registers loaded ontology files as Workspace artifacts linked to materialized rows', async () => {
+    const artifact = await storeOntologyFileInWorkspace({
+      fileName: 'example.ttl',
+      mimeType: 'text/turtle',
+      text: '<https://example.org/s> <https://example.org/p> <https://example.org/o> .',
+      lastModified: 1722513600000,
+      size: 76,
+      ontologyIris: ['https://example.org/ontology'],
+      imports: ['https://example.org/imported'],
+      statements: [{
+        subject: 'https://example.org/s',
+        predicate: 'https://example.org/p',
+        object: 'https://example.org/o',
+        objectType: 'NamedNode',
+        graph: 'https://example.org/graph'
+      }]
+    });
+
+    expect(artifact).toMatchObject({
+      artifactKind: 'ontology-rdf',
+      role: 'loaded',
+      label: 'example.ttl',
+      mediaType: 'text/turtle',
+      summary: {
+        tripleCount: 1,
+        ontologyIris: ['https://example.org/ontology'],
+        imports: ['https://example.org/imported']
+      }
+    });
+
+    await expect(getWorkspaceArtifactById(artifact.artifactId)).resolves.toMatchObject({
+      label: 'example.ttl',
+      payload: expect.stringContaining('https://example.org/s')
+    });
+    await expect(getAllTriples()).resolves.toEqual([
+      expect.objectContaining({ artifactId: artifact.artifactId })
+    ]);
   });
 
   test('migrates legacy triples, settings, and saved queries on first read', async () => {
