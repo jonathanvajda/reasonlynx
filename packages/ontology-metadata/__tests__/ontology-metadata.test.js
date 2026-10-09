@@ -7,6 +7,7 @@ import {
   findMaxOpaqueOntologyIriNumber,
   findNextAvailableOpaqueOntologyIriNumber,
   generateOntologySettings,
+  inspectOntologyDataset,
   normalizeOntologyMetadataRecord,
   ONTOLOGY_METADATA_PROFILE_SETTING_KEY,
   readOntologyMetadataRecordFromQuads,
@@ -141,6 +142,38 @@ describe('ontology-metadata package source', () => {
     ])).toEqual({
       ontologyIri: 'https://example.org/ont',
       importIri: 'https://example.org/ont'
+    });
+  });
+
+  test('inspects ontology declarations, imports, versions, and named graphs', () => {
+    const graph = { termType: 'NamedNode', value: 'https://example.org/graph' };
+    const term = (value) => ({ termType: 'NamedNode', value });
+    const quads = [
+      {
+        subject: term('https://example.org/ont'),
+        predicate: term(COMMON_NAMESPACE_IRIS.rdf.type),
+        object: term(COMMON_NAMESPACE_IRIS.owl.Ontology),
+        graph
+      },
+      {
+        subject: term('https://example.org/ont'),
+        predicate: term(COMMON_NAMESPACE_IRIS.owl.versionIRI),
+        object: term('https://example.org/ont/1'),
+        graph
+      },
+      {
+        subject: term('https://example.org/ont'),
+        predicate: term(COMMON_NAMESPACE_IRIS.owl.imports),
+        object: term('https://example.org/imported'),
+        graph
+      }
+    ];
+
+    expect(inspectOntologyDataset(quads)).toEqual({
+      imports: ['https://example.org/imported'],
+      namedGraphs: ['https://example.org/graph'],
+      ontologyIris: ['https://example.org/ont', 'https://example.org/ont/1'],
+      tripleCount: 3
     });
   });
 });

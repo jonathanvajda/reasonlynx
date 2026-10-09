@@ -1,4 +1,4 @@
-﻿// Dependencies
+// Dependencies
 //   comunica-browser.js
 //     QueryEngine
 //   indexeddb-triplestore.js
@@ -64,7 +64,7 @@ function looksLikeBnodeId(v) {
 function asSubjectTerm(v, type) {
   if ((type === 'NamedNode') && isAbsoluteIri(v)) return $rdf.sym(v);
   if (isAbsoluteIri(v)) return $rdf.sym(v); // fallback if metadata missing
-  // subjects canâ€™t be literals â†’ use bnode if not an absolute IRI
+  // subjects can’t be literals → use bnode if not an absolute IRI
   const id = String(v || '').replace(/^_:/, '').replace(/^_g_/, '');
   return $rdf.blankNode(id || 's');
 }
@@ -368,7 +368,7 @@ async function queryFromNamedGraph(graphIRI, query) {
         data.on('end', resolve);
         data.on('error', reject);
       });
-      // Graph-y results â€” keep old shape (your UI already supports it)
+      // Graph-y results — keep old shape (your UI already supports it)
       return nt.split('\n').filter(Boolean).map(line => ({ nt: { value: line } }));
     }
 
@@ -441,7 +441,7 @@ async function queryAllNamedGraphs(query) {
       }
       // If JSON parsed but isn't results/boolean, fall through to quads
     } catch (_) {
-      // Not JSON / not SELECT-ASK â€” fall through to N-Triples
+      // Not JSON / not SELECT-ASK — fall through to N-Triples
     }
 
     // Fallback: quads (CONSTRUCT/DESCRIBE)
@@ -534,25 +534,6 @@ async function collectStreamText(stream) {
   });
 }
 
-// Execute a SPARQL query on a remote SPARQL endpoint
-async function runQueryOnEndpoint(endpoint, query, authHeaders = {}) {
-  const headers = {
-    'Content-Type': 'application/sparql-query',
-    ...authHeaders,
-  };
-  const response = await fetch(endpoint, { method: 'POST', headers, body: query });
-  if (!response.ok) {
-    const txt = await response.text().catch(()=> '');
-    throw new Error(`Endpoint error ${response.status}: ${txt || response.statusText}`);
-  }
-  const data = await response.json();
-  const vars = data?.head?.vars || [];
-  const rows = data?.results?.bindings || [];
-  return { vars, rows };
-}
-
-
-
 /**
 /**
  * Turn an UPDATE into 0..n CONSTRUCT previews.
@@ -589,45 +570,6 @@ async function flushActiveWorkspace() {
     showToast('Something went wrong while clearing. See console for details.', 'error');
   }
 }
-
-// Row-based uploader: stash each selected file into IndexedDB (skip empty rows)
-async function addFilesToDB(rows, errors, namedGraphError) {
-  for (const row of rows) {
-    const file = row.querySelector('.rdf-file')?.files?.[0];
-    const iriRaw = (row.querySelector('.graph-iri')?.value || '').trim();
-
-    // Skip rows with no file chosen
-    if (!file) continue;
-
-    try {
-      const text = await readFileAsText(file);
-      const detected = getSupportedMimeTypeForFilename(file.name);
-      const mime = detected.ok && detected.value.category === 'rdf' ? detected.value.mimeType : 'text/turtle';
-
-      const g = $rdf.graph();
-      // 4-arg signature; pass null/undefined for default graph when IRI blank
-      await parseIntoNamedGraph(text, g, iriRaw || null, mime);
-
-      // persist rdflib statements to IndexedDB
-      await storeTriplesInNamedGraph(g.statements);
-      if (debuggingConsoleEnabled) {console.info(`[add-to-db] Stored ${g.statements.length} triples into ${iriRaw ? `<${iriRaw}>` : 'default graph'}`);}
-      const label = iriRaw ? `<${iriRaw}>` : 'default graph';
-      showToast(`Loaded ${g.statements.length} triple(s) into ${label}`, 'success');
-    } catch (e) {
-      errors.push(`Failed to parse ${file?.name || '(no file name)'}: ${e.message}`);
-      if (debuggingConsoleEnabled) {console.error(e);}
-      showToast(`Failed to load ${file?.name || '(file)'}: ${e.message}`, 'error');
-    }
-  }
-
-  if (errors.length) {
-    showToast(`Completed with ${errors.length} error(s). See console for details.`, 'error');
-  } else {
-    showToast('All selected files loaded successfully.', 'success');
-  }
-
-  namedGraphError.textContent = errors.join(' | ');
-};
 
 /**
  * Parse RDF text to an rdflib graph.
@@ -805,7 +747,7 @@ async function clearActiveSavedQueries() {
 }
 
 /**
- * Canonical (pre-listed) URL â†’ fetch â†’ parse â†’ stash to default/named.
+ * Canonical (pre-listed) URL → fetch → parse → stash to default/named.
  * Side-effects: fetch network + write to IndexedDB.
  * @param {Object} opt
  * @param {string} opt.url
@@ -826,7 +768,7 @@ async function importCanonical(opt={}) {
 }
 
 /**
- * Local file â†’ read â†’ parse â†’ stash to default/named.
+ * Local file → read → parse → stash to default/named.
  * Side-effects: read file + write to IndexedDB.
  * @param {Object} opt
  * @param {File} opt.file
@@ -882,7 +824,6 @@ async function previewInsertFromUpdate(updateStr, opt={}) {
 
 export {
   clearActiveSavedQueries,
-  addFilesToDB,
   buildQuery,
   clearActiveSettings,
   clearActiveTriples,
@@ -900,7 +841,6 @@ export {
   previewInsertFromUpdate,
   queryAllNamedGraphs,
   queryFromNamedGraph,
-  runQueryOnEndpoint,
   runQueryOnLocalDataset,
   runConstructPreview,
   stashGraphToIndexedDB

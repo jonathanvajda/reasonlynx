@@ -1,3 +1,4 @@
+import { datatypeComparisonExtensions } from './datatype-value-comparison.js';
 // axiolotl-inference.js
 
 // Dependencies: semantic-core.js and shared RDF/namespace utilities.
@@ -14,6 +15,7 @@ import {
   isBlankNodeTerm,
   isAbsoluteIri
 } from '../../packages/ontology-utils/src/index.js';
+import { splitSparqlPrologueFromBody } from '../../packages/sparql-utils/src/index.js';
 import {
   loadGraphFromIndexedDB,
   stashGraphToIndexedDB
@@ -62,6 +64,38 @@ function transitiveClosure(edges) {
     closure.set(child, seenLocal);
   }
   return closure;
+}
+
+const INFERENCE_RULE_ORDER = Object.freeze([
+  'subpropertyof',
+  'equivalentproperty',
+  'inverse',
+  'symmetric',
+  'transitive',
+  'propertychain',
+  'domain',
+  'range',
+  'subclassof',
+  'equivalentclass',
+  'intersectionof',
+  'hasvalue',
+  'hasvalueclass',
+  'allvaluesfrom',
+  'somevaluesfromclass',
+  'functional',
+  'inversefunctional',
+  'sameas',
+]);
+
+function orderInferenceRules(rules) {
+  const selected = new Set(rules);
+  const ordered = INFERENCE_RULE_ORDER.filter(rule => selected.has(rule));
+  for (const rule of rules) {
+    if (!INFERENCE_RULE_ORDER.includes(rule) && !ordered.includes(rule)) {
+      ordered.push(rule);
+    }
+  }
+  return ordered;
 }
 
 /**
@@ -169,8 +203,9 @@ function selectSerializableInferenceQuads(quads, context = 'inference') {
 */
 // axiolotl-inference.js
 async function inferUntilStable(rules) {
+  const orderedRules = orderInferenceRules(rules);
   if (debuggingConsoleEnabled) {
-    console.info('[inferUntilStable] Starting inference over rules:', rules);
+    console.info('[inferUntilStable] Starting inference over rules:', orderedRules);
   }
 
   const { DataFactory, Store } = N3;
@@ -462,8 +497,8 @@ async function inferUntilStable(rules) {
 
   inferenceInfo(`[inferUntilStable] Seed closures added ${seedAdded} triples.`);
 
-  const rulesFiltered = rules.filter(r => r !== 'subclassof' && r !== 'subpropertyof');
-  if (rules.length !== rulesFiltered.length) {
+  const rulesFiltered = orderedRules.filter(r => r !== 'subclassof' && r !== 'subpropertyof');
+  if (orderedRules.length !== rulesFiltered.length) {
     inferenceInfo('[inferUntilStable] SPARQL disabled for subclassof/subpropertyof; using JS closures instead.');
   }
 
@@ -582,45 +617,6 @@ function selectUnseen(quads, seenKeys) {
   }
 
   return { $new: uniq, batchUnique: batchSet.size };
-}
-
-async function insertOverlayIntoEndpoint(overlayGraph, endpointUrl, { mode, graphIRI, authHeaders = {} }) {
-  if (!overlayGraph) throw new Error('Nothing to insert. Run inference first.');
-  if (!endpointUrl) throw new Error('Missing endpoint URL.');
-
-  const { Writer, DataFactory } = N3;
-  const { quad, defaultGraph } = DataFactory;
-
-  // Flatten to triples for INSERT DATA; target graph is controlled by mode/graphIRI.
-  const flattened = overlayGraph
-    .getQuads(null, null, null, null)
-    .map(q => quad(q.subject, q.predicate, q.object, defaultGraph()));
-
-  const nt = await new Promise((resolve, reject) => {
-    const writer = new Writer({ format: 'N-Triples' });
-    writer.addQuads(flattened);
-    writer.end((error, result) => {
-      if (error) reject(error);
-      else resolve((result || '').trim());
-    });
-  });
-
-  const open = (mode === 'named' && graphIRI) ? `GRAPH <${graphIRI}> {` : '';
-  const close = (mode === 'named' && graphIRI) ? `}` : '';
-  const update = `INSERT DATA { ${open}\n${nt}\n${close} }`;
-
-  const res = await fetch(endpointUrl, {
-    method: 'POST',
-    headers: { 'content-type': 'application/sparql-update', ...authHeaders },
-    body: update
-  });
-
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error(`Endpoint responded ${res.status}: ${t || res.statusText}`);
-  }
-
-  return true;
 }
 
 /**
@@ -745,9 +741,218 @@ function getConstructQueryForRule(rule) {
         }
       }
     `,
+
+    equivalentclass: `
+      CONSTRUCT { ?x rdf:type ?equivalentClass }
+      WHERE {
+        ?class owl:equivalentClass ?equivalentClass .
+        ?x rdf:type ?class .
+        FILTER(?class != ?equivalentClass)
+        FILTER(isIRI(?equivalentClass))
+        FILTER NOT EXISTS {
+          { ?x rdf:type ?equivalentClass }
+          UNION
+          { GRAPH ?g { ?x rdf:type ?equivalentClass } }
+        }
+      }
+    `,
+
+    equivalentproperty: `
+      CONSTRUCT { ?x ?equivalentProperty ?y }
+      WHERE {
+        ?property owl:equivalentProperty ?equivalentProperty .
+        ?x ?property ?y .
+        FILTER(?property != ?equivalentProperty)
+        FILTER(isIRI(?equivalentProperty))
+        FILTER NOT EXISTS {
+          { ?x ?equivalentProperty ?y }
+          UNION
+          { GRAPH ?g { ?x ?equivalentProperty ?y } }
+        }
+      }
+    `,
+
+    sameas: `
+      CONSTRUCT { ?S ?P ?O }
+      WHERE {
+        {
+          ?x owl:sameAs ?y .
+          BIND(?y AS ?S) BIND(owl:sameAs AS ?P) BIND(?x AS ?O)
+        }
+        UNION
+        {
+          ?x owl:sameAs ?y .
+          ?y owl:sameAs ?z .
+          BIND(?x AS ?S) BIND(owl:sameAs AS ?P) BIND(?z AS ?O)
+        }
+        UNION
+        {
+          ?x owl:sameAs ?y .
+          ?x ?p ?o .
+          BIND(?y AS ?S) BIND(?p AS ?P) BIND(?o AS ?O)
+        }
+        UNION
+        {
+          ?x owl:sameAs ?y .
+          ?s ?p ?x .
+          BIND(?s AS ?S) BIND(?p AS ?P) BIND(?y AS ?O)
+        }
+        FILTER NOT EXISTS {
+          { ?S ?P ?O }
+          UNION
+          { GRAPH ?g { ?S ?P ?O } }
+        }
+      }
+    `,
+
+    functional: `
+      CONSTRUCT { ?v1 owl:sameAs ?v2 }
+      WHERE {
+        ?p rdf:type owl:FunctionalProperty .
+        ?x ?p ?v1 .
+        ?x ?p ?v2 .
+        FILTER(?v1 != ?v2)
+        FILTER(!isLiteral(?v1) && !isLiteral(?v2))
+        FILTER NOT EXISTS {
+          { ?v1 owl:sameAs ?v2 }
+          UNION
+          { GRAPH ?g { ?v1 owl:sameAs ?v2 } }
+        }
+      }
+    `,
+
+    inversefunctional: `
+      CONSTRUCT { ?x1 owl:sameAs ?x2 }
+      WHERE {
+        ?p rdf:type owl:InverseFunctionalProperty .
+        ?x1 ?p ?y .
+        ?x2 ?p ?y .
+        FILTER(?x1 != ?x2)
+        FILTER NOT EXISTS {
+          { ?x1 owl:sameAs ?x2 }
+          UNION
+          { GRAPH ?g { ?x1 owl:sameAs ?x2 } }
+        }
+      }
+    `,
+
+    hasvalue: `
+      CONSTRUCT { ?x ?p ?v }
+      WHERE {
+        ?class rdfs:subClassOf ?restriction .
+        ?restriction rdf:type owl:Restriction ;
+                     owl:onProperty ?p ;
+                     owl:hasValue ?v .
+        ?x rdf:type ?class .
+        FILTER NOT EXISTS {
+          { ?x ?p ?v }
+          UNION
+          { GRAPH ?g { ?x ?p ?v } }
+        }
+      }
+    `,
+
+    hasvalueclass: `
+      CONSTRUCT { ?x rdf:type ?class }
+      WHERE {
+        ?class (owl:equivalentClass|^owl:equivalentClass) ?restriction .
+        FILTER(isIRI(?class))
+        ?restriction rdf:type owl:Restriction ;
+                     owl:onProperty ?p ;
+                     owl:hasValue ?v .
+        ?x ?p ?v .
+        FILTER NOT EXISTS {
+          { ?x rdf:type ?class }
+          UNION
+          { GRAPH ?g { ?x rdf:type ?class } }
+        }
+      }
+    `,
+
+    allvaluesfrom: `
+      CONSTRUCT { ?y rdf:type ?filler }
+      WHERE {
+        ?class rdfs:subClassOf ?restriction .
+        ?restriction rdf:type owl:Restriction ;
+                     owl:onProperty ?p ;
+                     owl:allValuesFrom ?filler .
+        ?x rdf:type ?class .
+        ?x ?p ?y .
+        FILTER(isIRI(?filler))
+        FILTER NOT EXISTS {
+          { ?y rdf:type ?filler }
+          UNION
+          { GRAPH ?g { ?y rdf:type ?filler } }
+        }
+      }
+    `,
+
+    somevaluesfromclass: `
+      CONSTRUCT { ?x rdf:type ?class }
+      WHERE {
+        ?class (owl:equivalentClass|^owl:equivalentClass) ?restriction .
+        FILTER(isIRI(?class))
+        ?restriction rdf:type owl:Restriction ;
+                     owl:onProperty ?p ;
+                     owl:someValuesFrom ?filler .
+        ?x ?p ?y .
+        ?y rdf:type ?filler .
+        FILTER NOT EXISTS {
+          { ?x rdf:type ?class }
+          UNION
+          { GRAPH ?g { ?x rdf:type ?class } }
+        }
+      }
+    `,
+
+    intersectionof: `
+      CONSTRUCT { ?x rdf:type ?class }
+      WHERE {
+        ?class owl:intersectionOf ?list .
+        ?list rdf:rest*/rdf:first ?member .
+        ?x rdf:type ?member .
+        FILTER NOT EXISTS {
+          ?list rdf:rest*/rdf:first ?required .
+          FILTER NOT EXISTS {
+            { ?x rdf:type ?required }
+            UNION
+            { GRAPH ?g1 { ?x rdf:type ?required } }
+          }
+        }
+        FILTER NOT EXISTS {
+          { ?x rdf:type ?class }
+          UNION
+          { GRAPH ?g2 { ?x rdf:type ?class } }
+        }
+      }
+    `,
+
+    propertychain: `
+      CONSTRUCT { ?x ?superProperty ?z }
+      WHERE {
+        ?superProperty owl:propertyChainAxiom ?list .
+        ?list rdf:first ?p1 ;
+              rdf:rest/rdf:first ?p2 ;
+              rdf:rest/rdf:rest rdf:nil .
+        ?x ?p1 ?y .
+        ?y ?p2 ?z .
+        FILTER NOT EXISTS {
+          { ?x ?superProperty ?z }
+          UNION
+          { GRAPH ?g { ?x ?superProperty ?z } }
+        }
+      }
+    `,
   };
 
-  return prefixDeclarations + (RULES[rule] || '');
+  if (!RULES[rule]) {
+    if (debuggingConsoleEnabled) {
+      console.warn(`[getConstructQueryForRule] Unknown inference rule: ${rule}`);
+    }
+    return '';
+  }
+
+  return prefixDeclarations + RULES[rule];
 }
 
 /**
@@ -757,9 +962,55 @@ function getConstructQueryForRule(rule) {
  * @returns {Promise<Array<any>>}
  */
 async function runRuleOnce(rule, rdfjsStore) {
+  // Equality substitutes existing terms. Going through CONSTRUCT can rescope
+  // source blank nodes, turning list cells into fresh nodes on every pass.
+  if (rule === 'sameas') return materializeSameAs(rdfjsStore);
   const q = getConstructQueryForRule(rule);
   if (!q) return [];
-  return await applyConstructWithComunica(q, rdfjsStore);
+
+  if (!isConstructQueryText(q)) {
+    inferenceWarn(`[runRuleOnce] Skipping "${rule}" because it did not generate a CONSTRUCT query.`);
+    if (debuggingConsoleEnabled) {
+      console.warn('[runRuleOnce] Non-CONSTRUCT query preview:', q.slice(0, 300));
+    }
+    return [];
+  }
+
+  try {
+    return await applyConstructWithComunica(q, rdfjsStore);
+  } catch (error) {
+    inferenceError(`[runRuleOnce] Rule "${rule}" failed: ${error.message || error}`);
+    if (debuggingConsoleEnabled) {
+      console.error(`[runRuleOnce] Rule "${rule}" query preview:`, q.slice(0, 600), error);
+    }
+    return [];
+  }
+}
+
+function materializeSameAs(store) {
+  const { namedNode, quad, defaultGraph } = N3.DataFactory;
+  const sameAs = namedNode(COMMON_NAMESPACE_IRIS.owl.sameAs);
+  const additions = new Map();
+  const add = (subject, predicate, object) => {
+    const candidate = quad(subject, predicate, object, defaultGraph());
+    if (!isSerializableInferenceQuad(candidate)) return;
+    if (store.countQuads(subject, predicate, object, null)) return;
+    additions.set(quadKey(candidate), candidate);
+  };
+
+  // Match the existing rule's default-graph input scope; retain the exact RDF/JS
+  // terms, including distinct blank-node identities, in every substitution.
+  for (const { subject: x, object: y } of store.getQuads(null, sameAs, null, defaultGraph())) {
+    add(y, sameAs, x);
+    for (const { object: z } of store.getQuads(y, sameAs, null, defaultGraph())) add(x, sameAs, z);
+    for (const { predicate, object } of store.getQuads(x, null, null, defaultGraph())) add(y, predicate, object);
+    for (const { subject, predicate } of store.getQuads(null, null, x, defaultGraph())) add(subject, predicate, y);
+  }
+  return [...additions.values()];
+}
+
+function isConstructQueryText(queryText) {
+  return /^CONSTRUCT\b/i.test(splitSparqlPrologueFromBody(queryText).bodyText);
 }
 
 /**
@@ -773,6 +1024,7 @@ async function applyConstructWithComunica(constructQuery, rdfjsStore) {
     sources: [{ type: 'rdfjsSource', value: rdfjsStore }],
     baseIRI: 'http://example.org/',
     distinctConstruct: true,
+    extensionFunctions: datatypeComparisonExtensions(),
   });
 
   const quads = await new Promise((resolve, reject) => {
@@ -792,7 +1044,6 @@ export {
   getConstructQueryForRule,
   getSelectedRulesFromCheckboxes,
   inferUntilStable,
-  insertOverlayIntoEndpoint,
   mapFromQuads,
   runInferenceOverlay,
   runRuleOnce,

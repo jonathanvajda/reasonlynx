@@ -327,8 +327,216 @@ button.prefix-button {
   margin: 0.1em 0.1em;
 }
 
-.file-upload-row input[type="file"] {
-  width: 45%;
+.ontology-drop-zone {
+  display: grid;
+  place-items: center;
+  gap: 0.35rem;
+  min-height: 8rem;
+  padding: 1.25rem;
+  border: 2px dashed var(--ont-border);
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--app-control-bg) 75%, transparent);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.ontology-drop-zone:hover,
+.ontology-drop-zone:focus-visible,
+.ontology-drop-zone.is-dragging {
+  border-color: var(--ont-link-hover);
+  background: color-mix(in srgb, var(--ont-focus) 10%, var(--app-control-bg));
+}
+
+.ontology-drop-zone.is-dragging {
+  transform: scale(1.01);
+}
+
+.ontology-drop-zone span,
+.ontology-drop-zone small,
+.staged-ontology-muted {
+  color: var(--ont-muted);
+}
+
+.staged-ontology-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.staged-ontology-empty {
+  padding: 1rem;
+  border: 1px solid var(--ont-border);
+  border-radius: 0.45rem;
+  color: var(--ont-muted);
+  text-align: center;
+}
+
+.staged-ontology-card {
+  padding: 16px;
+  border: 1px solid var(--ont-border);
+  border-radius: 0.55rem;
+  background: var(--app-control-bg);
+  font-family: var(--ont-font-body);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.staged-ontology-card > header,
+.staged-import-row,
+.staged-ontology-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.staged-ontology-card h4,
+.staged-ontology-card h5 {
+  margin: 0;
+  font-family: var(--ont-font-body);
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.staged-ontology-card h4 {
+  font-size: 21px;
+  overflow-wrap: anywhere;
+}
+
+.staged-ontology-card h5 {
+  font-size: 17px;
+}
+
+.staged-ontology-metadata,
+.staged-graph-summary,
+.staged-graph-assignment,
+.staged-imports {
+  margin-top: 0.9rem;
+}
+
+.staged-ontology-card code {
+  min-width: 0;
+  padding: 0.16rem 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--ont-border) 70%, transparent);
+  border-radius: 0.25rem;
+  background: color-mix(in srgb, var(--ont-panel-bg) 80%, transparent);
+  font-size: 15px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.staged-detail-row,
+.staged-graph-assignment {
+  display: grid;
+  grid-template-columns: minmax(8.5rem, 18%) minmax(0, 1fr);
+  align-items: start;
+  gap: 0.5rem 0.85rem;
+}
+
+.staged-graph-summary code {
+  display: block;
+}
+
+.staged-graph-assignment {
+  height: auto;
+}
+
+.staged-graph-assignment > span {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.staged-graph-assignment small {
+  color: var(--ont-muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.staged-graph-assignment input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 7px 9px;
+  font-size: 16px;
+}
+
+.staged-imports {
+  display: grid;
+  gap: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--ont-border);
+}
+
+.staged-import-row {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0;
+}
+
+.staged-import-state {
+  font-weight: 700;
+  text-align: center;
+}
+
+.staged-import-detail {
+  display: grid;
+  grid-template-columns: minmax(12rem, max-content) minmax(10rem, 1fr);
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  min-width: 0;
+}
+
+.staged-import-detail .staged-ontology-muted {
+  min-width: 0;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.staged-import-row button,
+.staged-ontology-card > header button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 7px 12px;
+  font-size: 15px;
+}
+
+.staged-ontology-actions {
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.staged-ontology-error {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--ont-danger, #b42318);
+}
+
+@media (max-width: 1100px) {
+  .staged-import-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .staged-detail-row,
+  .staged-graph-assignment {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .staged-import-row {
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+  }
+
+  .staged-import-row button {
+    grid-column: 2;
+    justify-self: start;
+  }
 }
 
 .workspace-export-panel {
@@ -371,10 +579,13 @@ button.prefix-button {
   gap: 1em;
   flex-wrap: wrap;
   margin-bottom: 1em;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
 }
 
 #rules label {
-  font-size: 1em;
+  font-size: 0.95em;
   color: var(--ont-text);
   background: var(--app-control-bg);
   border-radius: 4px;
@@ -384,8 +595,96 @@ button.prefix-button {
   transition: background-color 0.2s, border-color 0.2s;
 }
 
+#inference-left-sidebar h3 {
+  font-size: 1.7rem;
+  margin-top: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+
+#inference-left-sidebar select {
+  width: calc(100% - 0.5rem);
+  max-width: 18rem;
+  margin-left: 0;
+  margin-bottom: 0.35rem;
+}
+
 #rules label:hover {
   background: var(--app-control-hover);
+}
+
+#rules label.is-disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+#consistency-rule-options {
+  margin-top: 0.75rem;
+}
+
+#consistency-rule-list label {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  font-size: 0.875em;
+  line-height: 1.2;
+  color: var(--ont-text);
+  background: var(--app-control-bg);
+  border-radius: 4px;
+  padding: 3px 8px;
+  border: 1px solid color-mix(in srgb, var(--ont-border) 75%, var(--ont-accent-soft));
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+#consistency-rule-list li {
+  margin-bottom: 4px;
+}
+
+#consistency-rule-list input[type="checkbox"] {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+#consistency-rule-list label:hover {
+  background: var(--app-control-hover);
+}
+
+#consistency-rule-list label.is-disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.sidebar-note {
+  font-size: 1em;
+  color: var(--ont-muted);
+  line-height: 1.35;
+  margin: 0.45rem 0;
+}
+
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-left: 0.25rem;
+  border: 1px solid var(--app-control-border);
+  border-radius: 50%;
+  color: var(--ont-text);
+  background: var(--app-control-bg);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: help;
+}
+
+.help-icon:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ont-focus) 35%, transparent);
 }
 
 
@@ -455,7 +754,7 @@ button.prefix-button {
 
 /* ---------- 10) Toasts ---------- */
 
-#toast-container {
+body #toast-container {
   position: fixed;
   right: 16px;
   bottom: 16px;
@@ -463,17 +762,21 @@ button.prefix-button {
   flex-direction: column;
   gap: 8px;
   z-index: 9999;
+  width: auto;
+  max-width: min(520px, calc(100vw - 32px));
 }
 
-.toast {
-  min-width: 260px;
-  max-width: 420px;
+#toast-container > .toast {
+  width: auto;
+  min-width: min(320px, calc(100vw - 32px));
+  max-width: min(520px, calc(100vw - 32px));
   padding: 10px 12px;
   border-radius: 8px;
   box-shadow: var(--app-shadow-lg);
   background: var(--app-toast-bg);
   color: var(--app-toast-text);
-  font: 14px/1.35 var(--ont-font-body);
+  font: 15px/1.4 var(--ont-font-body);
+  white-space: normal;
   display: flex;
   align-items: flex-start;
   gap: 10px;
