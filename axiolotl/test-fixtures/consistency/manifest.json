@@ -1,0 +1,1341 @@
+{
+  "schemaVersion": 1,
+  "scope": "Current INCONSISTENCY_QUERIES registry; general satisfiability and unimplemented roadmap checks excluded.",
+  "defaultGraphScope": "default",
+  "fixtures": [
+    {
+      "id": "disjointWithTypeOverlap/positive",
+      "checkId": "disjointWithTypeOverlap",
+      "variant": "positive",
+      "path": "disjointWithTypeOverlap/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "disjointWithTypeOverlap/control",
+      "checkId": "disjointWithTypeOverlap",
+      "variant": "control",
+      "path": "disjointWithTypeOverlap/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "disjointWithTypeOverlap/after-materialization",
+      "checkId": "disjointWithTypeOverlap",
+      "variant": "after-materialization",
+      "path": "disjointWithTypeOverlap/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDisjointClassesTypeOverlap/positive",
+      "checkId": "allDisjointClassesTypeOverlap",
+      "variant": "positive",
+      "path": "allDisjointClassesTypeOverlap/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDisjointClassesTypeOverlap/control",
+      "checkId": "allDisjointClassesTypeOverlap",
+      "variant": "control",
+      "path": "allDisjointClassesTypeOverlap/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDisjointClassesTypeOverlap/after-materialization",
+      "checkId": "allDisjointClassesTypeOverlap",
+      "variant": "after-materialization",
+      "path": "allDisjointClassesTypeOverlap/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "complementOfTypeOverlap/positive",
+      "checkId": "complementOfTypeOverlap",
+      "variant": "positive",
+      "path": "complementOfTypeOverlap/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "complementOfTypeOverlap/control",
+      "checkId": "complementOfTypeOverlap",
+      "variant": "control",
+      "path": "complementOfTypeOverlap/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "complementOfTypeOverlap/after-materialization",
+      "checkId": "complementOfTypeOverlap",
+      "variant": "after-materialization",
+      "path": "complementOfTypeOverlap/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/positive",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "positive",
+      "path": "datatypeFunctionalPropertyConflict/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/control",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "control",
+      "path": "datatypeFunctionalPropertyConflict/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subpropertyof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/after-materialization",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "after-materialization",
+      "path": "datatypeFunctionalPropertyConflict/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "subpropertyof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/positive",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "positive",
+      "path": "objectFunctionalPropertyDifferentFromConflict/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/control",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "control",
+      "path": "objectFunctionalPropertyDifferentFromConflict/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subpropertyof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/after-materialization",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "after-materialization",
+      "path": "objectFunctionalPropertyDifferentFromConflict/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "subpropertyof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "negativePropertyAssertionConflict/positive",
+      "checkId": "negativePropertyAssertionConflict",
+      "variant": "positive",
+      "path": "negativePropertyAssertionConflict/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "negativePropertyAssertionConflict/control",
+      "checkId": "negativePropertyAssertionConflict",
+      "variant": "control",
+      "path": "negativePropertyAssertionConflict/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subpropertyof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "negativePropertyAssertionConflict/after-materialization",
+      "checkId": "negativePropertyAssertionConflict",
+      "variant": "after-materialization",
+      "path": "negativePropertyAssertionConflict/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "subpropertyof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDifferentSameAsConflict/positive",
+      "checkId": "allDifferentSameAsConflict",
+      "variant": "positive",
+      "path": "allDifferentSameAsConflict/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDifferentSameAsConflict/control",
+      "checkId": "allDifferentSameAsConflict",
+      "variant": "control",
+      "path": "allDifferentSameAsConflict/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "functional"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDifferentSameAsConflict/after-materialization",
+      "checkId": "allDifferentSameAsConflict",
+      "variant": "after-materialization",
+      "path": "allDifferentSameAsConflict/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "functional"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDisjointPropertiesSharedPair/positive",
+      "checkId": "allDisjointPropertiesSharedPair",
+      "variant": "positive",
+      "path": "allDisjointPropertiesSharedPair/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDisjointPropertiesSharedPair/control",
+      "checkId": "allDisjointPropertiesSharedPair",
+      "variant": "control",
+      "path": "allDisjointPropertiesSharedPair/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subpropertyof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allDisjointPropertiesSharedPair/after-materialization",
+      "checkId": "allDisjointPropertiesSharedPair",
+      "variant": "after-materialization",
+      "path": "allDisjointPropertiesSharedPair/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "subpropertyof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "disjointUnionMissingMemberHeuristic/positive",
+      "checkId": "disjointUnionMissingMemberHeuristic",
+      "variant": "positive",
+      "path": "disjointUnionMissingMemberHeuristic/positive.ttl",
+      "findingKind": "warning",
+      "ontologyInconsistent": false,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "A missing-type warning is not an OWL contradiction."
+    },
+    {
+      "id": "disjointUnionMissingMemberHeuristic/control",
+      "checkId": "disjointUnionMissingMemberHeuristic",
+      "variant": "control",
+      "path": "disjointUnionMissingMemberHeuristic/control.ttl",
+      "findingKind": "warning",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": "A missing-type warning is not an OWL contradiction."
+    },
+    {
+      "id": "disjointUnionMissingMemberHeuristic/after-materialization",
+      "checkId": "disjointUnionMissingMemberHeuristic",
+      "variant": "after-materialization",
+      "path": "disjointUnionMissingMemberHeuristic/after-materialization.ttl",
+      "findingKind": "warning",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "A missing-type warning is not an OWL contradiction."
+    },
+    {
+      "id": "allValuesFromMissingTypeHeuristic/positive",
+      "checkId": "allValuesFromMissingTypeHeuristic",
+      "variant": "positive",
+      "path": "allValuesFromMissingTypeHeuristic/positive.ttl",
+      "findingKind": "warning",
+      "ontologyInconsistent": false,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "A missing-type warning is not an OWL contradiction."
+    },
+    {
+      "id": "allValuesFromMissingTypeHeuristic/control",
+      "checkId": "allValuesFromMissingTypeHeuristic",
+      "variant": "control",
+      "path": "allValuesFromMissingTypeHeuristic/control.ttl",
+      "findingKind": "warning",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": "A missing-type warning is not an OWL contradiction."
+    },
+    {
+      "id": "allValuesFromMissingTypeHeuristic/after-materialization",
+      "checkId": "allValuesFromMissingTypeHeuristic",
+      "variant": "after-materialization",
+      "path": "allValuesFromMissingTypeHeuristic/after-materialization.ttl",
+      "findingKind": "warning",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "A missing-type warning is not an OWL contradiction."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/positive",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "positive",
+      "path": "singlePropertyHasKeyDifferentFromConflict/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/control",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "control",
+      "path": "singlePropertyHasKeyDifferentFromConflict/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/after-materialization",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "after-materialization",
+      "path": "singlePropertyHasKeyDifferentFromConflict/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "subclassof"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "allValuesFromMissingTypeHeuristic/warning-resolved",
+      "checkId": "allValuesFromMissingTypeHeuristic",
+      "variant": "warning-resolved",
+      "path": "allValuesFromMissingTypeHeuristic/warning-resolved.ttl",
+      "findingKind": "warning",
+      "ontologyInconsistent": false,
+      "materializationRules": [
+        "allvaluesfrom"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": "allValuesFrom derives the missing filler type; no contradiction is present."
+    },
+    {
+      "id": "disjointWithTypeOverlap/after-domain",
+      "checkId": "disjointWithTypeOverlap",
+      "variant": "after-domain",
+      "path": "disjointWithTypeOverlap/after-domain.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "domain"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "disjointWithTypeOverlap/after-range",
+      "checkId": "disjointWithTypeOverlap",
+      "variant": "after-range",
+      "path": "disjointWithTypeOverlap/after-range.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "range"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": ""
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/reverse-inequality",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "reverse-inequality",
+      "path": "objectFunctionalPropertyDifferentFromConflict/reverse-inequality.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "Direct check uses equality paths; does not require materialization."
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/all-different",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "all-different",
+      "path": "objectFunctionalPropertyDifferentFromConflict/all-different.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "Direct check uses equality paths; does not require materialization."
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/aliased-inequality",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "aliased-inequality",
+      "path": "objectFunctionalPropertyDifferentFromConflict/aliased-inequality.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "Direct check uses equality paths; does not require materialization."
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/aliased-all-different",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "aliased-all-different",
+      "path": "objectFunctionalPropertyDifferentFromConflict/aliased-all-different.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "Direct check uses equality paths; does not require materialization."
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/all-different-control",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "all-different-control",
+      "path": "objectFunctionalPropertyDifferentFromConflict/all-different-control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": "Direct check uses equality paths; does not require materialization."
+    },
+    {
+      "id": "objectFunctionalPropertyDifferentFromConflict/same-as-control",
+      "checkId": "objectFunctionalPropertyDifferentFromConflict",
+      "variant": "same-as-control",
+      "path": "objectFunctionalPropertyDifferentFromConflict/same-as-control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": "Direct check uses equality paths; does not require materialization."
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/string-integer-conflict",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "string-integer-conflict",
+      "path": "datatypeFunctionalPropertyConflict/string-integer-conflict.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/integer-lexical-control",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "integer-lexical-control",
+      "path": "datatypeFunctionalPropertyConflict/integer-lexical-control.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/integer-decimal-control",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "integer-decimal-control",
+      "path": "datatypeFunctionalPropertyConflict/integer-decimal-control.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/large-integer-conflict",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "large-integer-conflict",
+      "path": "datatypeFunctionalPropertyConflict/large-integer-conflict.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/boolean-lexical-control",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "boolean-lexical-control",
+      "path": "datatypeFunctionalPropertyConflict/boolean-lexical-control.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/unsupported-float",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "unsupported-float",
+      "path": "datatypeFunctionalPropertyConflict/unsupported-float.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": true
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": true
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "datatypeFunctionalPropertyConflict/invalid-integer",
+      "checkId": "datatypeFunctionalPropertyConflict",
+      "variant": "invalid-integer",
+      "path": "datatypeFunctionalPropertyConflict/invalid-integer.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": true
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": true
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/numeric-value-collision",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "numeric-value-collision",
+      "path": "singlePropertyHasKeyDifferentFromConflict/numeric-value-collision.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/mixed-datatype-control",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "mixed-datatype-control",
+      "path": "singlePropertyHasKeyDifferentFromConflict/mixed-datatype-control.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/anonymous-individual-control",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "anonymous-individual-control",
+      "path": "singlePropertyHasKeyDifferentFromConflict/anonymous-individual-control.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/anonymous-object-value-control",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "anonymous-object-value-control",
+      "path": "singlePropertyHasKeyDifferentFromConflict/anonymous-object-value-control.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/object-equality-collision",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "object-equality-collision",
+      "path": "singlePropertyHasKeyDifferentFromConflict/object-equality-collision.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/all-different-collision",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "all-different-collision",
+      "path": "singlePropertyHasKeyDifferentFromConflict/all-different-collision.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/reverse-inequality-collision",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "reverse-inequality-collision",
+      "path": "singlePropertyHasKeyDifferentFromConflict/reverse-inequality-collision.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true,
+          "coverageNotice": false
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "singlePropertyHasKeyDifferentFromConflict/unsupported-key-value",
+      "checkId": "singlePropertyHasKeyDifferentFromConflict",
+      "variant": "unsupported-key-value",
+      "path": "singlePropertyHasKeyDifferentFromConflict/unsupported-key-value.ttl",
+      "findingKind": "contradiction",
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": true
+        },
+        "afterMaterialization": {
+          "targetFinding": false,
+          "coverageNotice": true
+        }
+      },
+      "notes": "Bounded datatype/key regression. Unsupported comparisons are not contradiction findings."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/positive",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "positive",
+      "path": "sameAsKnownDifferentConflict/positive.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/reverse-different-from",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "reverse-different-from",
+      "path": "sameAsKnownDifferentConflict/reverse-different-from.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/reverse-same-as",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "reverse-same-as",
+      "path": "sameAsKnownDifferentConflict/reverse-same-as.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/aliased-inequality",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "aliased-inequality",
+      "path": "sameAsKnownDifferentConflict/aliased-inequality.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/all-different",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "all-different",
+      "path": "sameAsKnownDifferentConflict/all-different.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/aliased-all-different",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "aliased-all-different",
+      "path": "sameAsKnownDifferentConflict/aliased-all-different.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/control",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "control",
+      "path": "sameAsKnownDifferentConflict/control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/equality-control",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "equality-control",
+      "path": "sameAsKnownDifferentConflict/equality-control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/unrelated-all-different-control",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "unrelated-all-different-control",
+      "path": "sameAsKnownDifferentConflict/unrelated-all-different-control.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": false,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": false
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/self-inequality",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "self-inequality",
+      "path": "sameAsKnownDifferentConflict/self-inequality.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": true
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/after-materialization",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "after-materialization",
+      "path": "sameAsKnownDifferentConflict/after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "functional",
+        "sameas"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/after-inverse-functional",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "after-inverse-functional",
+      "path": "sameAsKnownDifferentConflict/after-inverse-functional.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "inversefunctional",
+        "sameas"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    },
+    {
+      "id": "sameAsKnownDifferentConflict/all-different-after-materialization",
+      "checkId": "sameAsKnownDifferentConflict",
+      "variant": "all-different-after-materialization",
+      "path": "sameAsKnownDifferentConflict/all-different-after-materialization.ttl",
+      "findingKind": "contradiction",
+      "ontologyInconsistent": true,
+      "materializationRules": [
+        "functional",
+        "sameas"
+      ],
+      "expected": {
+        "beforeMaterialization": {
+          "targetFinding": false
+        },
+        "afterMaterialization": {
+          "targetFinding": true
+        }
+      },
+      "notes": "General equality versus known inequality; no unique-name assumption."
+    }
+  ]
+}
