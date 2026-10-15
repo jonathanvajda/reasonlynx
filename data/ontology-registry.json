@@ -83,6 +83,11 @@
     "file": "./ontologies/foaf-20140114.rdf"
   },
   {
+    "iri": "http://www.w3.org/2006/vcard/ns",
+    "ontology_level": "domain",
+    "file": "./ontologies/vcard.ttl"
+  },
+  {
     "iri": "https://github.com/jonathanvajda/cco-d-acts",
     "ontology_level": "dom",
     "git_repo_url": "https://github.com/jonathanvajda/cco-d-acts",

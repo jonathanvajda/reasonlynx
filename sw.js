@@ -4,7 +4,7 @@
    - graph.jsonld: stale-while-revalidate
 */
 
-const SW_VERSION = 'reasonlynx-monorepo-v30';
+const SW_VERSION = 'reasonlynx-monorepo-v31';
 const CACHE_SHELL = `ontoeagle-shell-${SW_VERSION}`;
 const CACHE_DATA = `ontoeagle-data-${SW_VERSION}`;
 
@@ -217,21 +217,6 @@ const SHELL_ASSETS = [
   './axiolotl/images/axiolotl_raw-5.png',
   './axiolotl/images/axiolotl_raw-6-white.png',
   './axiolotl/index.html',
-  './axiolotl/ontology-files/AgentOntology.ttl',
-  './axiolotl/ontology-files/InformationEntityOntology.ttl',
-  './axiolotl/ontology-files/bfo-core.ttl',
-  './axiolotl/ontology-files/dcat3.ttl',
-  './axiolotl/ontology-files/foaf-20140114.rdf',
-  './axiolotl/ontology-files/geojson.rdf',
-  './axiolotl/ontology-files/ingest.txt',
-  './axiolotl/ontology-files/iri-mapping-v2.0.csv',
-  './axiolotl/ontology-files/omo.owl',
-  './axiolotl/ontology-files/ontology-list.json',
-  './axiolotl/ontology-files/owl.ttl',
-  './axiolotl/ontology-files/rdf-schema.ttl',
-  './axiolotl/ontology-files/rdf-syntax.ttl',
-  './axiolotl/ontology-files/skos.rdf',
-  './axiolotl/ontology-files/vcard',
   './axiolotl/query-pipelines/example-workflow.json',
   './axiolotl/query-pipelines/pipelines.manifest.json',
   './axiolotl/sparql-queries/all-triples-from-default-and-named-graphs.rq',
