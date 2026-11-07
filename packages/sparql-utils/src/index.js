@@ -1,3 +1,6 @@
+export { extractLibraryQueries, levenshtein, matchText, queryResourceIris, resourceMention,
+  ANNOTATION_PREDICATES, ontologyTerms, searchQueryLibrary } from './query-library.js';
+
 export {
   extractSparqlPrologueDeclarations,
   formatSparqlPrefixDeclarations,

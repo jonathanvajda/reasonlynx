@@ -149,3 +149,39 @@
   outline: 2px solid var(--ont-focus, #2563eb);
   outline-offset: 2px;
 }
+
+/* Editor and diagram above a wider library workspace. */
+.sviz-main { padding-inline: 1rem; }
+.sviz-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.sviz-layout::after { display: none; }
+.sviz-layout > .sviz-panel { width: auto; min-width: 0; margin: 0; float: none; box-sizing: border-box; }
+.sviz-library-layout { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(0, 3fr); gap: 1rem; margin-top: 1rem; align-items: start; }
+.sviz-library-layout[hidden] { display: none; }
+.sviz-library-layout > .sviz-panel { min-width: 0; box-sizing: border-box; }
+.sviz-diagram { max-width: none; }
+.sviz-library-toolbar { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-bottom: .8rem; }
+#queryLibrary h2 { font-size: 2rem; }
+#queryLibrary input[type=search], #queryLibrary select { width: 100%; }
+#queryLibrary input[type=file] { width: 100%; font-size: 1.2rem; }
+#queryLibrary details { margin-block: .8rem; }
+#queryLibrary summary { cursor: pointer; }
+#queryLibrary button { height: auto; white-space: normal; line-height: 1.5; padding: .6rem 1rem; }
+#libraryResults { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: 1rem; align-items: start; padding: .2rem; }
+.sviz-query-card { border: 1px solid var(--ont-border, #888); border-radius: 8px; padding: .8rem; margin-bottom: 0; overflow-wrap: anywhere; }
+.sviz-query-card.is-active { outline: 2px solid var(--ont-focus, #288bd5); }
+.sviz-card-open { text-align: left; width: 100%; font-weight: bold; }
+.sviz-query-card p { margin: .5rem 0; }
+.sviz-query-card pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.2rem; }
+.sviz-preview-line { display: block; }
+.sviz-preview-line.is-match { background: var(--ont-panel-bg, #7773); border-left: 3px solid #d5a31a; }
+.sviz-preview mark { font-weight: bold; color: #171200; background: #ffe083; }
+.sviz-resource-match { font-size: 1.2rem; }
+#librarySelected { font-weight: bold; margin-bottom: .6rem; overflow-wrap: anywhere; }
+@media (max-width: 1100px) { .sviz-library-layout { grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr); } }
+@media (max-width: 700px) { .sviz-layout, .sviz-library-layout { grid-template-columns: 1fr; } .sviz-diagram { height: 50vh; } }
+.sviz-header .sitehdr-bar { box-sizing: border-box; max-width: 100%; }
+.sviz-diagram { overflow: hidden; }
+.sviz-library-toolbar > span { overflow-wrap: anywhere; min-width: 0; }
+
+#queryLibrary input:not([type=checkbox]) { max-width: 100%; box-sizing: border-box; }
+.sviz-library-controls > h2, .sviz-library-results > h2 { margin-bottom: 1rem; }

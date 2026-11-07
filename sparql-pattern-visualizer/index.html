@@ -121,9 +121,15 @@
   <header id="siteHeader" class="sitehdr-root sviz-header" role="banner" aria-label="Site header"></header>
 
   <main class="sviz-main">
+    <div class="sviz-library-toolbar">
+      <button id="libraryToggle" aria-expanded="true" aria-controls="queryLibrary">Hide query library</button>
+      <span id="libraryProject"></span>
+    </div>
     <div>
       <div class="row sviz-layout">
+
         <section class="six columns sviz-panel" aria-label="SPARQL editor">
+          <div id="librarySelected" aria-live="polite"></div>
           <label class="sviz-label" for="svizQuery">SPARQL query</label>
           <textarea id="svizQuery" class="sviz-textarea" rows="14" spellcheck="false"></textarea>
 
@@ -158,6 +164,41 @@
           <section id="svizPrefixes" class="sviz-prefixes" aria-label="Prefixes"></section>
         </section>
       </div>
+      <section id="queryLibrary" class="sviz-library-layout" aria-label="Query library">
+        <aside class="sviz-panel sviz-library-controls" aria-label="Search and data management">
+          <h2>Query library</h2>
+          <label for="librarySearch">Search query text or ontology terms</label>
+          <input id="librarySearch" type="search" list="librarySuggestions" placeholder="Try phone or an IRI…" autocomplete="off" />
+          <datalist id="librarySuggestions"></datalist>
+          <label class="sviz-check"><input id="libraryFuzzy" type="checkbox" checked />Allow typos</label>
+          <label class="sviz-check"><input id="librarySemantic" type="checkbox" checked />Match ontology annotations</label>
+          <div class="sviz-library-toolbar">
+            <button id="libraryRefresh">Refresh</button>
+            <button id="libraryExport" disabled>Export selected</button>
+          </div>
+          <details>
+            <summary>Data management: queries and ontologies</summary>
+            <label for="libraryImport">Add queries to shared project (.rq, .sparql, JSON-LD)</label>
+            <input id="libraryImport" type="file" multiple accept=".rq,.sparql,.json,.jsonld" />
+            <label for="libraryDatabase">Other IndexedDB database</label>
+            <input id="libraryDatabase" placeholder="Database name" />
+            <label for="libraryObjectStore">Query / file object store</label>
+            <input id="libraryObjectStore" placeholder="Object store name" />
+            <button id="libraryReadStore">Read query store</button>
+            <label for="libraryOntologyFiles">Index ontology files (one or many)</label>
+            <input id="libraryOntologyFiles" type="file" multiple accept=".ttl,.nt,.nq,.trig,.n3,.rdf,.owl,.xml,.jsonld,.json" />
+            <label for="libraryOntology">Stored ontology</label>
+            <select id="libraryOntology"><option value="">All stored ontologies</option></select>
+            <button id="libraryIndex">Index stored ontologies</button>
+            <p>Shared project annotations are indexed automatically. Other stores and imported ontology annotations are read for this session. Storage is available only on the same browser origin as the other apps.</p>
+          </details>
+        </aside>
+        <section class="sviz-panel sviz-library-results" aria-labelledby="libraryResultsHeading">
+          <h2 id="libraryResultsHeading">Query results</h2>
+          <p id="libraryStatus" role="status" aria-live="polite"></p>
+          <div id="libraryResults"></div>
+        </section>
+      </section>
     </div>
   </main>
 
@@ -173,6 +214,10 @@
   <!-- Vendor libs (saved locally) -->
   <script src="../vendor/cytoscape.min.js" defer></script>
   <script src="../vendor/sparqljs.umd.js" defer></script>
+  <script src="../vendor/n3.min.js" defer></script>
+  <script src="../vendor/jsonld.min.js" defer></script>
+  <script src="../vendor/rdflib.min.js" defer></script>
+  <script src="../vendor/jszip.min.js" defer></script>
 
   <!-- App JS -->
   <script>
