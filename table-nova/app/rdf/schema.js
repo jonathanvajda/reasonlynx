@@ -432,7 +432,7 @@ export function toDateTimeLexical(s) {
 }
 
 /**
- * Loads N3 via esm.sh (pinned), cached.
+ * Resolves the same-origin vendored N3 browser global and caches it.
  * @returns {Promise<any>}
  */
 async function getN3() {

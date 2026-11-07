@@ -747,27 +747,6 @@ async function clearActiveSavedQueries() {
 }
 
 /**
- * Canonical (pre-listed) URL → fetch → parse → stash to default/named.
- * Side-effects: fetch network + write to IndexedDB.
- * @param {Object} opt
- * @param {string} opt.url
- * @param {'default'|'named'} [opt.targetMode='default']
- * @param {string|null} [opt.graphIRI=null]
- * @returns {Promise<{count:number, graphIRI:string}>}
- */
-async function importCanonical(opt={}) {
-  const { url, targetMode='default', graphIRI=null } = opt;
-  if (!url) throw new Error('importCanonical: url is required');
-  const resp = await fetch(url, { cache: 'no-store' });
-  if (!resp.ok) throw new Error(`HTTP ${resp.status} for ${url}`);
-  const text = await resp.text();
-  const detected = getSupportedMimeTypeForFilename(url);
-  const mime = detected.ok && detected.value.category === 'rdf' ? detected.value.mimeType : 'text/turtle';
-  const parsed = await parseRdfTextToGraph(text, mime);
-  return await stashGraphToIndexedDB(parsed, targetMode, graphIRI, 'urn:graph:canonical');
-}
-
-/**
  * Local file → read → parse → stash to default/named.
  * Side-effects: read file + write to IndexedDB.
  * @param {Object} opt
@@ -829,7 +808,6 @@ export {
   clearActiveTriples,
   clearGraph,
   flushActiveWorkspace,
-  importCanonical,
   importLocalFile,
   loadGraphFromIndexedDB,
   makeNamedGraphIRI,
