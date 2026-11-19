@@ -52,6 +52,7 @@ import {
         "controlled-vocabulary-registry": { src: "../images/cq-ferret.svg", alt: "CQ Ferret Controlled Vocabulary" },
         "tom": { src: "../images/tom.svg", alt: "Tabular Ontology Maker" },
         "table-nova": { src: "../images/table-nova-logo.svg", alt: "Table Nova" },
+        "rdfleece": { src: "../images/default-logo.png", alt: "RDFleece" },
         "axiolotl": { src: "../axiolotl/images/axiolotl.svg", alt: "Axiolotl SPARQL & Inference" },
         "graph-analyst-playbook": { src: "../images/default-logo.png", alt: "Graph Analyst Playbook" },
         "graph-analytics": { src: "../images/default-logo.png", alt: "Graph Analytics" },
@@ -79,6 +80,7 @@ import {
         "controlled-vocabulary-registry": { title: "Controlled Vocabulary Registry" },
         "tom": { title: "Tabular Ontology Maker" },
         "table-nova": { title: "Table Nova" },
+        "rdfleece": { title: "RDFleece" },
         "shacl-generator": { title: "SHACL Generator" },
         "axiolotl": { title: "Axiolotl SPARQL & Inference" },
         "graph-analyst-playbook": { title: "Graph Analyst Playbook" },
@@ -130,6 +132,7 @@ import {
         title: "Data Transformation",
         items: [
           { label: "Table Nova (Converts to RDF)", href: "../table-nova/", pageId: "table-nova" },
+          { label: "RDFleece (Converts JSON to RDF)", href: "../rdfleece/", pageId: "rdfleece" },
           { label: "DocxHund (Converts to RDF)", href: "../docxhund/", pageId: "docxhund" },
           { label: "Linked-Data Transformer", href: "../linked-data-transformer/", pageId: "linked-data-transformer" },
         ],
@@ -167,6 +170,7 @@ import {
     "kg-modeler": { label: "Knowledge Graph Modeler", href: "https://skreen5hot.github.io/kgModeler/", external: true },
     "mermaid-diagram-builder": { label: "Mermaid Diagram Builder", href: "https://skreen5hot.github.io/mermaid/", external: true },
     "table-nova": { label: "Table Nova", href: "../table-nova/" },
+    "rdfleece": { label: "RDFleece", href: "../rdfleece/" },
     "docxhund": { label: "DocxHund", href: "../docxhund/" },
     "linked-data-transformer": { label: "Linked-Data Transformer", href: "../linked-data-transformer/" },
     "axiolotl": { label: "Axiolotl SPARQL & Inference", href: "../axiolotl/" },
@@ -191,6 +195,7 @@ import {
     "kg-modeler": "Draw semantic node-edge models and produce RDF, ontology seeds, and diagrams.",
     "mermaid-diagram-builder": "Create and edit Mermaid diagrams visually.",
     "table-nova": "Transform CSV and spreadsheet tables into RDF and lightweight ontology drafts.",
+    "rdfleece": "Transform JSON documents and JSON Schema into RDF, ontology drafts, SHACL, and schema artifacts.",
     "docxhund": "Transform Word documents into RDF and annotate passages with semantic resources.",
     "linked-data-transformer": "Transform RDF datasets into new RDF structures and serializations.",
     "axiolotl": "Load and query graphs with SPARQL, EL inference, and consistency-oriented workflows.",
@@ -209,10 +214,10 @@ import {
       label: "Competency Cycle",
       groups: [
         { title: "Stage 0: Domain Scoping", appIds: ["cq-ferret", "ontoeagle"] },
-        { title: "Stage 1: Domain Analysis", appIds: ["controlled-vocabulary-registry", "ontology-tabulator", "ontoeagle", "table-nova", "graph-analytics"] },
+        { title: "Stage 1: Domain Analysis", appIds: ["controlled-vocabulary-registry", "ontology-tabulator", "ontoeagle", "table-nova", "rdfleece", "graph-analytics"] },
         { title: "Stage 2: Semantic Modeling", appIds: ["kg-modeler", "mermaid-diagram-builder", "tom", "graph-analyst-playbook", "sparql-pattern-visualizer"] },
-        { title: "Stage 3: Alignment", appIds: ["tom", "table-nova", "docxhund", "bundler", "myna-iri-swapper", "onto-diff"] },
-        { title: "Stage 4: Integration", appIds: ["linked-data-transformer", "axiolotl", "onto-merge", "table-nova", "tom", "bundler", "myna-iri-swapper"] },
+        { title: "Stage 3: Alignment", appIds: ["tom", "table-nova", "rdfleece", "docxhund", "bundler", "myna-iri-swapper", "onto-diff"] },
+        { title: "Stage 4: Integration", appIds: ["linked-data-transformer", "axiolotl", "onto-merge", "table-nova", "rdfleece", "tom", "bundler", "myna-iri-swapper"] },
         { title: "Stage 5: Validation", appIds: ["ontology-compliance-diagnostic", "nlp-quality-assurance", "onto-diff", "axiolotl", "graph-analytics", "visual-lynx", "sparql-pattern-visualizer", "graph-analyst-playbook"] }
       ]
     },
@@ -220,21 +225,21 @@ import {
       label: "Linear Pipeline",
       groups: [
         { title: "Controlled Vocabulary", appIds: ["cq-ferret", "controlled-vocabulary-registry", "ontoeagle", "tom", "nlp-quality-assurance"] },
-        { title: "Metadata Standards", appIds: ["ontology-tabulator", "ontoeagle", "tom", "ontology-compliance-diagnostic", "docxhund", "table-nova"] },
+        { title: "Metadata Standards", appIds: ["ontology-tabulator", "ontoeagle", "tom", "ontology-compliance-diagnostic", "table-nova", "rdfleece", "docxhund"] },
         { title: "Taxonomy", appIds: ["tom", "kg-modeler", "mermaid-diagram-builder", "ontology-tabulator", "bundler", "onto-merge", "onto-diff"] },
         { title: "Thesaurus", appIds: ["tom", "ontoeagle", "ontology-tabulator", "myna-iri-swapper", "onto-merge", "ontology-compliance-diagnostic", "nlp-quality-assurance"] },
         { title: "Ontology", appIds: ["tom", "kg-modeler", "ontology-tabulator", "bundler", "onto-merge", "onto-diff", "myna-iri-swapper", "linked-data-transformer", "axiolotl", "ontology-compliance-diagnostic", "nlp-quality-assurance"] },
-        { title: "Knowledge Graph", appIds: ["table-nova", "docxhund", "linked-data-transformer", "axiolotl", "visual-lynx", "graph-analytics", "graph-analyst-playbook", "sparql-pattern-visualizer", "kg-modeler", "tom", "myna-iri-swapper", "onto-merge", "onto-diff"] }
+        { title: "Knowledge Graph", appIds: ["table-nova", "rdfleece", "docxhund", "linked-data-transformer", "axiolotl", "visual-lynx", "graph-analytics", "graph-analyst-playbook", "sparql-pattern-visualizer", "kg-modeler", "tom", "myna-iri-swapper", "onto-merge", "onto-diff"] }
       ]
     },
     cicd: {
       label: "CI/CD",
       groups: [
         { title: "Plan", appIds: ["cq-ferret", "ontoeagle", "controlled-vocabulary-registry", "ontology-tabulator", "visual-lynx", "graph-analyst-playbook", "graph-analytics"] },
-        { title: "Code", appIds: ["tom", "kg-modeler", "mermaid-diagram-builder", "table-nova", "docxhund", "linked-data-transformer", "sparql-pattern-visualizer", "myna-iri-swapper"] },
-        { title: "Build", appIds: ["tom", "table-nova", "docxhund", "linked-data-transformer", "axiolotl", "bundler", "onto-merge", "myna-iri-swapper"] },
+        { title: "Code", appIds: ["tom", "kg-modeler", "mermaid-diagram-builder", "table-nova", "rdfleece", "docxhund", "linked-data-transformer", "sparql-pattern-visualizer", "myna-iri-swapper"] },
+        { title: "Build", appIds: ["tom", "table-nova", "rdfleece", "docxhund", "linked-data-transformer", "axiolotl", "bundler", "onto-merge", "myna-iri-swapper"] },
         { title: "Test", appIds: ["axiolotl", "ontology-compliance-diagnostic", "nlp-quality-assurance", "onto-diff", "graph-analytics", "visual-lynx", "sparql-pattern-visualizer", "graph-analyst-playbook"] },
-        { title: "Release", appIds: ["bundler", "tom", "table-nova", "onto-merge", "onto-diff", "ontology-compliance-diagnostic", "linked-data-transformer"] }
+        { title: "Release", appIds: ["bundler", "tom", "table-nova", "rdfleece", "onto-merge", "onto-diff", "ontology-compliance-diagnostic", "linked-data-transformer"] }
       ]
     },
     classic: {
