@@ -18,6 +18,7 @@ const APP_ROUTES = {
   'sparql-pattern-visualizer': 'sparql-pattern-visualizer/index.html',
   'ontology-tabulator': 'ontology-tabulator/index.html',
   'table-nova': 'table-nova/index.html',
+  rdfleece: 'rdfleece/index.html',
   docxhund: 'docxhund/index.html',
   'onto-merge': 'onto-merge/index.html',
   'onto-diff': 'onto-diff/index.html',

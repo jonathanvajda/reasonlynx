@@ -19,6 +19,7 @@ This repo is shaped for hosts that deploy the repository root as the public web 
 | `/sparql-pattern-visualizer/` | `sparql-pattern-visualizer/index.html` | `sparql-pattern-visualizer/docs/index.html` |
 | `/ontology-tabulator/` | `ontology-tabulator/index.html` | `ontology-tabulator/docs/index.html` |
 | `/table-nova/` | `table-nova/index.html` | `table-nova/docs/index.html` |
+| `/rdfleece/` | `rdfleece/index.html` | `table-nova/docs/rdfleece.html` |
 | `/about/` | `about/index.html` | `OntoEagle/docs/about.html` |
 | `/cq-ferret.html` | `cq-ferret.html` | Redirect alias to `/cq-ferret/` |
 | `/onto-eagle.html` | `onto-eagle.html` | Redirect alias to `/onto-eagle/` |
@@ -74,5 +75,6 @@ App suites get directories, not root-level `index.html` variants. This avoids co
 | SPARQL Pattern Visualizer | `/sparql-pattern-visualizer/` |
 | Ontology Tabulator | `/ontology-tabulator/` |
 | Table Nova | `/table-nova/` |
+| RDFleece | `/rdfleece/` |
 
 Root-level `.html` files should be aliases only, not separate app copies.

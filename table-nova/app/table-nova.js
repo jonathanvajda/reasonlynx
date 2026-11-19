@@ -256,6 +256,7 @@ async function handleRun() {
       runId,
       quads,
       columnSchemas,
+      predicateLocalNameStyle: options.predicate?.casing || 'camelCase',
       sampleValuesByPredicate
     });
 
@@ -265,6 +266,7 @@ async function handleRun() {
       createdAtIso: runCreatedAtIso,
       quads,
       columnSchemas,
+      predicateLocalNameStyle: options.predicate?.casing || 'camelCase',
       ontologyTurtle: outputPackage.views.tbox.turtle,
       sampleValuesByPredicate
     });
@@ -331,6 +333,7 @@ async function handleLoadRunToOutput(graphIri) {
       runId: createRunIdFromGraphIri(graphIri),
       quads: run.quads || [],
       columnSchemas: run.columnSchemas || [],
+      predicateLocalNameStyle: run.predicateLocalNameStyle || 'camelCase',
       sampleValuesByPredicate: run.sampleValuesByPredicate || {}
     });
 
@@ -532,10 +535,10 @@ function renderCurrentOutputs() {
 }
 
 /**
- * @param {{dataset: any, graphIri: string, filename: string, createdAtIso: string, runId: string, quads: any[], columnSchemas: any[], sampleValuesByPredicate?: Record<string, string[]>}} params
+ * @param {{dataset: any, graphIri: string, filename: string, createdAtIso: string, runId: string, quads: any[], columnSchemas: any[], predicateLocalNameStyle?: string, sampleValuesByPredicate?: Record<string, string[]>}} params
  * @returns {Promise<any>}
  */
-async function buildOutputPackage({ dataset, graphIri, filename, createdAtIso, runId, quads, columnSchemas, sampleValuesByPredicate = {} }) {
+async function buildOutputPackage({ dataset, graphIri, filename, createdAtIso, runId, quads, columnSchemas, predicateLocalNameStyle = 'camelCase', sampleValuesByPredicate = {} }) {
   const prefixes = TABLENOVA_DEFAULTS.prefixes;
   const aboxTurtle = await serializeScopeKind(dataset, graphIri, prefixes, 'turtle');
   const ontologyMetadataRecord = buildTableNovaOntologyMetadataRecord({
@@ -544,6 +547,7 @@ async function buildOutputPackage({ dataset, graphIri, filename, createdAtIso, r
     runId,
     baseOntologyIri: TABLENOVA_DEFAULTS.basePredicateIri,
     localNameStyle: 'PascalCase',
+    propertyLocalNameStyle: predicateLocalNameStyle,
     language: 'en'
   });
   const tboxDataset = buildOntologyDataset(columnSchemas || [], { metadataRecord: ontologyMetadataRecord });
