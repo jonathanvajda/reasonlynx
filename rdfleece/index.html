@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="RDFleece converts JSON and JSON Schema into RDF, OWL, SHACL, data dictionaries, and JSON Schema." />
+  <meta name="author" content="Jonathan Vajda" />
+  <meta name="dcterms.creator" content="Jonathan Vajda" />
+  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
+  <meta name="license" content="GNU General Public License version 3.0" />
+  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
+  <link rel="icon" type="image/x-icon" href="../images/block-logo.png" />
+  <title>RDFleece · JSON to RDF</title>
+
+  <!-- Shared repository baseline/reset, theme, and site chrome. -->
+  <link rel="stylesheet" href="../styles/skeleton.css" />
+  <link rel="stylesheet" href="../styles/app-base.css" />
+  <link rel="stylesheet" href="../styles/site-header.css" />
+  <link rel="stylesheet" href="../table-nova/styles/table-nova.css" />
+  <link rel="stylesheet" href="./styles/rdfleece.css" />
+
+  <link rel="modulepreload" href="../packages/namespace-registry/src/namespace-registry.js" />
+  <link rel="modulepreload" href="../packages/browser-file-io/src/index.js" />
+  <link rel="modulepreload" href="../packages/rdf-io/src/index.js" />
+</head>
+<body data-page-id="rdfleece">
+  <header id="siteHeader" class="sitehdr-root rdfleece-site-header" role="banner" aria-label="Site header"></header>
+
+  <main class="rdfleece-main table-nova-main">
+    <div class="rdfleece-page-heading">
+      <h1 class="rdfleece-page-heading__title">RDFleece</h1>
+      <p class="rdfleece-page-heading__subtitle">Stage JSON, review its implicit schema, and generate RDF, OWL, SHACL, a data dictionary, and JSON Schema.</p>
+    </div>
+
+    <section class="rdfleece-card table-nova-card" aria-labelledby="rdfleece-ingest-title">
+      <h2 id="rdfleece-ingest-title" class="rdfleece-card__title table-nova-card__title">Ingest</h2>
+      <div id="RDFleeceDropzone" class="rdfleece-dropzone table-nova-dropzone" role="button" tabindex="0" aria-label="Drop a JSON file here or click to select">
+        <div class="rdfleece-dropzone__inner">
+          <p class="rdfleece-dropzone__headline table-nova-dropzone__headline">Drag &amp; drop a JSON document</p>
+          <p class="rdfleece-dropzone__hint table-nova-dropzone__hint">…or click to choose a local .json file.</p>
+        </div>
+        <input id="RDFleeceFile" class="rdfleece-dropzone__input table-nova-dropzone__input" type="file" accept=".json,application/json" />
+      </div>
+      <div class="rdfleece-staging" aria-live="polite">
+        <h3 class="rdfleece-section-title">Staging area</h3>
+        <p id="RDFleeceFilename" class="rdfleece-muted">No JSON instance file staged.</p>
+        <div class="rdfleece-field">
+          <label class="rdfleece-label" for="RDFleeceSchemaFile">Optional JSON Schema</label>
+          <input id="RDFleeceSchemaFile" class="rdfleece-input table-nova-input" type="file" accept=".json,application/schema+json" />
+          <p id="RDFleeceSchemaFilename" class="rdfleece-muted">No schema supplied; RDFleece will infer one.</p>
+        </div>
+      </div>
+      <h3 class="rdfleece-section-title">Source preview</h3>
+      <pre id="RDFleecePreview" class="rdfleece-source-preview">JSON will appear here after parsing.</pre>
+    </section>
+
+    <section class="rdfleece-card table-nova-card" aria-labelledby="rdfleece-options-title">
+      <h2 id="rdfleece-options-title" class="rdfleece-card__title table-nova-card__title">Vocabulary and identity</h2>
+      <div class="rdfleece-options-grid">
+        <div class="rdfleece-field table-nova-field"><label class="rdfleece-label table-nova-label" for="RDFleeceBaseInstance">Instance base IRI</label><input id="RDFleeceBaseInstance" class="rdfleece-input table-nova-input" type="text" value="https://example.org/RDFleece/instance/" /></div>
+        <div class="rdfleece-field table-nova-field"><label class="rdfleece-label table-nova-label" for="RDFleeceBasePredicate">Predicate base IRI</label><input id="RDFleeceBasePredicate" class="rdfleece-input table-nova-input" type="text" value="https://example.org/RDFleece/" /></div>
+        <div class="rdfleece-field table-nova-field"><label class="rdfleece-label table-nova-label" for="RDFleeceCasing">Property casing</label><select id="RDFleeceCasing" class="rdfleece-select table-nova-select"><option value="camelCase">camelCase</option><option value="PascalCase">PascalCase</option><option value="snake_case">snake_case</option><option value="SHOUT_CASE">SHOUT_CASE</option></select></div>
+        <div class="rdfleece-checks">
+          <label class="rdfleece-checkbox"><input id="RDFleecePrefixHas" type="checkbox" checked /> <span>Prefix generated properties with “has”</span></label>
+          <label class="rdfleece-checkbox"><input id="RDFleecePreserveNulls" type="checkbox" checked /> <span>Preserve explicit nulls as resources</span></label>
+        </div>
+      </div>
+      <div class="rdfleece-actions table-nova-actions"><button id="RDFleeceRun" class="rdfleece-btn rdfleece-btn--primary table-nova-btn table-nova-btn--primary" type="button" disabled>RUN RDFLEECE</button></div>
+      <div id="RDFleeceStatus" class="rdfleece-status" aria-live="polite">Stage a JSON file or JSON Schema to begin.</div>
+    </section>
+
+    <section class="rdfleece-card table-nova-card" aria-labelledby="rdfleece-schema-title">
+      <h2 id="rdfleece-schema-title" class="rdfleece-card__title table-nova-card__title">Review inferred schema</h2>
+      <div id="RDFleeceSchema" class="rdfleece-schema">No inferred paths yet.</div>
+    </section>
+
+    <section class="rdfleece-card table-nova-card" aria-labelledby="rdfleece-output-title">
+      <h2 id="rdfleece-output-title" class="rdfleece-card__title table-nova-card__title">Output</h2>
+      <nav class="table-nova-tabs table-nova-format-tabs" aria-label="Output format">
+        <button class="table-nova-tab table-nova-tab--active" type="button" data-rdfleece-format="turtle">Turtle</button>
+        <button class="table-nova-tab" type="button" data-rdfleece-format="ntriples">N-Triples</button>
+        <button class="table-nova-tab" type="button" data-rdfleece-format="jsonld">JSON-LD</button>
+        <button class="table-nova-tab" type="button" data-rdfleece-format="shacl">SHACL</button>
+        <div class="table-nova-output-metaexport">
+          <button id="RDFleeceDictionary" class="table-nova-btn table-nova-btn--tertiary" type="button" disabled>Export data dictionary</button>
+          <button id="RDFleeceJsonSchema" class="table-nova-btn table-nova-btn--tertiary" type="button" disabled>Export JSON Schema</button>
+        </div>
+      </nav>
+
+      <fieldset class="table-nova-output-scope" aria-label="Output graph content">
+        <legend class="table-nova-label">Graph content</legend>
+        <label class="table-nova-radiochip"><input type="radio" name="RDFleeceOutputScope" value="abox" checked /><span>Instance data (ABox)</span></label>
+        <label class="table-nova-radiochip"><input type="radio" name="RDFleeceOutputScope" value="tbox" /><span>Ontology schema (TBox)</span></label>
+        <label class="table-nova-radiochip"><input type="radio" name="RDFleeceOutputScope" value="combined" /><span>Combined</span></label>
+      </fieldset>
+
+      <div class="table-nova-output-actions">
+        <button id="RDFleeceDownload" class="table-nova-btn table-nova-btn--tertiary" type="button" disabled>Export Turtle</button>
+        <button id="RDFleeceDownloadAlternate" class="table-nova-btn table-nova-btn--tertiary" type="button" disabled>Export TriG</button>
+      </div>
+      <label class="rdfleece-label" for="RDFleeceOutput">Generated artifact</label>
+      <textarea id="RDFleeceOutput" class="rdfleece-textarea table-nova-textarea" spellcheck="false" readonly></textarea>
+    </section>
+  </main>
+
+  <footer class="rdfleece-footer" role="contentinfo">
+    <p><strong>RDFleece</strong> is part of the Table Nova application family.</p>
+    <p>Copyright © Jonathan Vajda. Licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v3.0</a>.</p>
+  </footer>
+
+  <aside id="toast-container" aria-live="polite" aria-relevant="additions"></aside>
+  <script src="../vendor/n3.min.js"></script>
+  <script src="../vendor/jsonld.min.js"></script>
+  <script type="module" src="../app/site-header.js"></script>
+  <script type="module" src="./app/main.js"></script>
+</body>
+</html>
+

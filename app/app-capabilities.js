@@ -15,6 +15,7 @@ export const APP_CAPABILITY_MANIFESTS = Object.freeze({
   'kg-modeler': { appId: 'kg-modeler', produces: ['ontology-seed', 'ontology-draft', 'rdf-dataset', 'mermaid-diagram'], accepts: ['term-list', 'ontology-rdf', 'rdf-dataset'] },
   'mermaid-diagram-builder': { appId: 'mermaid-diagram-builder', produces: ['mermaid-diagram'], accepts: ['mermaid-diagram'] },
   'table-nova': { appId: 'table-nova', produces: ['rdf-dataset', 'ontology-draft'], accepts: ['tabular-file', 'mapping'] },
+  rdfleece: { appId: 'rdfleece', produces: ['rdf-dataset', 'ontology-draft', 'json-schema', 'data-dictionary', 'shacl-shapes'], accepts: ['json-document', 'json-schema'] },
   docxhund: { appId: 'docxhund', produces: ['document-rdf', 'annotation-rdf', 'rdf-dataset'], accepts: ['document', 'ontology-rdf', 'rdf-dataset'] },
   'linked-data-transformer': { appId: 'linked-data-transformer', produces: ['rdf-dataset'], accepts: ['rdf-dataset', 'ontology-rdf', 'jsonld-graph', 'document-rdf'] },
   axiolotl: { appId: 'axiolotl', produces: ['sparql-query', 'rdf-dataset', 'inferred-rdf'], accepts: ['rdf-dataset', 'ontology-rdf', 'ontology-draft', 'jsonld-graph', 'document-rdf', 'annotation-rdf'] },
