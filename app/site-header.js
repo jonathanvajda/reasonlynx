@@ -57,7 +57,7 @@ import {
         "graph-analyst-playbook": { src: "../images/default-logo.png", alt: "Graph Analyst Playbook" },
         "graph-analytics": { src: "../images/default-logo.png", alt: "Graph Analytics" },
         "myna-iri-swapper": { src: "../images/myna-iri-swapper.png", alt: "Myna IRI Swapper" },
-        "docxhund": { src: "../docxhund/images/docxhund-base.png", alt: "DocxHund" },
+        "docxhund": { src: "../images/docxhund-brand.svg", alt: "DocxHund" },
         "visual-lynx": { src: "../images/visual-lynx.svg", alt: "Visual Lynx" },
         "sparql-pattern-visualizer": { src: "../sparql-pattern-visualizer/images/default-logo-uncropped.png", alt: "SPARQL Pattern Visualizer" },
         "linked-data-transformer": { src: "../images/default-logo.png", alt: "Linked-Data Transformer" },
