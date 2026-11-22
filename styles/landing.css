@@ -33,3 +33,31 @@
 @media(max-width:850px){.app-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.app-card-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.app-card{transition:none}.app-card.reveal-pending{opacity:1;transform:none}}
+
+/* The mascot and headline lead into a shared introduction and action panel. */
+.site-header{position:sticky;top:0;z-index:10}
+.hero{padding:3.5rem 0 5rem;overflow:visible}
+.hero-top{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center;gap:4rem}
+.hero-mascot{display:flex;align-items:center;justify-content:center;min-width:0}
+.hero-mascot img{display:block;width:min(100%,360px);height:auto;position:relative;z-index:11;pointer-events:none;will-change:transform,opacity}
+.hero-heading h1{max-width:13ch;margin-bottom:0}
+.hero-intro{display:flex;align-items:center;justify-content:space-between;gap:2rem;margin-top:2rem;background:#123c31;color:#fff;border-radius:12px;padding:2rem 2.5rem;box-shadow:12px 14px 0 #dbece1}
+.hero-intro .hero-copy{max-width:42rem;color:#fff;margin:0;font-size:1.2rem}
+.hero-intro .hero-note{color:#c4d9cf;margin:.65rem 0 0}
+.hero-intro .actions{margin:0;flex-shrink:0}
+.brand img{transition:opacity .12s linear}
+@media(max-width:850px){.hero-top{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:2rem}.hero-intro{align-items:flex-start;flex-direction:column}.hero-intro .actions{margin:0}}
+@media(max-width:600px){.hero{padding:2rem 0 3.5rem}.hero-top{grid-template-columns:1fr;gap:1.5rem}.hero-mascot img{width:min(55%,230px)}.hero-heading h1{font-size:clamp(2.65rem,10vw,4rem)}.hero-intro{padding:1.5rem;box-shadow:8px 9px 0 #dbece1}.hero-intro .hero-copy{font-size:1.05rem}}
+@media(prefers-reduced-motion:reduce){.hero-mascot img,.brand img{transition:none!important;transform:none!important;opacity:1!important}}
+
+.brand img{width:auto;height:54px;max-width:170px}
+
+/* A quiet linked-data constellation sits behind the moving mascot. */
+.hero-mascot{position:relative;min-height:360px}
+.hero-constellation{position:absolute;width:min(100%,360px);aspect-ratio:1;border-radius:50%;background:#e0efe4;pointer-events:none}
+.hero-constellation svg{display:block;width:100%;height:100%;padding:1rem}
+.constellation-lines{stroke:#24664f;stroke-width:1;opacity:.23}
+.constellation-nodes{fill:#24664f;opacity:.38}
+.hero-mascot img{width:min(57%,220px)}
+@media(max-width:850px){.hero-mascot{min-height:280px}.hero-constellation{width:min(100%,280px)}.hero-mascot img{width:min(57%,175px)}}
+@media(max-width:600px){.hero-mascot{min-height:235px}.hero-constellation{width:235px}.hero-mascot img{width:145px}}

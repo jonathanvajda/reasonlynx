@@ -18,20 +18,22 @@
   </header>
   <main id="main">
     <section class="hero">
-      <div class="wrap hero-grid">
-        <div>
-          <p class="eyebrow">Semantic tools · training · consulting</p>
-          <h1>Make complex data easier to understand and connect.</h1>
-          <p class="hero-copy">ReasonLynx helps teams bring meaning to their data with open tools, practical education, and semantic engineering services.</p>
-          <div class="actions"><a class="button primary" href="#contact">Discuss your project</a><a class="button secondary" href="#apps">Explore the tools</a></div>
-          <p class="hero-note">For data leaders, engineers, educators, and curious practitioners.</p>
+      <div class="wrap hero-layout">
+        <div class="hero-top">
+          <div class="hero-mascot">
+            <div class="hero-constellation" aria-hidden="true">
+              <svg viewBox="0 0 360 360" fill="none">
+                <g class="constellation-lines"><path d="M39 130 91 72 151 91 203 48 270 76 318 130 299 196 321 254 258 300 202 279 141 316 86 281 42 227 63 178 39 130Z"/><path d="m91 72 30 58-58 48 78 34-55 69m65-190 38 47 14-90m-14 90 81-62-14 100 62-46M141 212l48-74 67 38 2 124M141 212l61 67 54-103 43 20"/></g>
+                <g class="constellation-nodes"><circle cx="39" cy="130" r="4"/><circle cx="91" cy="72" r="5"/><circle cx="151" cy="91" r="3"/><circle cx="203" cy="48" r="4"/><circle cx="270" cy="76" r="5"/><circle cx="318" cy="130" r="3"/><circle cx="299" cy="196" r="5"/><circle cx="321" cy="254" r="3"/><circle cx="258" cy="300" r="4"/><circle cx="202" cy="279" r="3"/><circle cx="141" cy="316" r="5"/><circle cx="86" cy="281" r="4"/><circle cx="42" cy="227" r="3"/><circle cx="63" cy="178" r="5"/><circle cx="121" cy="130" r="3"/><circle cx="189" cy="138" r="4"/><circle cx="256" cy="176" r="3"/><circle cx="141" cy="212" r="4"/></g>
+              </svg>
+            </div>
+            <img src="./images/ReasonLynx_greenscale.png" alt="" width="588" height="750">
+          </div>
+          <div class="hero-heading"><p class="eyebrow">Semantic tools &middot; training &middot; consulting</p><h1>Make complex data easier to understand and connect.</h1></div>
         </div>
-        <div class="hero-panel" aria-label="From data to shared understanding">
-          <span class="panel-kicker">A practical path to shared meaning</span>
-          <div class="panel-row"><span class="panel-symbol">01</span><div><strong>Understand</strong><p>Start with the questions your data needs to answer.</p></div></div>
-          <div class="panel-row"><span class="panel-symbol">02</span><div><strong>Connect</strong><p>Build shared models across concepts and systems.</p></div></div>
-          <div class="panel-row"><span class="panel-symbol">03</span><div><strong>Put knowledge to work</strong><p>Explore, validate, and use it in real workflows.</p></div></div>
-          <div class="panel-foot">Data <span>·</span> Meaning <span>·</span> Action</div>
+        <div class="hero-intro">
+          <div><p class="hero-copy">ReasonLynx helps teams bring meaning to their data with open tools, practical education, and semantic engineering services.</p><p class="hero-note">For data leaders, engineers, educators, and curious practitioners.</p></div>
+          <div class="actions"><a class="button light" href="#contact">Discuss your project</a><a class="button outline-light" href="#apps">Explore the tools</a></div>
         </div>
       </div>
     </section>
@@ -105,5 +107,6 @@
   </main>
   <footer><div class="wrap footer-row"><span>© ReasonLynx LLC</span><div><a href="./about/">About</a><a href="#apps">Apps</a><a href="mailto:jonathan@reasonlynx.com">Contact</a></div></div></footer>
   <script src="./app/landing-reveal.js" defer></script>
+  <script src="./app/landing-hero.js" defer></script>
 </body>
 </html>
