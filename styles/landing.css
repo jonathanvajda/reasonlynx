@@ -61,3 +61,15 @@
 .hero-mascot img{width:min(57%,220px)}
 @media(max-width:850px){.hero-mascot{min-height:280px}.hero-constellation{width:min(100%,280px)}.hero-mascot img{width:min(57%,175px)}}
 @media(max-width:600px){.hero-mascot{min-height:235px}.hero-constellation{width:235px}.hero-mascot img{width:145px}}
+
+/* Contact inquiry draft */
+.contact-layout{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:start;gap:4rem}
+.contact-intro a{color:#fff;text-underline-offset:.2em}.contact-team-link{display:inline-block;margin-top:.5rem;font-weight:700}
+.contact-form[hidden]{display:none}.contact-form{background:#fff;color:#17302c;border-radius:10px;padding:2rem;box-shadow:0 12px 36px rgba(0,0,0,.12)}
+.contact-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.contact-field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem;min-width:0}.contact-field label{font-size:.9rem;font-weight:700}.contact-field .optional{font-weight:400;color:#526b61}
+.contact-field input,.contact-field select,.contact-field textarea{width:100%;min-width:0;border:1px solid #a8bdb0;border-radius:5px;background:#fff;color:#17302c;font:inherit;font-size:1rem;padding:.7rem .8rem}.contact-field textarea{resize:vertical}.contact-field input:focus-visible,.contact-field select:focus-visible,.contact-field textarea:focus-visible,.contact-form button:focus-visible{outline:3px solid #d29118;outline-offset:2px}
+.contact-field select{appearance:none;padding-right:2.3rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2317302c' stroke-width='1.7'%3E%3Cpath d='m5 7 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;background-size:1.2rem}
+.contact-form button{background:#1e624d;color:#fff;cursor:pointer;font:inherit;font-weight:700}.contact-form .contact-form-note{font-size:.86rem;color:#526b61;line-height:1.5;margin:1rem 0 0}
+@media(max-width:850px){.contact-layout{grid-template-columns:1fr;gap:2.5rem}}
+@media(max-width:520px){.contact-fields{grid-template-columns:1fr;gap:0}.contact-form{padding:1.3rem}}
