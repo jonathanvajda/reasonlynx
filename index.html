@@ -1,718 +1,133 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Edge-Canonical Computing is a rapid ontology development landing page for explaining edge-focused ontology workflows, tooling, and applied semantic engineering services." />
-  <meta name="author" content="Jonathan Vajda" />
-  <meta name="dcterms.creator" content="Jonathan Vajda" />
-  <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
-  <meta name="license" content="GNU General Public License version 3.0" />
-  <link rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" />
-  <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
-  <meta name="version" content="0.1.0" />
-  <title>ReasonLynx | Rapid Ontology Development via Edge-Canonical Computing</title>
-
-  <!-- Load Skeleton first, then your app base theme layer -->
-  <link rel="stylesheet" href="./styles/normalize.css" />
-  <link rel="stylesheet" href="./styles/skeleton.css" />
-  <link rel="stylesheet" href="./styles/app-base.css" />
-
-  <style>
-    /* Scoped landing page styles layered on top of Skeleton + app-base.css */
-    .landing-page {
-      padding: 2.4rem 0 4.8rem;
-      background:
-        radial-gradient(circle at top left, color-mix(in srgb, var(--ont-accent) 12%, transparent), transparent 28%),
-        linear-gradient(180deg, var(--ont-bg) 0%, color-mix(in srgb, var(--ont-bg) 92%, #000) 100%);
-    }
-
-    .landing-page__section {
-      padding: 3.6rem 0;
-    }
-
-    .landing-page__hero {
-      min-height: 88vh;
-      display: flex;
-      align-items: center;
-    }
-
-    .landing-page__eyebrow {
-      display: inline-block;
-      margin-bottom: 1.2rem;
-      padding: 0.45rem 0.9rem;
-      border-radius: 999px;
-      background: var(--ont-accent-soft);
-      color: var(--ont-pill-text);
-      font-size: 1.3rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    .landing-page__title {
-      margin: 0 0 1.4rem;
-      font-size: clamp(3.4rem, 6vw, 5.8rem);
-      line-height: 1.02;
-      letter-spacing: -0.04em;
-      color: var(--ont-text);
-    }
-
-    .landing-page__lead,
-    .landing-page__sublead {
-      max-width: 68ch;
-      margin: 0 0 1.25rem;
-      color: var(--ont-muted);
-      font-size: 1.9rem;
-      line-height: 1.65;
-    }
-
-    .landing-page__actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .landing-page__hero-visual {
-      position: relative;
-      min-height: 48rem;
-      border: 1px solid var(--ont-border);
-      border-radius: calc(var(--ont-radius) * 3);
-      background: linear-gradient(
-        145deg,
-        color-mix(in srgb, var(--ont-panel-bg) 92%, white 8%),
-        color-mix(in srgb, var(--ont-emph-bg) 84%, var(--ont-panel-bg))
-      );
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-      overflow: hidden;
-    }
-
-    .landing-page__hero-visual::before {
-      content: "placeholder image";
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--ont-muted);
-      font-size: 2.2rem;
-      letter-spacing: 0.04em;
-      text-transform: lowercase;
-      background:
-        linear-gradient(135deg, color-mix(in srgb, var(--ont-accent-soft) 75%, transparent), transparent 60%),
-        repeating-linear-gradient(
-          135deg,
-          transparent,
-          transparent 18px,
-          color-mix(in srgb, var(--ont-border) 40%, transparent) 18px,
-          color-mix(in srgb, var(--ont-border) 40%, transparent) 36px
-        );
-    }
-
-    .landing-page__hero-note {
-      position: absolute;
-      right: 1.6rem;
-      bottom: 1.6rem;
-      width: min(30rem, calc(100% - 3.2rem));
-      padding: 1.4rem 1.5rem;
-      background: color-mix(in srgb, var(--ont-panel-bg) 88%, transparent);
-      border: 1px solid var(--ont-border);
-      border-radius: calc(var(--ont-radius) * 2);
-      backdrop-filter: blur(8px);
-      color: var(--ont-muted);
-      font-size: 1.5rem;
-      line-height: 1.55;
-    }
-
-    .landing-page__section-heading {
-      max-width: 76rem;
-      margin-bottom: 2.4rem;
-    }
-
-    .landing-page__section-heading h2 {
-      margin: 0 0 1rem;
-      font-size: clamp(2.8rem, 4vw, 4.2rem);
-      line-height: 1.08;
-      letter-spacing: -0.03em;
-      color: var(--ont-text);
-    }
-
-    .landing-page__section-heading p {
-      margin: 0;
-      color: var(--ont-muted);
-      font-size: 1.8rem;
-      line-height: 1.7;
-    }
-
-    .landing-page__feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 2rem;
-    }
-
-    .landing-page__feature-card {
-      display: flex;
-      flex-direction: column;
-      min-height: 100%;
-      background: var(--ont-panel-bg);
-      border: 1px solid transparent;
-      border-radius: calc(var(--ont-radius) * 2.5);
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      opacity: 0;
-      transform: translateY(36px);
-      transition:
-        opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-        transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
-        border-color 180ms ease,
-        box-shadow 180ms ease;
-    }
-
-    .landing-page__feature-card.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .landing-page__feature-card:hover {
-      border-color: color-mix(in srgb, var(--ont-accent) 30%, var(--ont-border));
-      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.12);
-    }
-
-    .landing-page__app-card {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .landing-page__app-card:focus-visible {
-      outline: 3px solid var(--ont-accent);
-      outline-offset: 3px;
-    }
-
-    .landing-page__feature-card:nth-child(2) {
-      transition-delay: 90ms;
-    }
-
-    .landing-page__feature-card:nth-child(3) {
-      transition-delay: 180ms;
-    }
-
-    .landing-page__feature-card:nth-child(4) {
-      transition-delay: 60ms;
-    }
-
-    .landing-page__feature-card:nth-child(5) {
-      transition-delay: 150ms;
-    }
-
-    .landing-page__feature-card:nth-child(6) {
-      transition-delay: 240ms;
-    }
-
-    .landing-page__feature-media {
-      position: relative;
-      min-height: 18rem;
-      background:
-        linear-gradient(135deg, color-mix(in srgb, var(--ont-accent-soft) 85%, transparent), transparent 65%),
-        linear-gradient(160deg, color-mix(in srgb, var(--ont-panel-bg) 95%, white 5%), color-mix(in srgb, var(--ont-emph-bg) 90%, var(--ont-panel-bg)));
-      border-bottom: 1px solid var(--ont-border);
-    }
-
-    .landing-page__feature-media::before {
-      content: "placeholder image";
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--ont-muted);
-      font-size: 1.5rem;
-      letter-spacing: 0.03em;
-    }
-
-    .landing-page__feature-media:has(img)::before {
-      content: none;
-    }
-
-    .landing-page__feature-media img {
-      position: absolute;
-      inset: 50% auto auto 50%;
-      max-width: min(68%, 18rem);
-      max-height: 12rem;
-      object-fit: contain;
-      transform: translate(-50%, -50%);
-      filter: drop-shadow(0 1.4rem 2.4rem rgba(0, 0, 0, 0.16));
-    }
-
-    .landing-page__feature-body {
-      padding: 1.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      flex: 1;
-    }
-
-    .landing-page__feature-title {
-      margin: 0;
-      font-size: 2rem;
-      line-height: 1.25;
-      color: var(--ont-text);
-    }
-
-    .landing-page__feature-text {
-      margin: 0;
-      color: var(--ont-muted);
-      font-size: 1.6rem;
-      line-height: 1.7;
-    }
-
-    .landing-page__topic-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 2rem;
-    }
-
-    .landing-page__topic-card {
-      padding: 2rem;
-      background: var(--ont-panel-bg);
-      border: 1px solid var(--ont-border);
-      border-radius: calc(var(--ont-radius) * 2.25);
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.06);
-    }
-
-    .landing-page__topic-card h3 {
-      margin: 0 0 0.9rem;
-      font-size: 2rem;
-      line-height: 1.25;
-      color: var(--ont-text);
-    }
-
-    .landing-page__topic-card p {
-      margin: 0;
-      color: var(--ont-muted);
-      font-size: 1.6rem;
-      line-height: 1.7;
-    }
-
-    .landing-page__footer-note {
-      margin-top: 1.8rem;
-      color: var(--ont-muted);
-      font-size: 1.4rem;
-    }
-
-    @media (max-width: 1000px) {
-      .landing-page__hero {
-        min-height: auto;
-      }
-
-      .landing-page__feature-grid,
-      .landing-page__topic-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .landing-page__hero-visual {
-        margin-top: 2rem;
-        min-height: 36rem;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .landing-page {
-        padding-top: 1.2rem;
-      }
-
-      .landing-page__section {
-        padding: 2.6rem 0;
-      }
-
-      .landing-page__lead,
-      .landing-page__sublead,
-      .landing-page__section-heading p,
-      .landing-page__feature-text,
-      .landing-page__topic-card p,
-      .landing-page__hero-note {
-        font-size: 1.55rem;
-      }
-
-      .landing-page__hero-note {
-        right: 1rem;
-        bottom: 1rem;
-        width: calc(100% - 2rem);
-      }
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ReasonLynx provides free semantic tools, practical education, and consulting for ontology and knowledge graph projects.">
+  <title>ReasonLynx | Semantic tools, training, and consulting</title>
+  <link rel="icon" href="./images/block-logo.png">
+  <link rel="stylesheet" href="./styles/landing.css">
 </head>
 <body>
-  <main class="landing-page">
-    <section class="landing-page__section landing-page__hero">
-      <div class="container" style="min-width: 75%;">
-        <div class="row">
-          <div class="seven columns">
-            <div class="landing-page__eyebrow">Edge-canonical computing - rapid ontology development</div>
-            <h1 class="landing-page__title">ReasonLynx</h1>
-            <h2>Ontology-driven tooling for agile workflows that move closer to the edge.</h2>
-            <p class="landing-page__lead">
-              This landing page frames a platform around edge-canonical computing and rapid ontology development: a way to build semantic tools that are lighter to deploy, faster to iterate, and easier to align with changing operational needs.
-            </p>
-            <p class="landing-page__sublead">
-              Instead of treating ontologies as static documentation, the workflow treats them as active assets for validation, search, transformation, reporting, and knowledge capture across evolving enterprise environments.
-            </p>
-            <div class="landing-page__actions">
-              <a class="button button-primary" href="#features">Explore features</a>
-              <a class="button" href="#enterprise-topics">Enterprise topics</a>
-              <a class="button" href="./onto-eagle/">Open OntoEagle</a>
-              <a class="button" href="./cq-ferret/">Open CQ Ferret</a>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap nav-row">
+      <a class="brand" href="./" aria-label="ReasonLynx home"><img src="./images/ReasonLynx_greenscale.png" alt="ReasonLynx"></a>
+      <nav aria-label="Main navigation"><a href="#solutions">Solutions</a><a href="#services">Services</a><a href="#apps">Apps</a><a href="#learn">Learn</a><a href="./about/">About</a><a class="nav-contact" href="#contact">Contact</a></nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <div class="wrap hero-layout">
+        <div class="hero-top">
+          <div class="hero-mascot">
+            <div class="hero-constellation" aria-hidden="true">
+              <svg viewBox="0 0 360 360" fill="none">
+                <g class="constellation-lines"><path d="M39 130 91 72 151 91 203 48 270 76 318 130 299 196 321 254 258 300 202 279 141 316 86 281 42 227 63 178 39 130Z"/><path d="m91 72 30 58-58 48 78 34-55 69m65-190 38 47 14-90m-14 90 81-62-14 100 62-46M141 212l48-74 67 38 2 124M141 212l61 67 54-103 43 20"/></g>
+                <g class="constellation-nodes"><circle cx="39" cy="130" r="4"/><circle cx="91" cy="72" r="5"/><circle cx="151" cy="91" r="3"/><circle cx="203" cy="48" r="4"/><circle cx="270" cy="76" r="5"/><circle cx="318" cy="130" r="3"/><circle cx="299" cy="196" r="5"/><circle cx="321" cy="254" r="3"/><circle cx="258" cy="300" r="4"/><circle cx="202" cy="279" r="3"/><circle cx="141" cy="316" r="5"/><circle cx="86" cy="281" r="4"/><circle cx="42" cy="227" r="3"/><circle cx="63" cy="178" r="5"/><circle cx="121" cy="130" r="3"/><circle cx="189" cy="138" r="4"/><circle cx="256" cy="176" r="3"/><circle cx="141" cy="212" r="4"/></g>
+              </svg>
             </div>
+            <img src="./images/ReasonLynx_greenscale.png" alt="" width="588" height="750">
           </div>
-
-          <div class="five columns">
-            <div class="landing-page__hero-visual" aria-label="Placeholder hero image block">
-              <div class="landing-page__hero-note">
-                Replace this block with a graph visual, UI screenshot, workflow collage, or conceptual image showing ontology-enabled tooling across local, browser, and edge deployment contexts.
-              </div>
-            </div>
-          </div>
+          <div class="hero-heading"><p class="eyebrow">Semantic tools &middot; training &middot; consulting</p><h1>Make complex data easier to understand and connect.</h1></div>
+        </div>
+        <div class="hero-intro">
+          <div><p class="hero-copy">ReasonLynx helps teams bring meaning to their data with open tools, practical education, and semantic engineering services.</p><p class="hero-note">For data leaders, engineers, educators, and curious practitioners.</p></div>
+          <div class="actions"><a class="button light" href="#contact">Discuss your project</a><a class="button outline-light" href="#apps">Explore the tools</a></div>
+        </div>
+      </div>
+    </section>
+    <section id="solutions" class="section">
+      <div class="wrap">
+        <div class="section-heading"><p class="eyebrow">Enterprise data challenges</p><h2>Data maturity built into the foundation.</h2><p>Across industries and government, teams face common challenges in finding, connecting, protecting, and using information. Agentic AI solutions are often limited or stall out quickly. Why? The data isn't AI-ready. Semantic tools and practices can improve maturity in each area.</p></div>
+        <div class="problem-grid">
+          <details class="dimension"><summary><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13" cy="13" r="8"/><path d="m19 19 7 7M9 13h8M13 9v8"/></svg><span class="dimension-title">Discovery</span><span class="dimension-teaser">Make information easier to find and understand.</span><span class="dimension-toggle">Explore the challenge</span></summary><div class="dimension-detail"><p><strong>The challenge:</strong> Teams cannot use data they cannot locate or interpret.</p><p><strong>An approach:</strong> Describe assets with meaningful metadata, identifiers, and shared definitions that support search and understanding.</p><p class="dimension-reference">Related principle: FAIR findability.</p></div></details>
+          <details class="dimension"><summary><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 26 7v8c0 7-4 11-10 14C10 26 6 22 6 15V7z"/><rect x="12" y="13" width="8" height="7" rx="1"/><path d="M14 13v-2a2 2 0 0 1 4 0v2"/></svg><span class="dimension-title">Access &amp; security</span><span class="dimension-teaser">Leverage edge compute, cybersecurity posture, and access controls.</span><span class="dimension-toggle">Explore the challenge</span></summary><div class="dimension-detail"><p><strong>The challenge:</strong> People need useful access while sensitive information remains protected.</p><p><strong>An approach:</strong> Describe data, sensitivity, and usage requirements clearly to inform access and governance decisions alongside security controls.</p><p class="dimension-reference">Related principles: FAIR accessibility and NIST privacy and cybersecurity frameworks.</p></div></details>
+          <details class="dimension"><summary><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="10" width="8" height="12" rx="2"/><rect x="21" y="10" width="8" height="12" rx="2"/><path d="M11 13h10M11 19h10M7 7v3M25 22v3"/></svg><span class="dimension-title">Interoperability</span><span class="dimension-teaser">Make meaningful connections between data across systems and domains.</span><span class="dimension-toggle">Explore the challenge</span></summary><div class="dimension-detail"><p><strong>The challenge:</strong> Different systems use different structures, terms, and assumptions.</p><p><strong>An approach:</strong> Use shared vocabularies, models, and open standards to align meaning and support exchange.</p><p class="dimension-reference">Related principle: FAIR interoperability.</p></div></details>
+          <details class="dimension"><summary><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m16 4 11 6-11 6L5 10zM5 16l11 6 11-6M5 22l11 6 11-6"/></svg><span class="dimension-title">Quality &amp; reuse</span><span class="dimension-teaser">Make data more dependable and useful over time.</span><span class="dimension-toggle">Explore the challenge</span></summary><div class="dimension-detail"><p><strong>The challenge:</strong> Missing context, unclear provenance, and inconsistent quality make reuse difficult.</p><p><strong>An approach:</strong> Document origins and usage conditions, define quality expectations, and support review and validation.</p><p class="dimension-reference">Related principle: FAIR reusability; NIST RDaF metadata and provenance.</p></div></details>
+          <details class="dimension"><summary><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="25" cy="8" r="3"/><circle cx="16" cy="24" r="3"/><path d="M10 8h12M9 11l5 10M23 11l-5 10"/></svg><span class="dimension-title">Meaning &amp; inference</span><span class="dimension-teaser">Express relationships so knowledge can be put to work.</span><span class="dimension-toggle">Explore the challenge</span></summary><div class="dimension-detail"><p><strong>The challenge:</strong> Implicit relationships and assumptions are hard for people and systems to use consistently.</p><p><strong>An approach:</strong> Represent concepts and relationships using linked-data standards such as RDF, RDFS, and OWL; where appropriate, use inference to derive additional knowledge.</p><p class="dimension-reference">Related principle: FAIR interoperability and knowledge representation.</p></div></details>
+        </div>
+        <p class="framework-note">Enterprise data maturity may be measured and governed by public standards, such as the <a href="https://www.gofair.foundation/fair-principles">FAIR principles</a>, the <a href="https://www.nist.gov/programs-projects/research-data-framework-rdaf">NIST Research Data Framework</a>, and the <a href="https://www.dhs.gov/sites/default/files/2022-01/DHS%20Evidence-Based%20Data%20Strategy-2021-07-16.pdf">DHS Evidence-Based Data Strategy</a>. Controlled vocabularies, taxonomies, ontologies, shared semantic data layers, and knowledge graphs are technologies that can provide relief for many enterprise pain-points.</p>
+        <a class="text-link" href="#contact">Looking for enterprise solution expertise?</a>
+      </div>
+    </section>
+    <section id="services" class="section services-section">
+      <div class="wrap service-layout"><div class="section-heading"><p class="eyebrow">Work with ReasonLynx</p><h2>Expertise for the work your team needs to do.</h2><p>From early questions to implementation and maintenance, ReasonLynx offers consulting and training tailored to your goals and environment.</p><a class="text-link" href="#contact">Talk about your needs</a></div>
+        <div class="service-list">
+          <article><h3>Discovery &amp; architecture</h3><p>Clarify requirements, assess information challenges, and plan a semantic architecture and roadmap.</p></article>
+          <article><h3>Ontology &amp; knowledge graph engineering</h3><p>Develop models, vocabularies, and validation artifacts that make domain knowledge explicit.</p></article>
+          <article><h3>Implementation &amp; integration</h3><p>Apply semantic models to data workflows and connect them with your systems and technology stack.</p></article>
+          <article><h3>Training &amp; ongoing guidance</h3><p>Help your team learn semantic methods and tools, and support governance and quality over time.</p></article>
+        </div>
+      </div>
+    </section>
+    <section id="apps" class="section">
+      <div class="wrap"><div class="section-heading"><p class="eyebrow">Free tools</p><h2>Find a tool for the task at hand.</h2><p>Explore the ReasonLynx suite across the competency cycle, from scoping and analysis to integration and validation. Many tools support more than one stage.</p></div>
+        <div class="app-collections">
+          <section class="app-collection"><div class="app-collection-heading"><h3>Domain scoping</h3><p>Frame the questions and concepts that guide the work.</p></div><div class="app-card-grid">
+            <a class="app-card" href="./cq-ferret/" data-reveal><span class="app-card-media"><img src="./images/cq-ferret.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">CQ Ferret</span><span class="app-card-description">Organize competency questions.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./onto-eagle/" data-reveal><span class="app-card-media"><img src="./images/Eagle-VI_1753264913.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">OntoEagle</span><span class="app-card-description">Search ontology terms.</span><span class="app-card-action">Open app</span></span></a>
+          </div></section>
+          <section class="app-collection"><div class="app-collection-heading"><h3>Domain analysis</h3><p>Inspect domain information and explore its structure.</p></div><div class="app-card-grid">
+            <a class="app-card" href="./ontology-tabulator/" data-reveal><span class="app-card-media"><img src="./images/ontology-tabulator.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Ontology Tabulator</span><span class="app-card-description">Review statements in tables.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./ontology-viewer/" data-reveal><span class="app-card-media"><img src="./images/Eagle-VI_1753264913.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Ontology Viewer</span><span class="app-card-description">Browse ontology assets.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./table-nova/" data-reveal><span class="app-card-media"><img src="./images/table-nova-logo.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Table Nova</span><span class="app-card-description">Work with tabular data.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./rdfleece/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">RDFleece</span><span class="app-card-description">Transform JSON into semantic formats.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./graph-analytics/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Graph Analytics</span><span class="app-card-description">Explore graph relationships.</span><span class="app-card-action">Open app</span></span></a>
+          </div></section>
+          <section class="app-collection"><div class="app-collection-heading"><h3>Semantic modeling</h3><p>Build and investigate models, queries, and workflows.</p></div><div class="app-card-grid">
+            <a class="app-card" href="./tabular-ontology-maker/" data-reveal><span class="app-card-media"><img src="./images/tom.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Tabular Ontology Maker</span><span class="app-card-description">Build from spreadsheets.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./graph-analyst-playbook/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Graph Analyst Playbook</span><span class="app-card-description">Stage graph investigations.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./sparql-pattern-visualizer/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">SPARQL Pattern Visualizer</span><span class="app-card-description">Inspect query patterns.</span><span class="app-card-action">Open app</span></span></a>
+          </div></section>
+          <section class="app-collection"><div class="app-collection-heading"><h3>Alignment</h3><p>Prepare and align semantic resources across sources.</p></div><div class="app-card-grid">
+            <a class="app-card" href="./docxhund/" data-reveal><span class="app-card-media"><img src="./images/docxhund-brand.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">DocxHund</span><span class="app-card-description">Explore document-oriented workflows.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./bundler/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Slim Bundle Builder</span><span class="app-card-description">Bundle semantic resources.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./iri-swapper/" data-reveal><span class="app-card-media"><img src="./images/myna-iri-swapper.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Myna IRI Swapper</span><span class="app-card-description">Rewrite RDF and SPARQL IRIs.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./onto-diff/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">OntoDiff</span><span class="app-card-description">Compare ontology versions.</span><span class="app-card-action">Open app</span></span></a>
+          </div></section>
+          <section class="app-collection"><div class="app-collection-heading"><h3>Integration</h3><p>Bring data and semantic assets together.</p></div><div class="app-card-grid">
+            <a class="app-card" href="./linked-data-transformer/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Linked-Data Transformer</span><span class="app-card-description">Transform linked data.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./axiolotl/" data-reveal><span class="app-card-media"><img src="./axiolotl/images/axiolotl.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Axiolotl</span><span class="app-card-description">Query and analyze RDF.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./onto-merge/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">OntoMerge</span><span class="app-card-description">Merge ontology sources.</span><span class="app-card-action">Open app</span></span></a>
+          </div></section>
+          <section class="app-collection"><div class="app-collection-heading"><h3>Validation</h3><p>Assess and visualize semantic assets.</p></div><div class="app-card-grid">
+            <a class="app-card" href="./ontology-compliance-diagnostic/" data-reveal><span class="app-card-media"><img src="./images/default-logo.png" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Ontology Compliance Diagnostic</span><span class="app-card-description">Assess ontology quality.</span><span class="app-card-action">Open app</span></span></a>
+            <a class="app-card" href="./visual-lynx/" data-reveal><span class="app-card-media"><img src="./images/visual-lynx.svg" alt="" loading="lazy"></span><span class="app-card-body"><span class="app-card-title">Visual Lynx</span><span class="app-card-description">Visualize linked data.</span><span class="app-card-action">Open app</span></span></a>
+          </div></section>
         </div>
       </div>
     </section>
 
-    <section id="features" class="landing-page__section">
-      <div class="container">
-        <div class="landing-page__section-heading">
-          <h2>Core features</h2>
-          <p>
-            The layout below uses div-based cards instead of table borders. Each card reveals with a soft opacity and translate transition as the user scrolls, and more cards can be added by duplicating the same block.
-          </p>
+    <section id="learn" class="section learn-section"><div class="wrap learn-layout"><div><p class="eyebrow">Learn with ReasonLynx</p><h2>Start exploring. Keep learning.</h2></div><div><p>Free tools are only part of the picture. We are developing practical tutorials to help you understand the problems, try the tools, and apply semantic methods to your own work.</p><p class="learn-note">Tutorials are in development. Have a question or need training for your team? We would be glad to hear from you.</p><a class="text-link" href="#contact">Ask about training</a></div></div></section>
+
+    <section id="contact" class="section contact-section">
+      <div class="wrap contact-layout">
+        <div class="contact-intro">
+          <p class="eyebrow">Start a conversation</p>
+          <h2>Let&rsquo;s talk about your goals.</h2>
+          <p>Tell us a little about what you&rsquo;re working on. Whether you&rsquo;re exploring an idea, looking for training, or need help with a project, we&rsquo;d be glad to hear from you.</p>
+          <p>Requirements Gathering &middot; Data Analytics &middot; <br /> Semantic Disambiguation &middot; Explainable Inference</p>
+          <p class="contact-email">Prefer to write directly? <a href="mailto:jonathan@reasonlynx.com">jonathan@reasonlynx.com</a></p>
+          <a class="contact-team-link" href="./about/">Meet the team</a>
         </div>
-
-        <div class="landing-page__feature-grid">
-          <article class="landing-page__feature-card js-reveal-card">
-            <div class="landing-page__feature-media"></div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Local-first semantic workflows</h3>
-              <p class="landing-page__feature-text">
-                Run ontology-centered tasks closer to the user and closer to the data so modeling, validation, and iteration happen with less friction.
-              </p>
-            </div>
-          </article>
-
-          <article class="landing-page__feature-card js-reveal-card">
-            <div class="landing-page__feature-media"></div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Agile ontology curation</h3>
-              <p class="landing-page__feature-text">
-                Support rapid refinement of classes, properties, constraints, and annotations as requirements shift during discovery and delivery.
-              </p>
-            </div>
-          </article>
-
-          <article class="landing-page__feature-card js-reveal-card">
-            <div class="landing-page__feature-media"></div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Composable toolchain modules</h3>
-              <p class="landing-page__feature-text">
-                Stage separate capabilities for ingestion, inspection, querying, reporting, and transformation while preserving a coherent semantic core.
-              </p>
-            </div>
-          </article>
-
-          <article class="landing-page__feature-card js-reveal-card">
-            <div class="landing-page__feature-media"></div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Portable semantic assets</h3>
-              <p class="landing-page__feature-text">
-                Keep linked data and ontology artifacts usable across environments so the same model can support multiple tools and stages of work.
-              </p>
-            </div>
-          </article>
-
-          <article class="landing-page__feature-card js-reveal-card">
-            <div class="landing-page__feature-media"></div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Faster analyst feedback loops</h3>
-              <p class="landing-page__feature-text">
-                Give teams quicker visibility into ontology quality, model fit, and downstream behavior before issues harden into process debt.
-              </p>
-            </div>
-          </article>
-
-          <article class="landing-page__feature-card js-reveal-card">
-            <div class="landing-page__feature-media"></div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Enterprise-ready deployment story</h3>
-              <p class="landing-page__feature-text">
-                Frame a path toward secure hosting, selective sync, offline capability, and governed semantic operations without losing development speed.
-              </p>
-            </div>
-          </article>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/Eagle-VI_1753264913.svg" alt="OntoEagle Semantic Lookup logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">OntoEagle Semantic Lookup</h3>
-              <p class="landing-page__feature-text">Search and inspect ontology terms from local and shared semantic catalogs.</p>
-            </div>
+        <form id="contact-form" class="contact-form" hidden>
+          <div class="contact-fields">
+            <div class="contact-field"><label for="contact-name">Name <span aria-hidden="true">*</span></label><input id="contact-name" name="name" type="text" autocomplete="name" required maxlength="120"></div>
+            <div class="contact-field"><label for="contact-email">Email <span aria-hidden="true">*</span></label><input id="contact-email" name="email" type="email" autocomplete="email" required maxlength="254"></div>
+            <div class="contact-field"><label for="contact-phone">Phone <span class="optional">(optional)</span></label><input id="contact-phone" name="phone" type="tel" autocomplete="tel" maxlength="50"></div>
+            <div class="contact-field"><label for="contact-topic">What can we help with?</label><select id="contact-topic" name="topic"><option value="">Choose a topic</option><option>Consulting</option><option>Training</option><option>Consulting and training</option><option>Something else</option></select></div>
           </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/Eagle-VI_1753264913.svg" alt="Ontology Viewer logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Ontology Viewer</h3>
-              <p class="landing-page__feature-text">Browse ontology assets with the shared catalog viewer experience.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/cq-ferret.svg" alt="Competency Question Ferret logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Competency Question Ferret</h3>
-              <p class="landing-page__feature-text">Extract and organize competency questions for ontology analysis.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/default-logo.png" alt="Slim Bundle Builder logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Slim Bundle Builder</h3>
-              <p class="landing-page__feature-text">Collect selected semantic resources into portable bundles.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/tom.svg" alt="Tabular Ontology Maker logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Tabular Ontology Maker</h3>
-              <p class="landing-page__feature-text">Build ontology structures from spreadsheet-oriented workflows.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="axiolotl/images/axiolotl.svg" alt="Axiolotl logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Axiolotl</h3>
-              <p class="landing-page__feature-text">Run SPARQL and inference workflows for RDF graph analysis.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/default-logo.png" alt="Graph Analyst Playbook logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Graph Analyst Playbook</h3>
-              <p class="landing-page__feature-text">Stage analyst workflows and playbook steps for graph investigation.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/default-logo.png" alt="Graph Analytics logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Graph Analytics</h3>
-              <p class="landing-page__feature-text">Explore paths and relationships across RDF graph structures.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/visual-lynx.svg" alt="Visual Lynx logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Visual Lynx</h3>
-              <p class="landing-page__feature-text">Visualize linked data and graph structures for inspection.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/default-logo.png" alt="Linked-Data Transformer logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Linked-Data Transformer</h3>
-              <p class="landing-page__feature-text">Transform linked data between practical browser-based workflow stages.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="ontology-compliance-diagnostic/favicon.svg" alt="Ontology Compliance Diagnostic logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Ontology Compliance Diagnostic</h3>
-              <p class="landing-page__feature-text">Evaluate ontology quality and compliance against diagnostic criteria.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="iri-swapper/icon.svg" alt="Myna IRI Swapper logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Myna IRI Swapper</h3>
-              <p class="landing-page__feature-text">Rewrite RDF and SPARQL IRIs from mapping files in one app.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="sparql-pattern-visualizer/images/default-logo-uncropped.png" alt="SPARQL Pattern Visualizer logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">SPARQL Pattern Visualizer</h3>
-              <p class="landing-page__feature-text">Inspect query patterns and SPARQL structures visually.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/ontology-tabulator.svg" alt="Ontology Tabulator logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Ontology Tabulator</h3>
-              <p class="landing-page__feature-text">Review ontology statements through tabular inspection workflows.</p>
-            </div>
-          </div>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="images/table-nova-logo.svg" alt="Table Nova logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">Table Nova</h3>
-              <p class="landing-page__feature-text">Work with tabular data as part of semantic toolchain preparation.</p>
-            </div>
-          </div>
-
-          <a class="landing-page__feature-card landing-page__app-card js-reveal-card is-visible" href="./rdfleece/">
-            <div class="landing-page__feature-media">
-              <img src="images/default-logo.png" alt="RDFleece logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">RDFleece</h3>
-              <p class="landing-page__feature-text">Transform JSON and JSON Schema into RDF, OWL, SHACL, data dictionaries, and JSON Schema.</p>
-            </div>
-          </a>
-
-          <div class="landing-page__feature-card js-reveal-card is-visible">
-            <div class="landing-page__feature-media">
-              <img src="docxhund/images/docxhund-base.png" alt="DocxHund logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">DocxHund</h3>
-              <p class="landing-page__feature-text">Prototype document-oriented workflows alongside the semantic app suite.</p>
-            </div>
-          </div>
-
-          <a class="landing-page__feature-card landing-page__app-card js-reveal-card is-visible" href="./onto-merge/">
-            <div class="landing-page__feature-media">
-              <img src="images/default-logo.png" alt="OntoMerge logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">OntoMerge</h3>
-              <p class="landing-page__feature-text">Merge ontology sources while controlling which imports are combined, retained, or omitted.</p>
-            </div>
-          </a>
-
-          <a class="landing-page__feature-card landing-page__app-card js-reveal-card is-visible" href="./onto-diff/">
-            <div class="landing-page__feature-media">
-              <img src="images/default-logo.png" alt="OntoDiff logo">
-            </div>
-            <div class="landing-page__feature-body">
-              <h3 class="landing-page__feature-title">OntoDiff</h3>
-              <p class="landing-page__feature-text">Compare ontology versions and export reports or a reproducible SPARQL update.</p>
-            </div>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section id="enterprise-topics" class="landing-page__section">
-      <div class="container">
-        <div class="landing-page__section-heading">
-          <h2>Core topics in enterprise needs</h2>
-          <p>
-            This section is staged structurally so the descriptions can be tightened later. For now it marks out the problem areas your tools are meant to address.
-          </p>
-        </div>
-
-        <div class="landing-page__topic-grid">
-          <article class="landing-page__topic-card">
-            <h3>Interoperability across systems</h3>
-            <p>
-              Stage copy here about aligning multiple data sources, reducing semantic mismatch, and establishing shared meaning across teams and applications.
-            </p>
-          </article>
-
-          <article class="landing-page__topic-card">
-            <h3>Governance and traceability</h3>
-            <p>
-              Stage copy here about validations, reviewable changes, versioned ontology assets, and support for accountable knowledge management.
-            </p>
-          </article>
-
-          <article class="landing-page__topic-card">
-            <h3>Operational agility</h3>
-            <p>
-              Stage copy here about shortening the distance between identifying a requirement, updating a semantic model, and shipping usable capability.
-            </p>
-          </article>
-
-          <article class="landing-page__topic-card">
-            <h3>Scalable knowledge capture</h3>
-            <p>
-              Stage copy here about letting teams extend shared semantic assets over time without rebuilding every downstream workflow from scratch.
-            </p>
-          </article>
-        </div>
-
-        <p class="landing-page__footer-note">
-          To add more feature cards, duplicate one <code>.landing-page__feature-card</code> block. The grid will continue to flow naturally, and the reveal behavior will apply automatically.
-        </p>
+          <div class="contact-field"><label for="contact-message">Tell us a little about your needs <span class="optional">(optional)</span></label><textarea id="contact-message" name="message" rows="4" maxlength="2000" placeholder="For example: I&rsquo;d like to discuss ontology development training for my team."></textarea></div>
+          <button class="button light" type="submit">Open email draft</button>
+          <p class="contact-form-note" id="contact-form-note">This opens your email app with a draft to review and send. The message is not sent automatically.</p>
+        </form>
       </div>
     </section>
   </main>
-
-  <script>
-    (function () {
-      var cards = document.querySelectorAll('.js-reveal-card');
-
-      if (!('IntersectionObserver' in window)) {
-        cards.forEach(function (card) {
-          card.classList.add('is-visible');
-        });
-        return;
-      }
-
-      var observer = new IntersectionObserver(function (entries, obs) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) {
-            return;
-          }
-          entry.target.classList.add('is-visible');
-          obs.unobserve(entry.target);
-        });
-      }, {
-        threshold: 0.15,
-        rootMargin: '0px 0px -40px 0px'
-      });
-
-      cards.forEach(function (card) {
-        observer.observe(card);
-      });
-    }());
-  </script>
+  <footer><div class="wrap footer-row"><span>© ReasonLynx LLC</span><div><a href="./about/">About</a><a href="#apps">Apps</a><a href="mailto:jonathan@reasonlynx.com">Contact</a></div></div></footer>
+  <script src="./app/landing-reveal.js" defer></script>
+  <script src="./app/landing-hero.js" defer></script>
+  <script src="./app/contact-form.js" defer></script>
 </body>
 </html>

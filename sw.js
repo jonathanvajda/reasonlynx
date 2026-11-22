@@ -374,7 +374,7 @@ const SHELL_ASSETS = [
   './sparql-pattern-visualizer/styles/sviz.css',
   './docxhund/',
   './docxhund/examples/example-docx-parsing.ttl',
-  './docxhund/images/docxhund-base.png',
+  './docxhund/images/docxhund-brand.svg',
   './docxhund/index.html',
   './docxhund/scripts/config.js',
   './docxhund/scripts/annotation-model.js',

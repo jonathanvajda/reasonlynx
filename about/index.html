@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="OntoEagle is a lightweight browser-based toolkit for exploring ontologies, assembling ontology slims, and supporting ontology development workflows." />
+    <meta name="description" content="Meet the developers behind ReasonLynx and get in touch about semantic consulting and training." />
     <meta name="author" content="Jonathan Vajda" />
     <meta name="dcterms.creator" content="Jonathan Vajda" />
     <meta name="dcterms.rightsHolder" content="Jonathan Vajda" />
@@ -13,7 +13,7 @@
   <meta name="dcterms.license" content="https://www.gnu.org/licenses/gpl-3.0.en.html" />
   <meta name="version" content="0.1.0" />
     <link rel="icon" type="image/x-icon" href="../images/block-logo.png">
-    <title>OntoEagle Lookup</title>
+    <title>About | ReasonLynx</title>
     <!-- Public CSS -->
     <link rel="stylesheet" href="../styles/skeleton.css" />
 
@@ -111,6 +111,14 @@
     <!-- App Local CSS -->
     <link rel="stylesheet" href="../styles/search-app.css" />
     <style>
+        .about-intro, .about-contact { max-width: 75rem; margin: 2rem auto; padding: 0 2rem; text-align: center; }
+        .about-contact { margin-top: 4rem; margin-bottom: 4rem; padding: 2.5rem; border: 1px solid var(--ont-border); border-radius: 1rem; background: var(--ont-panel-bg); }
+        .about-contact a { display: inline-block; margin-top: .5rem; }
+        #team-wrap { width: min(110rem, 92%); margin: auto; }
+        #development-team { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem; }
+        #development-team .team-members { min-width: 0; text-align: center; }
+        #development-team .bio { max-width: 48rem; margin: auto; text-align: left; }
+        @media (max-width: 700px) { #development-team { grid-template-columns: 1fr; } }
         .social img { 
         width: 50px; 
         height: 50px; 
@@ -133,11 +141,11 @@
 
     <main role="main">
         <h1 style="justify-self: center; margin:auto;">About Us</h1>
-        <br />
-        <div style="width: 50%; margin:auto;">
+        <div class="about-intro"><p>ReasonLynx LLC brings together open tools, education, and semantic engineering to help people make information more useful. Meet the developers behind the tools.</p><p><a href="../#services">Explore consulting and training</a> &middot; <a href="../#apps">Explore the tools</a></p></div>
+        <div id="team-wrap">
         <h2 style="justify-self: center;">Development Team</h2>
-        <div id="development-team" style="justify-self: center; margin:auto; display: flex;grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div id="jonathan-vajda" class="team-members" style="max-width: 50%; gap: 1rem;">
+        <div id="development-team">
+            <div id="jonathan-vajda" class="team-members">
                 <div class="avatar" style="justify-self: center; margin:auto;">
                     <a href="https://github.com/jonathanvajda" style="text-decoration: none;" target="_blank">
                         <img style="height:150px; width:auto; border-radius: 10%; border: 2px solid var(--ont-border);" alt="View jonathanvajda's GitHub page" src="https://avatars.githubusercontent.com/u/36548200?v=4"></a>
@@ -158,18 +166,18 @@
                         <img class="social" src="../images/phi-vajda2.jpg" alt="Icon for Jonathan Vajda's website, for philosophy, theology, and technology. Go to https://jonathanvajda.com/" style="border-radius: 48%;">
                     </a>
                     &nbsp;
-                    <a href="mailto:jonathan.vajda@gmail.com" style="text-decoration: none;">
-                        <img class="social invert svg" src="../images/email-1-svgrepo-com.svg" alt="Mail to jonathan.vajda@gmail.com" style="border-radius: 48%;">
+                    <a href="mailto:jonathan@reasonlynx.com" style="text-decoration: none;">
+                        <img class="social invert svg" src="../images/email-1-svgrepo-com.svg" alt="Mail to jonathan@reasonlynx.com" style="border-radius: 48%;">
                     </a>
                 </div>
                 <br />
-                <div class="bio" style="max-width: 80%; justify-self: center; margin:auto;">
+                <div class="bio">
                     <p>Jonathan Vajda is an ontologist at U.S. Customs and Border Protection (CBP), where he designs and maintains formal, machine-readable domain models aligned with Basic Formal Ontology and related standards. He designed, executed, and oversees his team's ontology quality assurance pipeline.</p>
                     <p>He holds a PhD in Philosophy (<a href="http://buffalo.edu" target="_blank">UB</a>), an MA in Philosophy (<a href="http://wmich.edu/" target="_blank">WMU</a>), an MA in Religion (<a href="http://wts.edu" target="_blank">WTS</a>), and a BA in Psychology (<a href="http://cmich.edu/" target="_blank">CMU</a>). He was <a href="http://ccef.org" target="_blank">CCEF</a>'s IT adminstrator for 5+ years, where he made naive ontologies for organization-wide technology asset management.</p>
                 </div>
             </div>
 
-            <div id="aaron-damiano" class="team-members" style="max-width: 50%; gap: 1rem;">
+            <div id="aaron-damiano" class="team-members">
                 <div class="avatar" style="justify-self: center; margin:auto;">
                     <a href="https://github.com/Skreen5hot/" style="text-decoration: none;" target="_blank">
                         <img style="height:150px; width:auto; border-radius: 10%; border: 2px solid var(--ont-border);" alt="View Skreen5hot's GitHub page"
@@ -196,14 +204,19 @@
                     </a>
                 </div>
                 <br />  
-                <div class="bio" style="max-width: 80%; justify-self: center; margin:auto;">
-                    <p>Aaron Damiano is a semantic engineer, ontologist, and data scientist specializing in enterprise knowledge graphs and ontology-driven systems. He works at U.S. Customs and Border Protection, where he helps lead efforts to normalize, integrate, and operationalize data using formal ontologies and graph technologies.</p>
-                    <p>With more than 20 years of private-sector experience before entering federal service, Aaron focuses on pragmatic semantic architectures that bridge theory and implementation. He is particularly interested in normalization services, semantic reduction strategies, and building tools that make knowledge graphs accessible to both humans and machines.</p>
+                <div class="bio">
+                    <p>Aaron Damiano is a semantic engineer, ontologist, and data scientist specializing in enterprise knowledge graphs and ontology-driven systems. He works at M&T Bank, where he leads AI development with a view toward normalization, integration, and operationalization of data using formal ontologies and graph technologies.</p>
+                    <p>With more than 20 years of private-sector experience and 3 years of federal service, Aaron focuses on pragmatic semantic architectures that bridge theory and implementation. He is particularly interested in normalization services, semantic reduction strategies, and building tools that make knowledge graphs accessible to both humans and machines.</p>
                 </div>
                 
             </div>
         </div>
         </div>
+        <section class="about-contact" aria-labelledby="contact-heading">
+            <h2 id="contact-heading">Have a project or training question?</h2>
+            <p>Tell Jonathan about your goals and how ReasonLynx might help. You can also reach each developer using the links above.</p>
+            <a class="button button-primary" href="mailto:jonathan@reasonlynx.com?subject=ReasonLynx%20consulting%20or%20training%20inquiry">Email ReasonLynx</a>
+        </section>
     </main>
 
     <script>
