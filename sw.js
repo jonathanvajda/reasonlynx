@@ -4,7 +4,7 @@
    - graph.jsonld: stale-while-revalidate
 */
 
-const SW_VERSION = 'reasonlynx-monorepo-v31';
+const SW_VERSION = 'reasonlynx-monorepo-v32';
 const CACHE_SHELL = `ontoeagle-shell-${SW_VERSION}`;
 const CACHE_DATA = `ontoeagle-data-${SW_VERSION}`;
 
@@ -374,7 +374,7 @@ const SHELL_ASSETS = [
   './sparql-pattern-visualizer/styles/sviz.css',
   './docxhund/',
   './docxhund/examples/example-docx-parsing.ttl',
-  './docxhund/images/docxhund-brand.svg',
+  './images/docxhund-brand.svg',
   './docxhund/index.html',
   './docxhund/scripts/config.js',
   './docxhund/scripts/annotation-model.js',
